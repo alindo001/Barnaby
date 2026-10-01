@@ -290,7 +290,7 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                   </div>
                   <div className="flex items-center justify-between p-1.5 bg-slate-900/60 rounded-lg">
                     <span className="text-slate-400">Launch Direction</span>
-                    <span className="font-mono font-bold text-cyan-300">Gauge Arrows / Q, E, X</span>
+                    <span className="font-mono font-bold text-cyan-300">Expanding Dial / Q, E, X</span>
                   </div>
                   <div className="flex items-center justify-between p-1.5 bg-slate-900/60 rounded-lg">
                     <span className="text-slate-400">Restart / Pause</span>
@@ -339,8 +339,20 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                       <div className="font-bold text-cyan-300">Jetpack: Unmount & Directional Launch</div>
                       <div className="text-slate-300 leading-relaxed text-xs">
                         Hold <span className="text-amber-300 font-semibold font-mono">Jump</span> in mid-air to fly; fuel recharges on the ground. <br/>
-                        • <strong className="text-cyan-300">Take Off / Drop:</strong> Click <em>'Take Off'</em> on the fuel gauge or press <span className="text-amber-300 font-mono">Z/C</span> to smoothly detach the jetpack onto the floor.<br/>
-                        • <strong className="text-cyan-300">Directional Rocket Launch:</strong> Click any of the 6 direction arrows on the fuel gauge (←, ↖, ↑, ↗, →, ↓) or press <span className="text-amber-300 font-mono">Q, E, or X</span> to unmount and blast the jetpack like a rocket to smash enemies (+500 pts)! Launching downwards also triggers a massive rocket jump recoil.
+                        • <strong className="text-cyan-300">Take Off / Drop:</strong> Tap <em>'Drop'</em> in the expanding Launch dial or press <span className="text-amber-300 font-mono">Z/C</span> to smoothly detach the jetpack onto the floor.<br/>
+                        • <strong className="text-cyan-300">Directional Rocket Launch:</strong> Tap the on-screen <span className="text-cyan-300 font-semibold font-mono">Launch</span> button to open the 6-direction aim dial (↖, ↑, ↗, ←, →, ↓) or press <span className="text-amber-300 font-mono">Q, E, or X</span> to unmount and blast the jetpack like a rocket to smash enemies (+500 pts)! Launching downwards also triggers a massive rocket jump recoil.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 bg-amber-950/40 rounded-xl border border-amber-500/50 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-amber-500/20 text-amber-400 rounded-lg mt-0.5">
+                      <Rocket size={14} className="rotate-45" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-amber-300">⚡ Rocketeer Category: Pure Mid-Air Flight</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Zero platforms between launchpad and touchdown! Players fly continuously through the open sky. Swoop through glowing green fuel canisters in mid-air to replenish your tank and ride aerial coin arcs to the final landing strip.
                       </div>
                     </div>
                   </div>
@@ -376,7 +388,7 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                     <div>
                       <div className="font-bold text-slate-200">Playable Characters & Customizer</div>
                       <div className="text-slate-400">
-                        Choose between 🐦 <strong>Bird</strong>, 🐸 <strong>Frog</strong>, 🌊 <strong>Axolotl</strong>, and 🦫 <strong>Capybara</strong>! Personalize their colors, hats, outfits, expressions, and special items via the Character Locker.
+                        Play as 🐦 <strong className="text-cyan-300">Barnaby</strong> (or friends 🐸 <strong>Ribbit</strong>, 🌊 <strong>Lottie</strong>, and 🦫 <strong>Chilli</strong>)! Personalize their colors, hats, outfits, expressions, and gear in the Character Locker.
                       </div>
                     </div>
                   </div>

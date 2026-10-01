@@ -15,7 +15,9 @@ import {
   SlidersHorizontal,
   Flag
 } from 'lucide-react';
-import { GameState, GameStats, LevelData, TouchButtonSize } from '../types/game';
+import { GameState, GameStats, LevelData, TouchButtonSize, CharacterConfig } from '../types/game';
+import { TitleScreen } from './TitleScreen';
+import { BarnabyLogo } from './BarnabyLogo';
 
 interface GameOverlayProps {
   gameState: GameState;
@@ -25,6 +27,8 @@ interface GameOverlayProps {
   soundEnabled: boolean;
   dpadSize?: TouchButtonSize;
   touchOpacity?: number;
+  characterConfig?: CharacterConfig;
+  totalLevelsCount?: number;
   onStartGame: () => void;
   onResume: () => void;
   onRestart: () => void;
@@ -47,6 +51,8 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
   soundEnabled,
   dpadSize = 'normal',
   touchOpacity = 0.75,
+  characterConfig,
+  totalLevelsCount = 60,
   onStartGame,
   onResume,
   onRestart,
@@ -72,83 +78,29 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
   const starsEarned = stats.levelStars[currentLevel.id] || 1;
 
   return (
-    <div id="game-state-overlay" className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm select-none">
-      {/* 1. START MENU */}
+    <div id="game-state-overlay" className="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm select-none">
+      {/* 1. START MENU: Full Featured Barnaby Title Screen */}
       {gameState === 'MENU' && (
-        <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl text-center text-white flex flex-col items-center">
-          <div className="w-16 h-16 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400 mb-4 shadow-lg shadow-blue-500/10">
-            <Gamepad2 size={36} />
-          </div>
-
-          <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">
-            Platformer Game
-          </h1>
-          <p className="text-sm text-slate-400 mb-6 max-w-xs leading-relaxed">
-            Run, jump, dodge hazards, and collect gems across handcrafted 2D worlds.
-          </p>
-
-          <div className="w-full flex flex-col gap-3">
-            <button
-              id="btn-play-game"
-              onClick={onStartGame}
-              className="w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all"
-            >
-              <Play size={20} fill="currentColor" />
-              <span>Play Game</span>
-            </button>
-
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                id="btn-menu-level-select"
-                onClick={onOpenLevelSelect}
-                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-slate-200 hover:text-white font-semibold text-sm rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition-colors"
-              >
-                <Layers size={16} />
-                <span>Level Select</span>
-              </button>
-
-              <button
-                id="btn-menu-help"
-                onClick={onOpenHelp}
-                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-slate-200 hover:text-white font-semibold text-sm rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition-colors"
-              >
-                <span>Controls</span>
-              </button>
-            </div>
-
-            {onOpenCharacterSelect && (
-              <button
-                id="btn-menu-characters"
-                onClick={onOpenCharacterSelect}
-                className="w-full py-2.5 px-4 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-white font-semibold text-xs sm:text-sm rounded-xl border border-emerald-600/40 flex items-center justify-center gap-2 transition-all shadow-sm"
-              >
-                <Sparkles size={16} className="text-emerald-400" />
-                <span>Characters & Locker (Bird, Frog, Axolotl, Capybara)</span>
-              </button>
-            )}
-
-            {onOpenEditor && (
-              <button
-                id="btn-menu-sandbox"
-                onClick={onOpenEditor}
-                className="py-2 px-4 bg-purple-950/40 hover:bg-purple-900/50 text-purple-300 hover:text-purple-200 font-medium text-xs rounded-xl border border-purple-800/50 flex items-center justify-center gap-2 transition-colors"
-              >
-                <Sparkles size={14} className="text-purple-400" />
-                <span>Level Sandbox & Custom Builder</span>
-              </button>
-            )}
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-slate-800 w-full flex items-center justify-between text-xs text-slate-500">
-            <span>Move: WASD / Arrow Keys</span>
-            <span>Jump: Space / W / Up</span>
-          </div>
-        </div>
+        <TitleScreen
+          stats={stats}
+          characterConfig={characterConfig}
+          totalLevelsCount={totalLevelsCount}
+          soundEnabled={soundEnabled}
+          onStartGame={onStartGame}
+          onOpenLevelSelect={onOpenLevelSelect}
+          onOpenHelp={onOpenHelp}
+          onOpenCharacterSelect={onOpenCharacterSelect}
+          onOpenEditor={onOpenEditor}
+          onToggleSound={onToggleSound}
+        />
       )}
 
       {/* 2. PAUSE MENU */}
       {gameState === 'PAUSED' && (
         <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center text-white flex flex-col items-center">
+          <div className="mb-2">
+            <BarnabyLogo size="sm" showSubtitle={false} animated={false} />
+          </div>
           <h2 className="text-2xl font-bold tracking-tight mb-1 text-slate-100">Game Paused</h2>
           <p className="text-xs text-slate-400 mb-6">{currentLevel.title}</p>
 
@@ -462,15 +414,15 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
       {/* 5. VICTORY FINALE */}
       {gameState === 'VICTORY' && (
         <div className="bg-slate-900 border border-amber-500/50 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl text-center text-white flex flex-col items-center animate-in zoom-in-95 duration-300">
-          <div className="w-20 h-20 bg-amber-500/20 border border-amber-500/40 rounded-3xl flex items-center justify-center text-amber-400 mb-4 shadow-xl shadow-amber-500/20">
-            <Trophy size={48} />
+          <div className="mb-2">
+            <BarnabyLogo size="md" showSubtitle={true} animated={true} />
           </div>
 
-          <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2">
-            Quest Completed!
+          <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2 mt-2">
+            Solar Quest Mastered!
           </h2>
-          <p className="text-sm text-amber-300/80 mb-6 max-w-xs leading-relaxed">
-            Congratulations! You've mastered all 5 platforming worlds and conquered the Midnight Citadel.
+          <p className="text-sm text-amber-300/90 mb-5 max-w-xs leading-relaxed">
+            Incredible! You guided Barnaby through all {totalLevelsCount} challenging levels across the skies, volcanoes, grottos, and deep space starships!
           </p>
 
           {/* Grand Star Tally */}
@@ -480,7 +432,7 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
               <div className="flex items-center gap-1 text-amber-400 font-bold text-lg">
                 <Star size={18} fill="currentColor" />
                 <span>
-                  {(Object.values(stats.levelStars) as number[]).reduce((a: number, b: number) => a + b, 0)} / 15
+                  {(Object.values(stats.levelStars) as number[]).reduce((a: number, b: number) => a + b, 0)} / {totalLevelsCount * 3}
                 </span>
               </div>
             </div>

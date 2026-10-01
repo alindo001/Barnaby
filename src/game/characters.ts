@@ -14,11 +14,11 @@ export interface CharacterMeta {
 export const CHARACTERS_META: Record<CharacterType, CharacterMeta> = {
   bird: {
     id: 'bird',
-    name: 'Pip the Bird',
-    species: 'Bluebird',
+    name: 'Barnaby',
+    species: 'Bluebird Adventurer',
     emoji: '🐦',
-    tagline: 'Swift Aerial Explorer',
-    description: 'The brave feathered protagonist. Quick on their feet with breezy wing flutters and agile jumps.',
+    tagline: 'The Jetpack Platforming Legend',
+    description: 'The brave and plucky titular hero! Ready to blast through 60 perilous levels with high-octane jetpack thrusters, plasma blasters, and boundless energy.',
     specialFeatureName: 'Head Crest / Plume',
     specialOptions: [
       { id: 'crest', label: 'Feather Crest' },
@@ -138,7 +138,7 @@ export const CHARACTER_PRESETS: Record<CharacterType, CharacterPreset[]> = {
   bird: [
     {
       id: 'bluejay',
-      name: 'Classic Bluejay',
+      name: 'Hero Barnaby',
       config: {
         type: 'bird',
         primaryColor: '#3B82F6',

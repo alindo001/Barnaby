@@ -209,7 +209,7 @@ export const CharacterSelectModal: React.FC<CharacterSelectModalProps> = ({
                 )}
                 <span className="text-xl sm:text-2xl leading-none">{m.emoji}</span>
                 <span className="text-[11px] sm:text-xs font-bold truncate max-w-full">
-                  {type === 'bird' ? 'Bird (Hero)' : type === 'frog' ? 'Frog' : type === 'axolotl' ? 'Axolotl' : 'Capybara'}
+                  {type === 'bird' ? 'Barnaby' : type === 'frog' ? 'Ribbit' : type === 'axolotl' ? 'Lottie' : 'Chilli'}
                 </span>
                 <span className="hidden sm:inline text-[9px] text-slate-400 truncate max-w-full">
                   {m.species}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Star, Trophy, Play, CheckCircle2, Layers } from 'lucide-react';
+import { X, Star, Trophy, Play, CheckCircle2, Layers, Rocket } from 'lucide-react';
 import { LevelData, GameStats } from '../types/game';
 
 interface LevelSelectModalProps {
@@ -17,14 +17,17 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
   onSelectLevel,
   onClose
 }) => {
-  const [filterTier, setFilterTier] = useState<'all' | '1-7' | '8-14' | '15-21' | '22-27'>('all');
+  const [filterTier, setFilterTier] = useState<string>('all');
 
   const filteredLevels = levels.filter(l => {
     if (filterTier === 'all') return true;
-    if (filterTier === '1-7') return l.id >= 1 && l.id <= 7;
-    if (filterTier === '8-14') return l.id >= 8 && l.id <= 14;
-    if (filterTier === '15-21') return l.id >= 15 && l.id <= 21;
-    if (filterTier === '22-27') return l.id >= 22 && l.id <= 27;
+    if (filterTier === '1-10') return l.id >= 1 && l.id <= 10;
+    if (filterTier === '11-20') return l.id >= 11 && l.id <= 20;
+    if (filterTier === '21-27') return l.id >= 21 && l.id <= 27;
+    if (filterTier === '28-37') return l.id >= 28 && l.id <= 37;
+    if (filterTier === '38-47') return l.id >= 38 && l.id <= 47;
+    if (filterTier === '48-57') return l.id >= 48 && l.id <= 57;
+    if (filterTier === 'rocketeer') return l.category === 'rocketeer' || l.id >= 58;
     return true;
   });
 
@@ -59,20 +62,27 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
         </div>
 
         {/* Tier filter buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-3 text-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-3 text-xs scrollbar-none">
           {[
             { id: 'all', label: `All (${levels.length})` },
-            { id: '1-7', label: 'Tier 1 (1 - 7)' },
-            { id: '8-14', label: 'Tier 2 (8 - 14)' },
-            { id: '15-21', label: 'Tier 3 (15 - 21)' },
-            { id: '22-27', label: 'Master (22 - 27)' }
+            { id: 'rocketeer', label: '⚡ Rocketeer (No Platforms!)', highlight: true },
+            { id: '1-10', label: 'Classic (1 - 10)' },
+            { id: '11-20', label: 'Ascent (11 - 20)' },
+            { id: '21-27', label: 'Masters (21 - 27)' },
+            { id: '28-37', label: '🚀 Jetpack I (28 - 37)' },
+            { id: '38-47', label: '🚀 Jetpack II (38 - 47)' },
+            { id: '48-57', label: '🚀 Titan Finale (48 - 57)' }
           ].map(f => (
             <button
               key={f.id}
-              onClick={() => setFilterTier(f.id as any)}
+              onClick={() => setFilterTier(f.id)}
               className={`px-2.5 py-1 rounded-lg font-semibold transition-all whitespace-nowrap text-xs ${
                 filterTier === f.id
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  ? f.id === 'rocketeer'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-orange-500/30'
+                    : 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : f.id === 'rocketeer'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
                   : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
               }`}
             >
@@ -88,6 +98,8 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
             const stars = stats.levelStars[level.id] || 0;
             const highScore = stats.highScores[level.id] || 0;
             const isCurrent = originalIndex === currentLevelIndex;
+            const isRocketeer = level.category === 'rocketeer' || level.id >= 58;
+            const hasJetpackItem = isRocketeer || level.collectibles.some(c => c.type === 'jetpack' || c.type === 'jetpack_fuel') || level.id >= 28;
 
             return (
               <div
@@ -100,17 +112,32 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
                 className={`group relative p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                   isCurrent
                     ? 'bg-blue-950/40 border-blue-500/60 ring-1 ring-blue-500/50 shadow-lg shadow-blue-500/10'
+                    : isRocketeer
+                    ? 'bg-slate-900/90 hover:bg-slate-800/90 border-amber-500/50 hover:border-amber-400 shadow-md shadow-amber-500/5'
                     : 'bg-slate-800/60 hover:bg-slate-800 border-slate-700/70 hover:border-slate-600'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-base text-slate-100 group-hover:text-amber-400 transition-colors">
-                      {level.title}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`font-bold text-base transition-colors ${
+                        isRocketeer ? 'text-amber-300 group-hover:text-amber-200' : 'text-slate-100 group-hover:text-amber-400'
+                      }`}>
+                        {level.title}
+                      </span>
+                      {isRocketeer ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/25 text-amber-300 border border-amber-500/50 text-[9px] font-bold uppercase tracking-wider animate-pulse">
+                          <Rocket size={10} className="rotate-45 text-amber-400" /> ROCKETEER • NO PLATFORMS
+                        </span>
+                      ) : hasJetpackItem ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px] font-bold uppercase tracking-wider">
+                          <Rocket size={10} className="rotate-45" /> JETPACK
+                        </span>
+                      ) : null}
+                    </div>
                     
                     {/* Stars */}
-                    <div className="flex items-center gap-0.5">
+                    <div className="flex items-center gap-0.5 shrink-0">
                       {[1, 2, 3].map((starIndex) => (
                         <Star
                           key={starIndex}
@@ -160,10 +187,10 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
           <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
             <span className="flex items-center gap-1.5 text-slate-300">
               <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              Scroll down to access Level 7 & beyond
+              Showing {filteredLevels.length} of {levels.length} Levels • Try the new ⚡ Rocketeer zero-platform flight stages!
             </span>
             <span className="text-[11px] text-slate-500 font-mono">
-              Use wheel, trackpad, or drag scrollbar
+              Use tabs or drag scrollbar
             </span>
           </div>
         )}

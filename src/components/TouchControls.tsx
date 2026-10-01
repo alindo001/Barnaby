@@ -1,5 +1,18 @@
-import React from 'react';
-import { ArrowLeft, ArrowRight, ArrowUp, SlidersHorizontal, Rocket, Settings, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  ArrowUp, 
+  ArrowDown, 
+  ArrowUpLeft, 
+  ArrowUpRight, 
+  ArrowDownToLine,
+  SlidersHorizontal, 
+  Rocket, 
+  Settings, 
+  Zap, 
+  X 
+} from 'lucide-react';
 import { InputState, TouchButtonSize, LaunchDirection } from '../types/game';
 
 interface TouchControlsProps {
@@ -25,6 +38,7 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
   onShootBlaster,
   onInput 
 }) => {
+  const [showRocketDial, setShowRocketDial] = useState<boolean>(false);
   // Size styling maps with responsive scaling for small mobile screens
   const sizeMap = {
     normal: {
@@ -122,19 +136,106 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
         </div>
       </div>
 
+      {/* Directional Rocket Launch Dial for Touch/Mobile */}
+      {hasJetpack && onLaunchJetpack && showRocketDial && (
+        <div className="absolute bottom-20 sm:bottom-24 right-2 sm:right-6 bg-slate-900/95 border-2 border-cyan-400/80 rounded-2xl p-2.5 shadow-2xl backdrop-blur-xl flex flex-col items-center gap-1.5 z-50 pointer-events-auto animate-in zoom-in-95 duration-150">
+          <div className="w-full flex items-center justify-between text-[10px] font-bold text-cyan-300 pb-1 border-b border-slate-700/80">
+            <span className="flex items-center gap-1">
+              <Rocket size={12} className="text-cyan-400 rotate-45" />
+              ROCKET AIM & LAUNCH
+            </span>
+            <button 
+              onClick={() => setShowRocketDial(false)}
+              className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white"
+            >
+              <X size={12} />
+            </button>
+          </div>
+
+          {/* Directional 3x3 Pad */}
+          <div className="grid grid-cols-3 gap-1.5 p-1">
+            <button
+              id="btn-touch-launch-upleft"
+              onClick={() => { onLaunchJetpack('up-left'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-cyan-600/30 hover:bg-cyan-500 active:bg-cyan-400 border border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-200 active:text-slate-950 transition-all active:scale-95 shadow-md"
+              title="Launch Up-Left"
+            >
+              <ArrowUpLeft size={18} />
+            </button>
+            <button
+              id="btn-touch-launch-up"
+              onClick={() => { onLaunchJetpack('up'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-cyan-600/30 hover:bg-cyan-500 active:bg-cyan-400 border border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-200 active:text-slate-950 transition-all active:scale-95 shadow-md"
+              title="Launch Up"
+            >
+              <ArrowUp size={18} />
+            </button>
+            <button
+              id="btn-touch-launch-upright"
+              onClick={() => { onLaunchJetpack('up-right'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-cyan-600/30 hover:bg-cyan-500 active:bg-cyan-400 border border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-200 active:text-slate-950 transition-all active:scale-95 shadow-md"
+              title="Launch Up-Right"
+            >
+              <ArrowUpRight size={18} />
+            </button>
+
+            <button
+              id="btn-touch-launch-left"
+              onClick={() => { onLaunchJetpack('left'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-cyan-600/30 hover:bg-cyan-500 active:bg-cyan-400 border border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-200 active:text-slate-950 transition-all active:scale-95 shadow-md"
+              title="Launch Left"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <button
+              id="btn-touch-launch-drop"
+              onClick={() => { onLaunchJetpack('drop'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-amber-500/30 hover:bg-amber-500 active:bg-amber-400 border border-amber-400/60 rounded-xl flex flex-col items-center justify-center text-amber-200 active:text-slate-950 transition-all active:scale-95 shadow-md text-[8px] font-bold"
+              title="Drop / Unmount at feet"
+            >
+              <ArrowDownToLine size={14} />
+              <span>DROP</span>
+            </button>
+            <button
+              id="btn-touch-launch-right"
+              onClick={() => { onLaunchJetpack('right'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-cyan-600/30 hover:bg-cyan-500 active:bg-cyan-400 border border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-200 active:text-slate-950 transition-all active:scale-95 shadow-md"
+              title="Launch Right"
+            >
+              <ArrowRight size={18} />
+            </button>
+
+            <div />
+            <button
+              id="btn-touch-launch-down"
+              onClick={() => { onLaunchJetpack('down'); setShowRocketDial(false); }}
+              className="w-10 h-10 bg-cyan-600/30 hover:bg-cyan-500 active:bg-cyan-400 border border-cyan-400/60 rounded-xl flex items-center justify-center text-cyan-200 active:text-slate-950 transition-all active:scale-95 shadow-md"
+              title="Launch Down"
+            >
+              <ArrowDown size={18} />
+            </button>
+            <div />
+          </div>
+        </div>
+      )}
+
       {/* Right Controls: Jetpack Unmount Action, Blaster Fire & Jump / Fly Button */}
       <div className="flex items-end gap-1.5 min-[380px]:gap-2.5 sm:gap-3 pointer-events-auto shrink-0">
         {hasJetpack && onLaunchJetpack && (
           <button
-            id="btn-touch-unmount-jetpack"
-            onClick={() => onLaunchJetpack('drop')}
+            id="btn-touch-toggle-rocket-dial"
+            onClick={() => setShowRocketDial(prev => !prev)}
             style={{ opacity: touchOpacity }}
-            className="w-11 h-11 min-[380px]:w-13 min-[380px]:h-13 sm:w-14 sm:h-14 p-1 bg-amber-500/25 active:bg-amber-500 border border-amber-400/50 hover:border-amber-400 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center text-amber-200 active:text-slate-950 shadow-xl active:scale-95 transition-all touch-manipulation"
-            title="Unmount / Take Off Jetpack"
+            className={`w-11 h-11 min-[380px]:w-13 min-[380px]:h-13 sm:w-14 sm:h-14 p-1 rounded-2xl flex flex-col items-center justify-center shadow-xl active:scale-95 transition-all touch-manipulation border ${
+              showRocketDial
+                ? 'bg-cyan-500 text-slate-950 border-cyan-300 ring-2 ring-cyan-400 shadow-cyan-500/40'
+                : 'bg-amber-500/25 active:bg-amber-500 border border-amber-400/50 hover:border-amber-400 backdrop-blur-md text-amber-200 active:text-slate-950'
+            }`}
+            title="Directional Rocket Launch & Drop (Tap to aim in 6 directions)"
           >
-            <Rocket size={16} className="rotate-45" />
+            <Rocket size={16} className={showRocketDial ? "rotate-45 text-slate-950" : "rotate-45"} />
             <span className="text-[7px] min-[380px]:text-[8px] font-bold uppercase tracking-wider mt-0.5">
-              Take Off
+              {showRocketDial ? 'Close' : 'Launch'}
             </span>
           </button>
         )}

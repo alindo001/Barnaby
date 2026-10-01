@@ -294,6 +294,8 @@ export default function App() {
           soundEnabled={soundEnabled}
           dpadSize={dpadSize}
           touchOpacity={touchOpacity}
+          characterConfig={characterConfig}
+          totalLevelsCount={engineRef.current ? engineRef.current.levels.length : 60}
           onStartGame={handleStartGame}
           onResume={handleResume}
           onRestart={handleRestart}

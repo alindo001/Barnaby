@@ -55,6 +55,7 @@ export interface Collectible {
   value: number;
   collected?: boolean;
   bobOffset?: number;
+  respawnTimer?: number;
 }
 
 export type LaunchDirection = 'left' | 'up-left' | 'up' | 'up-right' | 'right' | 'down' | 'drop';
@@ -249,6 +250,7 @@ export interface LevelTheme {
 export interface LevelData {
   id: number;
   title: string;
+  category?: 'classic' | 'ascent' | 'masters' | 'jetpack' | 'rocketeer';
   description: string;
   worldWidth: number;
   worldHeight: number;
@@ -262,6 +264,7 @@ export interface LevelData {
   enemies: Enemy[];
   launchedJetpacks?: LaunchedJetpack[];
   blasterBullets?: BlasterBullet[];
+  startWithJetpack?: boolean;
   parTime?: number; // target time in seconds
   threeStarScore?: number;
 }

@@ -191,6 +191,11 @@ export class GameEngine {
 
     this.player = this.createPlayer(startX, startY);
 
+    if (this.currentLevel.startWithJetpack || this.currentLevel.category === 'rocketeer' || this.currentLevel.id >= 58) {
+      this.player.hasJetpack = true;
+      this.player.jetpackFuel = this.player.maxJetpackFuel;
+    }
+
     if (!resetCheckpoints && this.lastCheckpoint) {
       this.player.respawnX = this.lastCheckpoint.x;
       this.player.respawnY = this.lastCheckpoint.y;
@@ -254,7 +259,11 @@ export class GameEngine {
     this.player.isGrounded = true;
     this.player.invulnerableTimer = 2.0; // 2.0s invulnerability on respawn
 
-    if (this.player.hasJetpack) {
+    if (this.currentLevel.startWithJetpack || this.currentLevel.category === 'rocketeer') {
+      this.player.hasJetpack = true;
+      this.player.jetpackFuel = this.player.maxJetpackFuel;
+      this.player.isJetpacking = false;
+    } else if (this.player.hasJetpack) {
       this.player.jetpackFuel = this.player.maxJetpackFuel;
       this.player.isJetpacking = false;
     }
@@ -276,6 +285,30 @@ export class GameEngine {
         }
       }
     });
+
+    // CRITICAL: On death respawn, all fuel canisters ahead of the checkpoint/respawn point
+    // (and ALL fuel canisters & path guide items in Rocketeer stages) MUST respawn so the player can fly!
+    const isRocketeerStage = this.currentLevel.category === 'rocketeer' || this.currentLevel.id >= 58 || !!this.currentLevel.startWithJetpack;
+    this.currentLevel.collectibles.forEach(c => {
+      if (c.type === 'jetpack_fuel' || c.type === 'jetpack') {
+        if (isRocketeerStage || c.x >= this.player.x - 80) {
+          c.collected = false;
+          c.respawnTimer = undefined;
+        }
+      }
+      if (isRocketeerStage) {
+        c.collected = false;
+        c.respawnTimer = undefined;
+      }
+    });
+
+    // In Rocketeer stages, revive any flyer drones that were defeated
+    if (isRocketeerStage) {
+      this.currentLevel.enemies.forEach(e => {
+        e.isDead = false;
+        e.deathTimer = undefined;
+      });
+    }
 
     // Instantly center camera on the player at the checkpoint
     this.camera.x = Math.max(0, Math.min(this.currentLevel.worldWidth - this.canvas.width, this.player.x - this.canvas.width / 2));

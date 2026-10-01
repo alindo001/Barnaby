@@ -12,13 +12,6 @@ import {
   Sparkles,
   Coins,
   Rocket,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  ArrowDown,
-  ArrowUpLeft,
-  ArrowUpRight,
-  ArrowDownToLine,
   SlidersHorizontal,
   Zap,
   Shield
@@ -162,74 +155,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
                 {Math.round(stats.jetpackFuel ?? 100)}%
               </span>
             </div>
-
-            {/* Desktop Only: Unmount & Launch Directional Arrows */}
-            <div className="hidden md:flex items-center gap-1.5 pl-2 border-l border-slate-700/80 shrink-0">
-              <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-wider">
-                Launch:
-              </span>
-              <div className="flex items-center gap-0.5 bg-slate-950/80 p-0.5 rounded-lg border border-slate-700/60 shadow-inner">
-                <button
-                  id="btn-launch-left"
-                  onClick={() => onLaunchJetpack?.('left')}
-                  className="w-6 h-6 flex items-center justify-center hover:bg-cyan-500/25 active:bg-cyan-500 text-slate-300 hover:text-cyan-300 active:text-slate-950 rounded transition-colors"
-                  title="Unmount & Launch Left (Q or X+Left)"
-                >
-                  <ArrowLeft size={12} />
-                </button>
-                <button
-                  id="btn-launch-upleft"
-                  onClick={() => onLaunchJetpack?.('up-left')}
-                  className="w-6 h-6 flex items-center justify-center hover:bg-cyan-500/25 active:bg-cyan-500 text-slate-300 hover:text-cyan-300 active:text-slate-950 rounded transition-colors"
-                  title="Unmount & Launch Up-Left (Q+Up)"
-                >
-                  <ArrowUpLeft size={12} />
-                </button>
-                <button
-                  id="btn-launch-up"
-                  onClick={() => onLaunchJetpack?.('up')}
-                  className="w-6 h-6 flex items-center justify-center hover:bg-cyan-500/25 active:bg-cyan-500 text-slate-300 hover:text-cyan-300 active:text-slate-950 rounded transition-colors"
-                  title="Unmount & Launch Up (W+X or Up+X)"
-                >
-                  <ArrowUp size={12} />
-                </button>
-                <button
-                  id="btn-launch-upright"
-                  onClick={() => onLaunchJetpack?.('up-right')}
-                  className="w-6 h-6 flex items-center justify-center hover:bg-cyan-500/25 active:bg-cyan-500 text-slate-300 hover:text-cyan-300 active:text-slate-950 rounded transition-colors"
-                  title="Unmount & Launch Up-Right (E+Up)"
-                >
-                  <ArrowUpRight size={12} />
-                </button>
-                <button
-                  id="btn-launch-right"
-                  onClick={() => onLaunchJetpack?.('right')}
-                  className="w-6 h-6 flex items-center justify-center hover:bg-cyan-500/25 active:bg-cyan-500 text-slate-300 hover:text-cyan-300 active:text-slate-950 rounded transition-colors"
-                  title="Unmount & Launch Right (E or X+Right)"
-                >
-                  <ArrowRight size={12} />
-                </button>
-                <button
-                  id="btn-launch-down"
-                  onClick={() => onLaunchJetpack?.('down')}
-                  className="w-6 h-6 flex items-center justify-center hover:bg-cyan-500/25 active:bg-cyan-500 text-slate-300 hover:text-cyan-300 active:text-slate-950 rounded transition-colors"
-                  title="Unmount & Launch Down (S+X or Down+X)"
-                >
-                  <ArrowDown size={12} />
-                </button>
-              </div>
-
-              {/* Take Off Button */}
-              <button
-                id="btn-take-off-jetpack"
-                onClick={() => onLaunchJetpack?.('drop')}
-                className="px-1.5 py-0.5 bg-amber-500/20 hover:bg-amber-500/35 active:bg-amber-500 text-amber-300 hover:text-amber-100 active:text-slate-950 rounded border border-amber-500/40 text-[9px] font-bold tracking-wider uppercase flex items-center gap-1 transition-all"
-                title="Take Off Jetpack / Drop at feet (Z or C)"
-              >
-                <ArrowDownToLine size={11} />
-                <span>Drop</span>
-              </button>
-            </div>
           </div>
         )}
 
@@ -314,7 +239,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             id="btn-hud-character"
             onClick={onOpenCharacterSelect}
             className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-emerald-400 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
-            title="Character Locker (Bird, Frog, Axolotl, Capybara)"
+            title="Character Locker (Barnaby, Ribbit, Lottie, Chilli)"
           >
             <Sparkles size={14} className="text-emerald-400" />
           </button>

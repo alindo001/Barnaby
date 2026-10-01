@@ -1,8 +1,10 @@
 import { LevelData } from '../types/game';
 import { THEMES } from './themes';
 import { EXTRA_LEVELS } from './extraLevels';
+import { JETPACK_MEGA_LEVELS } from './jetpackMegaLevels';
+import { ROCKETEER_LEVELS } from './rocketeerLevels';
 
-export { THEMES };
+export { THEMES, ROCKETEER_LEVELS };
 
 const BASE_LEVELS: LevelData[] = [
   // ==========================================
@@ -891,4 +893,4 @@ const BASE_LEVELS: LevelData[] = [
   }
 ];
 
-export const INITIAL_LEVELS: LevelData[] = [...BASE_LEVELS, ...EXTRA_LEVELS];
+export const INITIAL_LEVELS: LevelData[] = [...BASE_LEVELS, ...EXTRA_LEVELS, ...JETPACK_MEGA_LEVELS, ...ROCKETEER_LEVELS];

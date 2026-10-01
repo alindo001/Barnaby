@@ -1,6 +1,6 @@
 {
-  "name": "Platformer Game",
-  "description": "A 2D platformer browser game with smooth physics, responsive jump mechanics, collectibles, hazards, and multiple levels.",
+  "name": "Barnaby",
+  "description": "An action-packed 2D platformer starring Barnaby the jetpack-flying hero. Explore 60 dense levels including new Rocketeer pure-flight stages, wield blasters, bubble shields, and customize characters across epic worlds.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

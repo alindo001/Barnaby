@@ -361,6 +361,20 @@ export class PhysicsEngine {
       }
     });
 
+    // 3.5 Dynamic Collectibles Respawn (Mid-air fuel canisters regeneration)
+    level.collectibles.forEach(c => {
+      if (c.collected && c.respawnTimer !== undefined && c.respawnTimer > 0) {
+        c.respawnTimer -= dt;
+        if (c.respawnTimer <= 0) {
+          c.collected = false;
+          c.respawnTimer = undefined;
+          if (c.type === 'jetpack_fuel') {
+            particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#34D399', 10);
+          }
+        }
+      }
+    });
+
     // 4. Update Launched Jetpacks (Rocket projectiles)
     if (level.launchedJetpacks && level.launchedJetpacks.length > 0) {
       for (let i = level.launchedJetpacks.length - 1; i >= 0; i--) {
@@ -645,6 +659,7 @@ export class PhysicsEngine {
         } else if (c.type === 'jetpack_fuel') {
           player.hasJetpack = true;
           player.jetpackFuel = player.maxJetpackFuel;
+          c.respawnTimer = 4.0; // Regenerate fuel canisters after 4s so flight corridors never go dry
           sound.playFuelRefill();
           particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#10B981', 18);
           particles.addPopup(c.x + c.width / 2, c.y - 12, '+FUEL (FULL TANK)', '#34D399');
