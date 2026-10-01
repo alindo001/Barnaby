@@ -66,7 +66,7 @@ export class GameEngine {
   private animationFrameId: number | null = null;
   private lastTime: number = 0;
   private hudUpdateTimer: number = 0;
-  private lastCheckpoint: { x: number; y: number; hasJetpack: boolean; hasBlaster?: boolean; blasterAmmo?: number } | null = null;
+  private lastCheckpoint: { x: number; y: number; hasJetpack: boolean; hasShield?: boolean; hasBlaster?: boolean; blasterAmmo?: number } | null = null;
   private onStateChangeCallback?: (state: GameState, stats: GameStats) => void;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -140,6 +140,7 @@ export class GameEngine {
       speedBoostTimer: 0,
       jumpBoostTimer: 0,
       invulnerableTimer: 0,
+      hasShield: false,
       hasJetpack: false,
       jetpackFuel: 100,
       maxJetpackFuel: 100,
@@ -165,6 +166,7 @@ export class GameEngine {
     if (this.onStateChangeCallback) {
       this.onStateChangeCallback(this.gameState, {
         ...this.stats,
+        hasShield: this.player ? !!this.player.hasShield : false,
         hasJetpack: this.player ? this.player.hasJetpack : false,
         jetpackFuel: this.player ? this.player.jetpackFuel : 100,
         maxJetpackFuel: this.player ? this.player.maxJetpackFuel : 100,
@@ -193,6 +195,7 @@ export class GameEngine {
       this.player.respawnX = this.lastCheckpoint.x;
       this.player.respawnY = this.lastCheckpoint.y;
       this.player.hasJetpack = this.lastCheckpoint.hasJetpack;
+      this.player.hasShield = this.lastCheckpoint.hasShield ?? false;
       if (this.lastCheckpoint.hasBlaster) {
         this.player.hasBlaster = true;
         this.player.blasterAmmo = this.lastCheckpoint.blasterAmmo ?? 30;
@@ -236,6 +239,7 @@ export class GameEngine {
       this.player.x = this.lastCheckpoint.x;
       this.player.y = this.lastCheckpoint.y;
       this.player.hasJetpack = this.lastCheckpoint.hasJetpack;
+      this.player.hasShield = this.lastCheckpoint.hasShield ?? false;
       if (this.lastCheckpoint.hasBlaster) {
         this.player.hasBlaster = true;
         this.player.blasterAmmo = this.lastCheckpoint.blasterAmmo ?? 30;
@@ -412,6 +416,7 @@ export class GameEngine {
         (cp) => {
           this.lastCheckpoint = {
             ...cp,
+            hasShield: this.player ? !!this.player.hasShield : false,
             hasBlaster: this.player ? this.player.hasBlaster : false,
             blasterAmmo: this.player ? this.player.blasterAmmo : 0
           };

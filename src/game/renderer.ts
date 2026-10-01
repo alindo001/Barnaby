@@ -638,6 +638,56 @@ export class GameRenderer {
       ctx.font = 'bold 9px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('+AMMO', cx, cy - 14);
+    } else if (c.type === 'bubble_shield') {
+      // Bubble Shield Collectible Item
+      const cx = c.x + c.width / 2;
+      const cy = c.y + c.height / 2 + bob;
+      const radius = c.width * 0.58;
+      const pulse = Math.sin(this.gameTime * 4) * 1.5;
+
+      ctx.save();
+      // Outer glow
+      const grad = ctx.createRadialGradient(cx, cy, radius * 0.2, cx, cy, radius + pulse);
+      grad.addColorStop(0, 'rgba(186, 230, 253, 0.25)');
+      grad.addColorStop(0.7, 'rgba(56, 189, 248, 0.45)');
+      grad.addColorStop(1, 'rgba(6, 182, 212, 0.75)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius + pulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bubble outline
+      ctx.strokeStyle = '#E0F2FE';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius + pulse, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Inner mini shield icon / emblem
+      ctx.fillStyle = '#38BDF8';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 6);
+      ctx.lineTo(cx + 6, cy - 3);
+      ctx.lineTo(cx + 5, cy + 5);
+      ctx.lineTo(cx, cy + 9);
+      ctx.lineTo(cx - 5, cy + 5);
+      ctx.lineTo(cx - 6, cy - 3);
+      ctx.closePath();
+      ctx.fill();
+
+      // Inner specular gleam
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(cx - radius * 0.35, cy - radius * 0.35, radius * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Floating label
+      ctx.fillStyle = '#38BDF8';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('SHIELD', cx, cy - radius - 5);
+      ctx.restore();
     }
   }
 
@@ -857,6 +907,47 @@ export class GameRenderer {
         ctx.lineWidth = 1.2;
         ctx.strokeRect(barX - 2, barY - 2, barW + 4, barH + 4);
       }
+    }
+
+    // Active Bubble Shield aura around player
+    if (p.hasShield) {
+      const shieldRadius = Math.max(p.width, p.height) * 0.72;
+      const shieldPulse = Math.sin(this.gameTime * 4) * 1.5;
+      const shieldCenterY = p.y + p.height / 2;
+
+      ctx.save();
+      // Outer bubble glow
+      const grad = ctx.createRadialGradient(cx, shieldCenterY, shieldRadius * 0.35, cx, shieldCenterY, shieldRadius + shieldPulse);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.05)');
+      grad.addColorStop(0.7, 'rgba(125, 211, 252, 0.25)');
+      grad.addColorStop(1, 'rgba(34, 211, 238, 0.65)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, shieldCenterY, shieldRadius + shieldPulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Shimmering bubble rim
+      ctx.strokeStyle = 'rgba(224, 242, 254, 0.85)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, shieldCenterY, shieldRadius + shieldPulse, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Specular highlight reflection on upper-left of bubble
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+      ctx.beginPath();
+      ctx.ellipse(
+        cx - (shieldRadius + shieldPulse) * 0.45,
+        shieldCenterY - (shieldRadius + shieldPulse) * 0.45,
+        (shieldRadius + shieldPulse) * 0.28,
+        (shieldRadius + shieldPulse) * 0.14,
+        -Math.PI / 4,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+      ctx.restore();
     }
   }
 

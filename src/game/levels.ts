@@ -66,6 +66,17 @@ export const THEMES: Record<string, LevelTheme> = {
     platformTop: '#06B6D4',
     platformBorder: '#0891B2',
     accentColor: '#38BDF8'
+  },
+  reef: {
+    name: 'Aquamarine Reef',
+    skyColorTop: '#082F49',
+    skyColorBottom: '#0284C7',
+    cloudColor: '#BAE6FD',
+    mountainColor: '#0369A1',
+    platformFill: '#0D9488',
+    platformTop: '#2DD4BF',
+    platformBorder: '#0F766E',
+    accentColor: '#38BDF8'
   }
 };
 
@@ -815,5 +826,143 @@ export const INITIAL_LEVELS: LevelData[] = [
     ],
     parTime: 85,
     threeStarScore: 7500
+  },
+  // ==========================================
+  // LEVEL 7: AQUAMARINE GROTTO
+  // Deep underwater cavern with coral reefs, bubble shields, float-glide abysses, 2 checkpoints
+  // ==========================================
+  {
+    id: 7,
+    title: 'Level 7: Aquamarine Grotto',
+    description: 'Arm the Bubble Shield! Float-glide across coral chasms, absorb peril with temporary invulnerability, and reach the ancient sunken shrine.',
+    worldWidth: 4400,
+    worldHeight: 640,
+    theme: THEMES.reef,
+    playerStart: { x: 80, y: 480 },
+    goal: { x: 4220, y: 240, width: 40, height: 60 },
+    checkpoints: [
+      { x: 1480, y: 380, width: 32, height: 48, activated: false },
+      { x: 2980, y: 300, width: 32, height: 48, activated: false }
+    ],
+    platforms: [
+      // Section 1: Sunken Shallows & Shield Altar (0 - 1480)
+      { id: 'l7_p1', x: 0, y: 520, width: 460, height: 120, type: 'solid' },
+      { id: 'l7_p2', x: 200, y: 420, width: 90, height: 20, type: 'solid' }, // Bubble Shield pedestal!
+      { id: 'l7_p3', x: 360, y: 360, width: 100, height: 20, type: 'solid' },
+
+      // Float Glide Gap 1 across spike trench
+      { id: 'l7_p4', x: 720, y: 380, width: 130, height: 20, type: 'solid' },
+      { id: 'l7_crumb1', x: 900, y: 340, width: 90, height: 20, type: 'crumbling' },
+      { id: 'l7_p5', x: 1040, y: 420, width: 120, height: 20, type: 'bouncy' },
+
+      // Moving Coral Lift 1
+      {
+        id: 'l7_lift1',
+        x: 1220, y: 380, width: 100, height: 22, type: 'solid',
+        startX: 1220, startY: 380, distanceX: 180, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0
+      },
+
+      // Checkpoint 1 Hub (1440 - 1760)
+      { id: 'l7_p6', x: 1440, y: 440, width: 260, height: 200, type: 'solid' },
+      { id: 'l7_p7', x: 1560, y: 340, width: 90, height: 20, type: 'one-way' },
+      { id: 'l7_p8', x: 1680, y: 260, width: 110, height: 20, type: 'solid' }, // Shield refill 2
+
+      // Section 2: Deep Anemone Trench & Kinetic Saws (1760 - 2980)
+      {
+        id: 'l7_lift2',
+        x: 1860, y: 420, width: 90, height: 22, type: 'solid',
+        startX: 1860, startY: 420, distanceX: 0, distanceY: -180, speed: 2.2, vx: 0, vy: -2.2
+      },
+      { id: 'l7_p9', x: 2000, y: 240, width: 130, height: 20, type: 'solid' },
+      { id: 'l7_crumb2', x: 2180, y: 300, width: 90, height: 20, type: 'crumbling' },
+      { id: 'l7_crumb3', x: 2320, y: 340, width: 90, height: 20, type: 'crumbling' },
+      { id: 'l7_p10', x: 2460, y: 380, width: 110, height: 20, type: 'solid' },
+      {
+        id: 'l7_lift3',
+        x: 2620, y: 340, width: 110, height: 22, type: 'solid',
+        startX: 2620, startY: 340, distanceX: 180, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0
+      },
+      { id: 'l7_p11', x: 2840, y: 260, width: 100, height: 20, type: 'bouncy' },
+
+      // Checkpoint 2 Coral Terrace (2940 - 3220)
+      { id: 'l7_p12', x: 2940, y: 360, width: 260, height: 280, type: 'solid' },
+      { id: 'l7_p13', x: 3060, y: 240, width: 100, height: 20, type: 'solid' }, // Shield refill 3
+
+      // Section 3: High Grotto Gliding Descent & Sunken Temple (3220 - 4400)
+      {
+        id: 'l7_lift4',
+        x: 3260, y: 440, width: 90, height: 22, type: 'solid',
+        startX: 3260, startY: 440, distanceX: 0, distanceY: -200, speed: 2.2, vx: 0, vy: -2.2
+      },
+      { id: 'l7_p14', x: 3400, y: 220, width: 120, height: 20, type: 'solid' }, // Launch peak
+      { id: 'l7_crumb4', x: 3640, y: 280, width: 80, height: 20, type: 'crumbling' },
+      { id: 'l7_p15', x: 3860, y: 320, width: 120, height: 20, type: 'solid' },
+      { id: 'l7_p16', x: 3920, y: 220, width: 90, height: 20, type: 'one-way' }, // Shield refill 4
+      { id: 'l7_p17', x: 4040, y: 260, width: 100, height: 20, type: 'bouncy' },
+      { id: 'l7_p18', x: 4180, y: 300, width: 220, height: 340, type: 'solid' }
+    ],
+    hazards: [
+      { id: 'l7_spk1', x: 460, y: 600, width: 260, height: 20, type: 'spike' },
+      { id: 'l7_spk2', x: 1160, y: 600, width: 280, height: 20, type: 'spike' },
+      { id: 'l7_spk3', x: 1800, y: 600, width: 260, height: 20, type: 'spike' },
+      { id: 'l7_spk4', x: 3200, y: 600, width: 280, height: 20, type: 'spike' },
+      { id: 'l7_spk5', x: 3520, y: 600, width: 340, height: 20, type: 'spike' },
+
+      // Kinetic coral saws
+      {
+        id: 'l7_saw1',
+        x: 840, y: 240, width: 44, height: 44, type: 'saw',
+        startX: 840, startY: 240, distanceX: 0, distanceY: 90, speed: 2.0, vx: 0, vy: 2.0
+      },
+      {
+        id: 'l7_saw2',
+        x: 2220, y: 180, width: 44, height: 44, type: 'saw',
+        startX: 2220, startY: 180, distanceX: 80, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0
+      },
+      {
+        id: 'l7_saw3',
+        x: 3720, y: 160, width: 44, height: 44, type: 'saw',
+        startX: 3720, startY: 160, distanceX: 0, distanceY: 80, speed: 2.0, vx: 0, vy: 2.0
+      }
+    ],
+    collectibles: [
+      // Bubble Shield Stations
+      { id: 'l7_shield1', x: 230, y: 386, width: 28, height: 28, type: 'bubble_shield', value: 800 },
+      { id: 'l7_shield2', x: 1720, y: 226, width: 28, height: 28, type: 'bubble_shield', value: 800 },
+      { id: 'l7_shield3', x: 3090, y: 206, width: 28, height: 28, type: 'bubble_shield', value: 800 },
+      { id: 'l7_shield4', x: 3950, y: 186, width: 28, height: 28, type: 'bubble_shield', value: 800 },
+
+      // Coins & Gems
+      { id: 'l7_c1', x: 300, y: 480, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l7_c2', x: 400, y: 320, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l7_c3', x: 780, y: 340, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l7_c4', x: 940, y: 300, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l7_c5', x: 1100, y: 370, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l7_c6', x: 1600, y: 300, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l7_c7', x: 2060, y: 200, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l7_c8', x: 2360, y: 300, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l7_c9', x: 2500, y: 340, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l7_c10', x: 2880, y: 220, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l7_c11', x: 3440, y: 180, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l7_c12', x: 3680, y: 240, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l7_c13', x: 4080, y: 210, width: 24, height: 24, type: 'gem', value: 500 }
+    ],
+    enemies: [
+      { id: 'l7_e1', x: 320, y: 492, width: 28, height: 24, type: 'slime', vx: 1.2, vy: 0, minX: 280, maxX: 440, facing: 1 },
+      { id: 'l7_e2', x: 560, y: 240, width: 26, height: 22, type: 'flyer', vx: 1.9, vy: 0, minX: 460, maxX: 680, facing: -1 },
+      { id: 'l7_e3', x: 760, y: 352, width: 28, height: 24, type: 'slime', vx: 1.3, vy: 0, minX: 730, maxX: 830, facing: 1 },
+      { id: 'l7_e4', x: 1280, y: 220, width: 26, height: 22, type: 'flyer', vx: 2.1, vy: 0, minX: 1180, maxX: 1420, facing: 1 },
+      { id: 'l7_e5', x: 1520, y: 412, width: 28, height: 24, type: 'slime', vx: 1.3, vy: 0, minX: 1460, maxX: 1620, facing: 1 },
+      { id: 'l7_e6', x: 1940, y: 200, width: 26, height: 22, type: 'flyer', vx: 2.3, vy: 0, minX: 1820, maxX: 2120, facing: -1 },
+      { id: 'l7_e7', x: 2040, y: 212, width: 28, height: 24, type: 'slime', vx: 1.2, vy: 0, minX: 2010, maxX: 2110, facing: 1 },
+      { id: 'l7_e8', x: 2480, y: 352, width: 28, height: 24, type: 'slime', vx: 1.4, vy: 0, minX: 2460, maxX: 2560, facing: -1 },
+      { id: 'l7_e9', x: 2700, y: 160, width: 26, height: 22, type: 'flyer', vx: 2.4, vy: 0, minX: 2580, maxX: 2860, facing: 1 },
+      { id: 'l7_e10', x: 3000, y: 332, width: 28, height: 24, type: 'slime', vx: 1.4, vy: 0, minX: 2960, maxX: 3120, facing: 1 },
+      { id: 'l7_e11', x: 3340, y: 180, width: 26, height: 22, type: 'flyer', vx: 2.3, vy: 0, minX: 3220, maxX: 3520, facing: -1 },
+      { id: 'l7_e12', x: 3900, y: 292, width: 28, height: 24, type: 'slime', vx: 1.5, vy: 0, minX: 3870, maxX: 3970, facing: 1 },
+      { id: 'l7_e13', x: 4100, y: 150, width: 26, height: 22, type: 'flyer', vx: 2.4, vy: 0, minX: 4000, maxX: 4220, facing: -1 }
+    ],
+    parTime: 80,
+    threeStarScore: 7000
   }
 ];

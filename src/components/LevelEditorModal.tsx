@@ -9,7 +9,8 @@ import {
   Sparkles, 
   Coins, 
   Move,
-  Rocket
+  Rocket,
+  Shield
 } from 'lucide-react';
 import { LevelData, Platform, Hazard, Collectible, Enemy, PlatformType, HazardType, CollectibleType } from '../types/game';
 import { THEMES } from '../game/levels';
@@ -180,6 +181,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               <option value="lava">Molten Core (Fiery lava)</option>
               <option value="sky">Sky Peaks (Sunset heights)</option>
               <option value="castle">Midnight Citadel (Dark stone)</option>
+              <option value="cyber">Neon Cyber-Outpost (Futuristic)</option>
+              <option value="reef">Aquamarine Reef (Ocean grotto)</option>
             </select>
           </div>
         </div>
@@ -242,6 +245,14 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
             >
               <Sparkles size={14} className="text-purple-400" />
               <span>Purple Gem</span>
+            </button>
+
+            <button
+              onClick={() => addCollectible('bubble_shield')}
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-700 border border-cyan-400/50 rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <Shield size={14} className="text-cyan-400" />
+              <span>Bubble Shield</span>
             </button>
 
             <button

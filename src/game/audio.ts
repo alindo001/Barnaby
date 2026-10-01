@@ -585,6 +585,60 @@ class SoundEngine {
     } catch {}
   }
 
+  // BUBBLE SHIELD PICKUP SOUND (Harmonic crystalline chime)
+  public playShieldPickup() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      [330, 440, 554, 660].forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+
+        gain.gain.setValueAtTime(0, now + idx * 0.05);
+        gain.gain.linearRampToValueAtTime(0.18, now + idx * 0.05 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.24);
+      });
+    } catch {}
+  }
+
+  // BUBBLE SHIELD POP / BURST SOUND (Aquatic watery pop)
+  public playShieldPop() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(650, now);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.12);
+
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.13);
+    } catch {}
+  }
+
   private stopMusic() {
     this.isMusicPlaying = false;
     if (this.musicTimer !== null) {

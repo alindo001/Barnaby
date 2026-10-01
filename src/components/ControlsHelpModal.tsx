@@ -13,7 +13,8 @@ import {
   SlidersHorizontal,
   Eye,
   Maximize2,
-  Check
+  Check,
+  Shield
 } from 'lucide-react';
 import { TouchButtonSize } from '../types/game';
 
@@ -304,6 +305,20 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                   <Zap size={16} /> Key Mechanics
                 </h3>
                 <div className="space-y-2">
+                  <div className="p-2.5 bg-cyan-950/40 rounded-xl border border-cyan-400/50 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-cyan-500/20 text-cyan-400 rounded-lg mt-0.5">
+                      <Shield size={14} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-cyan-300">Bubble Shield & Float-Glide</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Introduced in Level 7! Envelopes Barnaby in a protective aquatic sphere.<br/>
+                        • <strong className="text-cyan-300">Fatal Hit Absorption:</strong> Intercepts one lethal hit from enemies, saws, or spikes, popping with an upward recoil hop and granting temporary invulnerability.<br/>
+                        • <strong className="text-cyan-300">Float-Glide:</strong> Hold <span className="text-cyan-300 font-semibold font-mono">Jump / ↑</span> while in mid-air to gently float and glide across wide oceanic chasms.
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="p-2.5 bg-sky-950/40 rounded-xl border border-sky-500/40 flex items-start gap-2.5 shadow-sm">
                     <div className="p-1 bg-sky-500/20 text-sky-400 rounded-lg mt-0.5">
                       <Zap size={14} />

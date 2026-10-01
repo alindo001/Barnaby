@@ -30,18 +30,25 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
         </button>
 
         {/* Title */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 bg-amber-500/20 rounded-xl border border-amber-500/30 text-amber-400">
-            <Trophy size={24} />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">Select Level</h2>
-            <p className="text-sm text-slate-400">Choose a world to jump into or beat your high scores</p>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-amber-500/20 rounded-xl border border-amber-500/30 text-amber-400">
+              <Trophy size={24} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold tracking-tight">Select Level</h2>
+                <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-semibold">
+                  {levels.length} Levels
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">Choose a world to jump into or beat your high scores</p>
+            </div>
           </div>
         </div>
 
-        {/* Level Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[60vh] overflow-y-auto pr-1">
+        {/* Level Cards Grid with visible sleek custom scrollbar */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[64vh] overflow-y-auto pr-2 custom-scrollbar">
           {levels.map((level, idx) => {
             const stars = stats.levelStars[level.id] || 0;
             const highScore = stats.highScores[level.id] || 0;
@@ -112,6 +119,19 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
             );
           })}
         </div>
+        
+        {/* Scroll indicator footer */}
+        {levels.length > 4 && (
+          <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+            <span className="flex items-center gap-1.5 text-slate-300">
+              <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              Scroll down to access Level 7 & beyond
+            </span>
+            <span className="text-[11px] text-slate-500 font-mono">
+              Use wheel, trackpad, or drag scrollbar
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

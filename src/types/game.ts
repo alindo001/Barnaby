@@ -43,7 +43,7 @@ export interface Hazard {
   rotation?: number;
 }
 
-export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo';
+export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield';
 
 export interface Collectible {
   id: string;
@@ -150,6 +150,8 @@ export interface Player {
   blasterAmmo?: number;
   maxBlasterAmmo?: number;
   blasterCooldown?: number;
+  // Shield state
+  hasShield?: boolean;
   // Moving platform riding state
   ridingPlatformId?: string | null;
   ridingPlatformVy?: number;
@@ -291,6 +293,7 @@ export interface GameStats {
   hasBlaster?: boolean;
   blasterAmmo?: number;
   maxBlasterAmmo?: number;
+  hasShield?: boolean;
 }
 
 export interface InputState {

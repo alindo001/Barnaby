@@ -250,4 +250,43 @@ export class ParticleSystem {
       maxLife: 0.8
     });
   }
+
+  // Bubble Shield burst / pop particles
+  public emitShieldPop(x: number, y: number) {
+    for (let i = 0; i < 18; i++) {
+      const angle = (Math.PI * 2 * i) / 18 + (Math.random() - 0.5) * 0.2;
+      const speed = 2.0 + Math.random() * 3.5;
+      this.particles.push({
+        x: x + (Math.random() - 0.5) * 8,
+        y: y + (Math.random() - 0.5) * 8,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: 3 + Math.random() * 4,
+        color: Math.random() > 0.4 ? '#38BDF8' : '#67E8F9',
+        alpha: 0.9,
+        life: 0,
+        maxLife: 0.4 + Math.random() * 0.2,
+        shape: 'circle',
+        gravity: 0.04
+      });
+    }
+  }
+
+  // Floating micro-bubbles when gliding with Bubble Shield
+  public emitBubbleGlider(x: number, y: number) {
+    if (Math.random() > 0.35) return;
+    this.particles.push({
+      x: x + (Math.random() - 0.5) * 14,
+      y: y + (Math.random() - 0.5) * 6,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: 0.4 + Math.random() * 0.6,
+      size: 2.5 + Math.random() * 3,
+      color: '#A5F3FC',
+      alpha: 0.75,
+      life: 0,
+      maxLife: 0.45,
+      shape: 'circle',
+      gravity: -0.02
+    });
+  }
 }

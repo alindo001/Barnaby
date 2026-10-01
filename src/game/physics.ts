@@ -33,7 +33,7 @@ export class PhysicsEngine {
     onPlayerDeath: () => void,
     onLevelComplete: () => void,
     onScoreAdd: (pts: number) => void,
-    onCheckpointActivated?: (cp: { x: number; y: number; hasJetpack: boolean }) => void
+    onCheckpointActivated?: (cp: { x: number; y: number; hasJetpack: boolean; hasShield?: boolean }) => void
   ) {
     if (player.isDead) return;
 
@@ -144,6 +144,13 @@ export class PhysicsEngine {
 
     // 4. Gravity
     player.vy += this.GRAVITY * fpsRatio;
+
+    // Bubble Shield Float-Glide (Holding jump/up while falling in mid-air)
+    if (player.hasShield && !player.isGrounded && input.up && player.vy > 1.2 && !player.hasJetpack) {
+      player.vy = 1.2; // Gentle buoyancy glide
+      particles.emitBubbleGlider(player.x + player.width / 2, player.y + player.height);
+    }
+
     if (player.vy > this.MAX_FALL_SPEED) {
       player.vy = this.MAX_FALL_SPEED;
     }
@@ -651,6 +658,11 @@ export class PhysicsEngine {
           sound.playGem();
           particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#F59E0B', 12);
           particles.addPopup(c.x + c.width / 2, c.y, 'SUPER JUMP!', '#F59E0B');
+        } else if (c.type === 'bubble_shield') {
+          player.hasShield = true;
+          sound.playShieldPickup();
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#38BDF8', 24);
+          particles.addPopup(c.x + c.width / 2, c.y - 12, 'BUBBLE SHIELD! [HOLD JUMP TO GLIDE]', '#38BDF8');
         }
       }
     });
@@ -660,7 +672,7 @@ export class PhysicsEngine {
     player: Player, 
     checkpoints: NonNullable<LevelData['checkpoints']>, 
     particles: ParticleSystem,
-    onCheckpointActivated?: (cp: { x: number; y: number; hasJetpack: boolean }) => void
+    onCheckpointActivated?: (cp: { x: number; y: number; hasJetpack: boolean; hasShield?: boolean }) => void
   ) {
     checkpoints.forEach(cp => {
       if (!cp.activated && this.isOverlapping(player, cp)) {
@@ -676,7 +688,8 @@ export class PhysicsEngine {
           onCheckpointActivated({
             x: player.respawnX,
             y: player.respawnY,
-            hasJetpack: player.hasJetpack
+            hasJetpack: player.hasJetpack,
+            hasShield: player.hasShield
           });
         }
       }
@@ -710,7 +723,11 @@ export class PhysicsEngine {
         } else {
           // Player hit by enemy
           if (player.invulnerableTimer <= 0) {
-            this.killPlayer(player, particles, onPlayerDeath);
+            if (player.hasShield) {
+              this.popPlayerShield(player, particles);
+            } else {
+              this.killPlayer(player, particles, onPlayerDeath);
+            }
           }
         }
       }
@@ -723,7 +740,7 @@ export class PhysicsEngine {
     particles: ParticleSystem,
     onPlayerDeath: () => void
   ) {
-    // Fell off bottom of map
+    // Fell off bottom of map (void death)
     if (player.y > level.worldHeight + 60) {
       this.killPlayer(player, particles, onPlayerDeath);
       return;
@@ -734,10 +751,24 @@ export class PhysicsEngine {
     // Hazard spikes, saws, lava
     for (const h of level.hazards) {
       if (this.isOverlapping(player, h)) {
-        this.killPlayer(player, particles, onPlayerDeath);
-        return;
+        if (player.hasShield) {
+          this.popPlayerShield(player, particles);
+          return;
+        } else {
+          this.killPlayer(player, particles, onPlayerDeath);
+          return;
+        }
       }
     }
+  }
+
+  private popPlayerShield(player: Player, particles: ParticleSystem) {
+    player.hasShield = false;
+    player.invulnerableTimer = 1.6; // Invulnerability buffer to recover and escape
+    player.vy = -6.5; // Recoil bounce upward
+    sound.playShieldPop();
+    particles.emitShieldPop(player.x + player.width / 2, player.y + player.height / 2);
+    particles.addPopup(player.x + player.width / 2, player.y - 14, 'SHIELD POPPED!', '#38BDF8');
   }
 
   private killPlayer(player: Player, particles: ParticleSystem, onPlayerDeath: () => void) {

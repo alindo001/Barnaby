@@ -20,7 +20,8 @@ import {
   ArrowUpRight,
   ArrowDownToLine,
   SlidersHorizontal,
-  Zap
+  Zap,
+  Shield
 } from 'lucide-react';
 import { GameStats, LevelData, LaunchDirection, TouchButtonSize } from '../types/game';
 
@@ -270,6 +271,22 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             >
               FIRE
             </button>
+          </div>
+        )}
+
+        {/* Bubble Shield Status Badge */}
+        {stats.hasShield && (
+          <div 
+            id="hud-shield-badge" 
+            className="flex items-center gap-1.5 bg-slate-900/85 backdrop-blur-md px-2 sm:px-2.5 py-1 rounded-lg border border-cyan-400/60 shadow-lg text-xs animate-in fade-in duration-200"
+          >
+            <Shield size={13} className="text-cyan-400 animate-pulse" />
+            <span className="text-[10px] sm:text-[11px] font-bold text-cyan-300 tracking-wide">
+              BUBBLE SHIELD
+            </span>
+            <span className="text-[9px] text-cyan-400/90 bg-cyan-950/70 px-1 py-0.5 rounded border border-cyan-500/40 font-mono">
+              GLIDE ON [↑]
+            </span>
           </div>
         )}
       </div>
