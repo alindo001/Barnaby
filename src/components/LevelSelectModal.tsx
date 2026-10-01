@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Star, Trophy, Play, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Star, Trophy, Play, CheckCircle2, Layers } from 'lucide-react';
 import { LevelData, GameStats } from '../types/game';
 
 interface LevelSelectModalProps {
@@ -17,6 +17,17 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
   onSelectLevel,
   onClose
 }) => {
+  const [filterTier, setFilterTier] = useState<'all' | '1-7' | '8-14' | '15-21' | '22-27'>('all');
+
+  const filteredLevels = levels.filter(l => {
+    if (filterTier === 'all') return true;
+    if (filterTier === '1-7') return l.id >= 1 && l.id <= 7;
+    if (filterTier === '8-14') return l.id >= 8 && l.id <= 14;
+    if (filterTier === '15-21') return l.id >= 15 && l.id <= 21;
+    if (filterTier === '22-27') return l.id >= 22 && l.id <= 27;
+    return true;
+  });
+
   return (
     <div id="modal-level-select" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-2xl w-full p-6 shadow-2xl text-white relative">
@@ -47,19 +58,43 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
           </div>
         </div>
 
+        {/* Tier filter buttons */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-3 text-xs">
+          {[
+            { id: 'all', label: `All (${levels.length})` },
+            { id: '1-7', label: 'Tier 1 (1 - 7)' },
+            { id: '8-14', label: 'Tier 2 (8 - 14)' },
+            { id: '15-21', label: 'Tier 3 (15 - 21)' },
+            { id: '22-27', label: 'Master (22 - 27)' }
+          ].map(f => (
+            <button
+              key={f.id}
+              onClick={() => setFilterTier(f.id as any)}
+              className={`px-2.5 py-1 rounded-lg font-semibold transition-all whitespace-nowrap text-xs ${
+                filterTier === f.id
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
         {/* Level Cards Grid with visible sleek custom scrollbar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[64vh] overflow-y-auto pr-2 custom-scrollbar">
-          {levels.map((level, idx) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+          {filteredLevels.map((level) => {
+            const originalIndex = levels.findIndex(l => l.id === level.id);
             const stars = stats.levelStars[level.id] || 0;
             const highScore = stats.highScores[level.id] || 0;
-            const isCurrent = idx === currentLevelIndex;
+            const isCurrent = originalIndex === currentLevelIndex;
 
             return (
               <div
                 key={level.id}
                 id={`level-card-${level.id}`}
                 onClick={() => {
-                  onSelectLevel(idx);
+                  onSelectLevel(originalIndex);
                   onClose();
                 }}
                 className={`group relative p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
