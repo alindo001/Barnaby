@@ -72,7 +72,12 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   return (
     <div 
       id="game-hud" 
-      className="absolute top-0 left-0 right-0 p-2 sm:p-3 pointer-events-none flex justify-between items-start select-none z-10 max-w-full overflow-hidden"
+      style={{
+        paddingTop: 'max(0.5rem, env(safe-area-inset-top, 0.5rem))',
+        paddingLeft: 'max(0.5rem, env(safe-area-inset-left, 0.5rem))',
+        paddingRight: 'max(0.5rem, env(safe-area-inset-right, 0.5rem))'
+      }}
+      className="absolute top-0 left-0 right-0 pointer-events-none flex justify-between items-start select-none z-10 max-w-full overflow-hidden"
     >
       {/* Left HUD: Level Info, Lives, Stats & Active Powerup Status */}
       <div className="flex flex-col gap-1.5 pointer-events-auto max-w-[62%] sm:max-w-none">

@@ -237,7 +237,7 @@ export default function App() {
     <div 
       id="platformer-app-root"
       ref={containerRef}
-      className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none font-sans"
+      className="fixed inset-0 w-full h-[100dvh] overflow-hidden bg-slate-950 flex items-center justify-center select-none font-sans touch-none overscroll-none"
     >
       {/* 2D Canvas Viewport */}
       <canvas
