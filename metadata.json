@@ -1,0 +1,6 @@
+{
+  "name": "Platformer Game",
+  "description": "A 2D platformer browser game with smooth physics, responsive jump mechanics, collectibles, hazards, and multiple levels.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
