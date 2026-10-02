@@ -383,7 +383,6 @@ export class PhysicsEngine {
           e.facing = -1;
         }
       }
-
       const isFlyer = e.type === 'flyer' || e.type === 'pigeon';
 
       if (isFlyer) {
@@ -1046,12 +1045,18 @@ export class PhysicsEngine {
           particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#38BDF8', 24);
           particles.addPopup(c.x + c.width / 2, c.y - 12, 'JETPACK EQUIPPED! [HOLD JUMP]', '#38BDF8');
         } else if (c.type === 'jetpack_fuel') {
-          player.hasJetpack = true;
-          player.jetpackFuel = player.maxJetpackFuel;
+          if (player.hasJetpack) {
+            player.jetpackFuel = player.maxJetpackFuel;
+            sound.playFuelRefill();
+            particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#10B981', 18);
+            particles.addPopup(c.x + c.width / 2, c.y - 12, '+FUEL (FULL TANK)', '#34D399');
+          } else {
+            // Fuel gives bonus points but NEVER grants a jetpack!
+            sound.playCoin();
+            particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#94A3B8', 12);
+            particles.addPopup(c.x + c.width / 2, c.y - 12, '+200 PTS (NO JETPACK)', '#94A3B8');
+          }
           c.respawnTimer = 4.0; // Regenerate fuel canisters after 4s so flight corridors never go dry
-          sound.playFuelRefill();
-          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#10B981', 18);
-          particles.addPopup(c.x + c.width / 2, c.y - 12, '+FUEL (FULL TANK)', '#34D399');
         } else if (c.type === 'powerup_speed') {
           player.speedBoostTimer = 8;
           sound.playGem();

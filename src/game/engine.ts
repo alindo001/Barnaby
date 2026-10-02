@@ -76,7 +76,20 @@ export class GameEngine {
   private animationFrameId: number | null = null;
   private lastTime: number = 0;
   private hudUpdateTimer: number = 0;
-  private lastCheckpoint: { x: number; y: number; hasJetpack: boolean; hasShield?: boolean; hasBlaster?: boolean; blasterAmmo?: number } | null = null;
+  private lastCheckpoint: {
+    x: number;
+    y: number;
+    hasJetpack: boolean;
+    hasShield?: boolean;
+    hasBlaster?: boolean;
+    blasterAmmo?: number;
+    score?: number;
+    coins?: number;
+    gems?: number;
+    acorns?: number;
+    collectedIds?: Set<string>;
+    defeatedEnemyIds?: Set<string>;
+  } | null = null;
   private onStateChangeCallback?: (state: GameState, stats: GameStats) => void;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -269,16 +282,29 @@ export class GameEngine {
           }
         });
       }
+
+      // Revert collectibles to checkpoint bank
+      const bankedIds = this.lastCheckpoint.collectedIds || new Set<string>();
+      this.currentLevel.collectibles.forEach(c => {
+        c.collected = bankedIds.has(c.id);
+        c.respawnTimer = undefined;
+      });
+
+      // Revert defeated enemies to checkpoint state
+      const defeatedIds = this.lastCheckpoint.defeatedEnemyIds || new Set<string>();
+      this.currentLevel.enemies.forEach(e => {
+        e.isDead = defeatedIds.has(e.id);
+      });
     }
 
     this.particles.clear();
     
     this.stats.time = 0;
     this.stats.levelIndex = this.currentLevelIndex;
-    this.stats.score = 0;
-    this.stats.coins = 0;
-    this.stats.gems = 0;
-    this.stats.acorns = 0;
+    this.stats.score = (!resetCheckpoints && this.lastCheckpoint?.score !== undefined) ? this.lastCheckpoint.score : 0;
+    this.stats.coins = (!resetCheckpoints && this.lastCheckpoint?.coins !== undefined) ? this.lastCheckpoint.coins : 0;
+    this.stats.gems = (!resetCheckpoints && this.lastCheckpoint?.gems !== undefined) ? this.lastCheckpoint.gems : 0;
+    this.stats.acorns = (!resetCheckpoints && this.lastCheckpoint?.acorns !== undefined) ? this.lastCheckpoint.acorns : 0;
     this.stats.hasActiveCheckpoint = !!this.lastCheckpoint;
 
     this.camera.x = Math.max(0, Math.min(this.currentLevel.worldWidth - this.canvas.width, this.player.x - this.canvas.width / 2));
@@ -306,10 +332,64 @@ export class GameEngine {
       if (this.lastCheckpoint.hasBlaster) {
         this.player.hasBlaster = true;
         this.player.blasterAmmo = this.lastCheckpoint.blasterAmmo ?? 30;
+      } else {
+        this.player.hasBlaster = false;
+        this.player.blasterAmmo = 0;
       }
+
+      // Revert run stats to the checkpoint snapshot!
+      this.stats.score = this.lastCheckpoint.score ?? 0;
+      this.stats.coins = this.lastCheckpoint.coins ?? 0;
+      this.stats.gems = this.lastCheckpoint.gems ?? 0;
+      this.stats.acorns = this.lastCheckpoint.acorns ?? 0;
+
+      // Revert any collectible grabbed AFTER this checkpoint back to uncollected!
+      const bankedIds = this.lastCheckpoint.collectedIds || new Set<string>();
+      this.currentLevel.collectibles.forEach(c => {
+        if (!bankedIds.has(c.id)) {
+          c.collected = false;
+          c.respawnTimer = undefined;
+        }
+      });
+
+      // Revert enemies defeated after checkpoint
+      const defeatedIds = this.lastCheckpoint.defeatedEnemyIds || new Set<string>();
+      this.currentLevel.enemies.forEach(e => {
+        if (!defeatedIds.has(e.id)) {
+          e.isDead = false;
+          e.deathTimer = undefined;
+        }
+      });
     } else {
       this.player.x = this.player.respawnX;
       this.player.y = this.player.respawnY;
+
+      // Died before reaching any checkpoint: reset run stats to 0!
+      this.stats.score = 0;
+      this.stats.coins = 0;
+      this.stats.gems = 0;
+      this.stats.acorns = 0;
+
+      // Reset ALL collectibles in the level!
+      this.currentLevel.collectibles.forEach(c => {
+        c.collected = false;
+        c.respawnTimer = undefined;
+      });
+
+      // Reset enemies
+      this.currentLevel.enemies.forEach(e => {
+        e.isDead = false;
+        e.deathTimer = undefined;
+      });
+
+      // Reset weapons / powerups unless level inherently starts with them
+      if (!this.currentLevel.startWithJetpack && this.currentLevel.category !== 'rocketeer' && this.currentLevel.id < 58) {
+        this.player.hasJetpack = false;
+        this.player.jetpackFuel = 0;
+      }
+      this.player.hasShield = false;
+      this.player.hasBlaster = false;
+      this.player.blasterAmmo = 0;
     }
 
     this.player.vx = 0;
@@ -503,12 +583,6 @@ export class GameEngine {
 
   private handleAcornCollected() {
     this.stats.acorns = Math.min(3, (this.stats.acorns || 0) + 1);
-    const prevBest = this.stats.levelAcorns[this.currentLevel.id] || 0;
-    if (this.stats.acorns > prevBest) {
-      this.stats.levelAcorns[this.currentLevel.id] = this.stats.acorns;
-      this.recalculateTotalAcorns();
-      this.saveProgress();
-    }
     this.notifyState();
   }
 
@@ -573,11 +647,25 @@ export class GameEngine {
           if (pts === 500) this.stats.gems++;
         },
         (cp) => {
+          const collectedIds = new Set<string>();
+          this.currentLevel.collectibles.forEach(c => {
+            if (c.collected) collectedIds.add(c.id);
+          });
+          const defeatedEnemyIds = new Set<string>();
+          this.currentLevel.enemies.forEach(e => {
+            if (e.isDead) defeatedEnemyIds.add(e.id);
+          });
           this.lastCheckpoint = {
             ...cp,
             hasShield: this.player ? !!this.player.hasShield : false,
             hasBlaster: this.player ? this.player.hasBlaster : false,
-            blasterAmmo: this.player ? this.player.blasterAmmo : 0
+            blasterAmmo: this.player ? this.player.blasterAmmo : 0,
+            score: this.stats.score,
+            coins: this.stats.coins,
+            gems: this.stats.gems,
+            acorns: this.stats.acorns,
+            collectedIds,
+            defeatedEnemyIds
           };
           this.notifyState();
         },
