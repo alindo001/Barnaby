@@ -5,6 +5,7 @@ import {
   Sparkles, 
   HelpCircle, 
   Hammer, 
+  Wrench,
   Volume2, 
   VolumeX, 
   Trophy, 
@@ -274,7 +275,7 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
             <span>How to Play & Controls</span>
           </button>
 
-          {onOpenEnemyGallery ? (
+          {onOpenEnemyGallery && (
             <button
               id="btn-menu-enemy-gallery"
               onClick={onOpenEnemyGallery}
@@ -288,29 +289,35 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
                 {stats.totalEnemiesDefeated || 0} Defeated
               </span>
             </button>
-          ) : (
-            onOpenEditor && (
-              <button
-                id="btn-menu-sandbox"
-                onClick={onOpenEditor}
-                className="py-2.5 px-4 bg-purple-950/30 hover:bg-purple-900/40 active:scale-[0.98] text-purple-300 hover:text-purple-100 font-semibold text-xs sm:text-sm rounded-xl border border-purple-800/40 flex items-center justify-center gap-2 transition-all"
-              >
-                <Hammer size={15} className="text-purple-400" />
-                <span>Level Sandbox Builder</span>
-              </button>
-            )
           )}
         </div>
 
-        {/* Row 3: Level Sandbox Builder if both are present */}
-        {onOpenEnemyGallery && onOpenEditor && (
+        {/* Row 3: DEV Level Visual Editor & Modder */}
+        {onOpenEditor && (
           <button
             id="btn-menu-sandbox"
             onClick={onOpenEditor}
-            className="w-full py-2.5 px-4 bg-purple-950/30 hover:bg-purple-900/40 active:scale-[0.98] text-purple-300 hover:text-purple-100 font-semibold text-xs sm:text-sm rounded-xl border border-purple-800/40 flex items-center justify-center gap-2 transition-all"
+            className="w-full py-3 px-4 bg-gradient-to-r from-amber-950/90 via-amber-900/80 to-yellow-950/90 hover:from-amber-900 hover:via-amber-800 hover:to-yellow-900 active:scale-[0.98] text-amber-200 hover:text-white font-bold text-sm rounded-xl border-2 border-amber-500/70 shadow-lg shadow-amber-500/20 flex items-center justify-between gap-3 transition-all cursor-pointer group"
           >
-            <Hammer size={15} className="text-purple-400" />
-            <span>Level Sandbox & Tile Builder</span>
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 bg-amber-500/20 text-amber-300 rounded-lg group-hover:bg-amber-500/40 transition-colors">
+                <Wrench size={16} />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="font-extrabold tracking-wide text-amber-300 group-hover:text-amber-100 flex items-center gap-1.5">
+                  🛠️ Level Visual Editor & Modder
+                  <span className="px-1.5 py-0.2 bg-amber-500 text-slate-950 font-black text-[9px] rounded uppercase tracking-wider">
+                    DEV TOOL
+                  </span>
+                </span>
+                <span className="text-[11px] text-amber-200/80 font-normal">
+                  Drag & Drop Items, Enemies & Platforms • Levels 1-100 (or press F2)
+                </span>
+              </div>
+            </div>
+            <span className="px-2 py-1 bg-amber-950/80 text-amber-300 font-mono text-[11px] rounded-lg border border-amber-500/40 shrink-0">
+              [F2]
+            </span>
           </button>
         )}
       </div>

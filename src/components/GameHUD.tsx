@@ -295,10 +295,11 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           <button
             id="btn-hud-dev-editor"
             onClick={onOpenEditor}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-400 hover:text-amber-300 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
-            title="🛠️ Level Visual Editor & Inspector (DEV ONLY)"
+            className="h-7 sm:h-8 px-1.5 sm:px-2 flex items-center gap-1 text-amber-300 bg-amber-500/20 hover:bg-amber-500/30 active:scale-95 rounded-lg border border-amber-500/50 transition-all shadow-sm font-mono text-[10px] font-bold"
+            title="🛠️ Level Visual Editor & Modder (Press F2) [DEV TOOL]"
           >
-            <Wrench size={14} />
+            <Wrench size={13} className="text-amber-400" />
+            <span className="hidden sm:inline">MODDER</span>
           </button>
         )}
 
