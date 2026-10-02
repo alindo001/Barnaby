@@ -14,7 +14,8 @@ import {
   Rocket,
   SlidersHorizontal,
   Zap,
-  Shield
+  Shield,
+  Wrench
 } from 'lucide-react';
 import { GameStats, LevelData, LaunchDirection, TouchButtonSize } from '../types/game';
 
@@ -31,6 +32,7 @@ interface GameHUDProps {
   onTogglePause: () => void;
   onOpenLevelSelect: () => void;
   onOpenHelp: () => void;
+  onOpenEditor?: () => void;
   onToggleFullscreen: () => void;
   onToggleDpadSize?: () => void;
   onLaunchJetpack?: (direction: LaunchDirection) => void;
@@ -55,7 +57,8 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onLaunchJetpack,
   onShootBlaster,
   onOpenCharacterSelect,
-  onOpenEnemyGallery
+  onOpenEnemyGallery,
+  onOpenEditor
 }) => {
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -287,6 +290,17 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         >
           <Layers size={14} />
         </button>
+
+        {onOpenEditor && (
+          <button
+            id="btn-hud-dev-editor"
+            onClick={onOpenEditor}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-400 hover:text-amber-300 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title="🛠️ Level Visual Editor & Inspector (DEV ONLY)"
+          >
+            <Wrench size={14} />
+          </button>
+        )}
 
         <button
           id="btn-restart"

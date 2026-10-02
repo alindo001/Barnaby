@@ -177,6 +177,7 @@ export function declumpCollectibles(level: LevelData) {
 export function enrichLevelWithAcorns(level: LevelData): LevelData {
   level.requiredAcorns = getLevelRequiredAcorns(level.id);
   const existingAcorns = level.collectibles.filter(c => c.type === 'acorn');
+  const newAcorns: Collectible[] = [];
 
   if (existingAcorns.length < 3) {
     const isRocketeer = level.category === 'rocketeer' || level.id >= 58;
@@ -184,7 +185,6 @@ export function enrichLevelWithAcorns(level: LevelData): LevelData {
     const height = level.worldHeight;
 
     const targetFractions = [0.24, 0.54, 0.82];
-    const newAcorns: Collectible[] = [];
 
     for (let i = existingAcorns.length; i < 3; i++) {
       const fraction = targetFractions[i];
@@ -268,8 +268,10 @@ export function enrichLevelWithAcorns(level: LevelData): LevelData {
     }
   }
 
-  // Run comprehensive declumping pass on all collectibles
-  declumpCollectibles(level);
+  // Only run declumping pass if new procedural acorns were added
+  if (newAcorns.length > 0) {
+    declumpCollectibles(level);
+  }
 
   return level;
 }

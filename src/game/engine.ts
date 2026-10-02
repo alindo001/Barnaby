@@ -101,6 +101,15 @@ export class GameEngine {
     // Enrich all levels with 3 Golden Acorns and calculated unlock requirements
     this.levels = INITIAL_LEVELS.map(lvl => enrichLevelWithAcorns(this.cloneLevel(lvl)));
 
+    // Load dev level overrides if any exist (DEV ONLY - easily removable)
+    try {
+      const devOverrides = localStorage.getItem('barnaby_dev_level_overrides');
+      if (devOverrides) {
+        const parsed = JSON.parse(devOverrides);
+        this.levels = this.levels.map(lvl => parsed[lvl.id] ? parsed[lvl.id] : lvl);
+      }
+    } catch {}
+
     this.loadProgress();
 
     if (this.settings.collectibleStyle) {
@@ -251,6 +260,17 @@ export class GameEngine {
   public startLevel(levelIndex: number, resetCheckpoints: boolean = true) {
     this.currentLevelIndex = Math.max(0, Math.min(this.levels.length - 1, levelIndex));
     this.currentLevel = this.cloneLevel(this.levels[this.currentLevelIndex]);
+
+    // Check dev level overrides (DEV ONLY)
+    try {
+      const devOverrides = localStorage.getItem('barnaby_dev_level_overrides');
+      if (devOverrides) {
+        const parsed = JSON.parse(devOverrides);
+        if (parsed[this.currentLevel.id]) {
+          this.currentLevel = this.cloneLevel(parsed[this.currentLevel.id]);
+        }
+      }
+    } catch {}
     
     if (resetCheckpoints) {
       this.lastCheckpoint = null;

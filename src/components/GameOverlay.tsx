@@ -186,6 +186,17 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
               </button>
             )}
 
+            {onOpenEditor && (
+              <button
+                id="btn-pause-dev-editor"
+                onClick={onOpenEditor}
+                className="w-full py-2.5 px-4 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-white font-semibold text-sm rounded-xl border border-amber-500/40 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <span>🛠️</span>
+                <span>Edit Level in Visual Editor (DEV)</span>
+              </button>
+            )}
+
             <button
               id="btn-pause-sound"
               onClick={onToggleSound}

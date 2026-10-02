@@ -11,6 +11,7 @@ import { EnemyGalleryModal } from './components/EnemyGalleryModal';
 import { GameState, GameStats, LevelData, InputState, LaunchDirection, TouchButtonSize, CharacterConfig } from './types/game';
 import { sound } from './game/audio';
 import { loadCharacterConfig } from './game/characters';
+import { ALL_100_LEVELS } from './game/levels/index';
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -207,10 +208,13 @@ export default function App() {
 
   const handlePlayCustomLevel = useCallback((customLevel: LevelData) => {
     if (engineRef.current) {
+      const idx = engineRef.current.levels.findIndex(l => l.id === customLevel.id);
+      const targetIdx = idx >= 0 ? idx : 0;
+      engineRef.current.levels[targetIdx] = customLevel;
       engineRef.current.currentLevel = customLevel;
-      engineRef.current.currentLevelIndex = 0;
-      engineRef.current.startLevel(0);
+      engineRef.current.startLevel(targetIdx);
     }
+    setShowEditor(false);
   }, []);
 
   const handleLaunchJetpack = useCallback((direction: LaunchDirection) => {
@@ -308,6 +312,7 @@ export default function App() {
           onShootBlaster={handleShootBlaster}
           onOpenCharacterSelect={() => setShowCharacterSelect(true)}
           onOpenEnemyGallery={() => setShowEnemyGallery(true)}
+          onOpenEditor={() => setShowEditor(true)}
         />
       )}
 
@@ -391,9 +396,11 @@ export default function App() {
         />
       )}
 
-      {/* Level Sandbox / Builder Modal */}
+      {/* Level Sandbox / Builder Modal (DEV ONLY) */}
       {showEditor && (
         <LevelEditorModal
+          initialLevelIndex={stats.levelIndex}
+          levels={engineRef.current?.levels || ALL_100_LEVELS}
           onPlayCustomLevel={handlePlayCustomLevel}
           onClose={() => setShowEditor(false)}
         />
