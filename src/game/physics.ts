@@ -383,14 +383,79 @@ export class PhysicsEngine {
           e.facing = -1;
         }
       }
-      if (e.vy && e.minY !== undefined && e.maxY !== undefined) {
-        e.y += e.vy * fpsRatio;
-        if (e.y < e.minY) {
-          e.y = e.minY;
-          e.vy = Math.abs(e.vy);
-        } else if (e.y + e.height > e.maxY) {
-          e.y = e.maxY - e.height;
-          e.vy = -Math.abs(e.vy);
+
+      const isFlyer = e.type === 'flyer' || e.type === 'pigeon';
+
+      if (isFlyer) {
+        if (e.vy && e.minY !== undefined && e.maxY !== undefined) {
+          e.y += e.vy * fpsRatio;
+          if (e.y < e.minY) {
+            e.y = e.minY;
+            e.vy = Math.abs(e.vy);
+          } else if (e.y + e.height > e.maxY) {
+            e.y = e.maxY - e.height;
+            e.vy = -Math.abs(e.vy);
+          }
+        }
+      } else {
+        // Ground Enemy Platform & Ledge Intelligence (prevents mid-air floating!)
+        // 1. Ledge check: If approaching platform edge while walking, turn around!
+        if (e.state !== 'jumping') {
+          const frontX = e.vx > 0 ? e.x + e.width + 4 : e.x - 4;
+          const feetY = e.y + e.height;
+          let hasFooting = false;
+          for (const p of level.platforms) {
+            if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+            if (frontX >= p.x && frontX <= p.x + p.width && Math.abs(p.y - feetY) <= 10) {
+              hasFooting = true;
+              break;
+            }
+          }
+          if (!hasFooting) {
+            e.vx = -e.vx;
+            e.facing = e.vx > 0 ? 1 : -1;
+          }
+        }
+
+        // 2. Gravity and Platform Snapping (ensures ground enemies stay firmly planted on platforms)
+        if (e.state !== 'jumping') {
+          const enemyCenterX = e.x + e.width / 2;
+          const feetY = e.y + e.height;
+          let restingPlat = null;
+          for (const p of level.platforms) {
+            if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+            if (enemyCenterX >= p.x && enemyCenterX <= p.x + p.width) {
+              if (feetY >= p.y - 4 && feetY <= p.y + 14) {
+                restingPlat = p;
+                break;
+              }
+            }
+          }
+
+          if (restingPlat) {
+            e.y = restingPlat.y - e.height;
+            e.vy = 0;
+          } else {
+            // Apply gravity until grounded
+            e.vy = Math.min(10, (e.vy || 0) + 0.45 * fpsRatio);
+            e.y += e.vy * fpsRatio;
+
+            // Check landing on platform below
+            for (const p of level.platforms) {
+              if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+              if (enemyCenterX >= p.x && enemyCenterX <= p.x + p.width) {
+                if (e.y + e.height >= p.y && (e.y + e.height - e.vy * fpsRatio) <= p.y + 6) {
+                  e.y = p.y - e.height;
+                  e.vy = 0;
+                  break;
+                }
+              }
+            }
+
+            if (e.y > level.worldHeight + 60) {
+              e.isDead = true;
+            }
+          }
         }
       }
 
@@ -472,9 +537,25 @@ export class PhysicsEngine {
         if (e.vy !== 0 || e.state === 'jumping') {
           e.vy += 0.45 * fpsRatio;
           e.y += e.vy * fpsRatio;
-          const groundY = e.minY !== undefined ? e.minY : (e.maxY !== undefined ? e.maxY : 520 - e.height);
-          if (e.y >= groundY) {
-            e.y = groundY;
+
+          // Check if landing on any platform
+          const frogBottom = e.y + e.height;
+          const frogCenterX = e.x + e.width / 2;
+          let landed = false;
+          for (const p of level.platforms) {
+            if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+            if (frogCenterX >= p.x && frogCenterX <= p.x + p.width) {
+              if (frogBottom >= p.y && (frogBottom - e.vy * fpsRatio) <= p.y + 8 && e.vy > 0) {
+                e.y = p.y - e.height;
+                e.vy = 0;
+                e.state = 'idle';
+                landed = true;
+                break;
+              }
+            }
+          }
+          if (!landed && e.maxY !== undefined && e.y >= e.maxY - e.height) {
+            e.y = e.maxY - e.height;
             e.vy = 0;
             e.state = 'idle';
           }
