@@ -1,55 +1,19 @@
 import { LevelData, Collectible } from '../types/game';
 
 export const TOTAL_ACORNS_PER_LEVEL = 3;
-export const TOTAL_LEVELS_COUNT = 60;
-export const MAX_POSSIBLE_ACORNS = TOTAL_LEVELS_COUNT * TOTAL_ACORNS_PER_LEVEL; // 180
+export const TOTAL_LEVELS_COUNT = 100;
+export const MAX_POSSIBLE_ACORNS = TOTAL_LEVELS_COUNT * TOTAL_ACORNS_PER_LEVEL; // 300
 
 /**
  * Returns the cumulative golden acorns required to unlock a level.
  * Designed to provide a smooth, rewarding linear progression where
- * players who collect 1-2 acorns per level advance seamlessly.
+ * players who collect ~2 acorns per stage advance seamlessly across all 100 levels!
  */
 export function getLevelRequiredAcorns(levelId: number): number {
   if (levelId <= 1) return 0;
   if (levelId === 2) return 1;
-  if (levelId === 3) return 2;
-  if (levelId === 4) return 4;
-  if (levelId === 5) return 6;
-  if (levelId === 6) return 8;
-  if (levelId === 7) return 10;
-  if (levelId === 8) return 12;
-  if (levelId === 9) return 14;
-  if (levelId === 10) return 16;
-  
-  // Tier 2: Ascent (11 - 20) -> 18 to 36
-  if (levelId <= 20) {
-    return 16 + (levelId - 10) * 2;
-  }
-  
-  // Tier 3: Masters (21 - 27) -> 38 to 50
-  if (levelId <= 27) {
-    return 36 + (levelId - 20) * 2;
-  }
-  
-  // Tier 4: Jetpack Heavy I (28 - 37) -> 52 to 70
-  if (levelId <= 37) {
-    return 50 + (levelId - 27) * 2;
-  }
-  
-  // Tier 5: Jetpack Heavy II (38 - 47) -> 72 to 90
-  if (levelId <= 47) {
-    return 70 + (levelId - 37) * 2;
-  }
-  
-  // Tier 6: Titan Finale (48 - 57) -> 92 to 110
-  if (levelId <= 57) {
-    return 90 + (levelId - 47) * 2;
-  }
-  
-  // Tier 7: Rocketeer Master Flight (58 - 60)
-  if (levelId === 58) return 112;
-  if (levelId === 59) return 116;
-  return 120;
+  // Scaled linearly up to 200 acorns for level 100 (out of 300 total available)
+  return Math.min(200, Math.floor((levelId - 1) * 2.02));
 }
 
 export interface LevelUnlockStatus {

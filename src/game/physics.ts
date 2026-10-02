@@ -66,8 +66,10 @@ export class PhysicsEngine {
       player.vx += this.MOVE_ACCEL * fpsRatio;
       player.facing = 1;
     } else {
-      // Apply friction
-      const friction = player.isGrounded ? this.FRICTION : this.AIR_FRICTION;
+      // Apply friction (ice platforms have low friction, causing sliding!)
+      const friction = player.isGrounded 
+        ? (player.standingOnIce ? 0.96 : this.FRICTION) 
+        : this.AIR_FRICTION;
       player.vx *= Math.pow(friction, fpsRatio);
       if (Math.abs(player.vx) < 0.05) player.vx = 0;
     }
@@ -186,6 +188,7 @@ export class PhysicsEngine {
     const wasRidingThisFrame = !!player.ridingPlatformId;
     if (!wasRidingThisFrame) {
       player.isGrounded = false;
+      player.standingOnIce = false;
     }
 
     // Move X and resolve
@@ -878,6 +881,7 @@ export class PhysicsEngine {
             // Normal landing
             player.vy = 0;
             player.isGrounded = true;
+            player.standingOnIce = p.type === 'ice';
             player.isJumping = false;
             player.canDoubleJump = true;
             player.hasDoubleJumped = false;

@@ -294,6 +294,40 @@ export class GameRenderer {
       return;
     }
 
+    if (p.type === 'ice') {
+      // Frosted ice platform with crystalline sheen and glistening highlights
+      ctx.save();
+      const iceGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.height);
+      iceGrad.addColorStop(0, '#E0F2FE');
+      iceGrad.addColorStop(0.2, '#BAE6FD');
+      iceGrad.addColorStop(1, '#38BDF8');
+      ctx.fillStyle = iceGrad;
+      ctx.fillRect(p.x, p.y + 4, p.width, Math.max(0, p.height - 4));
+
+      // Crisp frozen glistening top rim
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(p.x, p.y, p.width, 4);
+
+      // Frost sparkle highlight line
+      ctx.fillStyle = '#7DD3FC';
+      ctx.fillRect(p.x, p.y + 4, p.width, 2);
+
+      // Ice crystal facets
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.lineWidth = 1;
+      const numFacets = Math.floor(p.width / 36);
+      for (let i = 0; i < numFacets; i++) {
+        const fx = p.x + 12 + i * 36;
+        ctx.beginPath();
+        ctx.moveTo(fx, p.y + 5);
+        ctx.lineTo(fx + 10, p.y + p.height - 4);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+      return;
+    }
+
     // Standard Solid / Moving Platforms
     ctx.fillStyle = theme.platformFill;
     ctx.fillRect(p.x, p.y + 8, p.width, Math.max(0, p.height - 8));

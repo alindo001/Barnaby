@@ -182,6 +182,8 @@ export interface Player {
   // Moving platform riding state
   ridingPlatformId?: string | null;
   ridingPlatformVy?: number;
+  // Ice platform sliding state
+  standingOnIce?: boolean;
   // Character visual customization
   character?: CharacterConfig;
 }
@@ -273,10 +275,15 @@ export interface LevelTheme {
   accentColor: string;
 }
 
+export type LevelGameplayType = 'runner' | 'terrain' | 'rocketeer' | 'gadget';
+
 export interface LevelData {
   id: number;
   title: string;
   category?: 'classic' | 'ascent' | 'masters' | 'jetpack' | 'rocketeer';
+  worldNumber?: number;
+  worldName?: string;
+  gameplayType?: LevelGameplayType;
   description: string;
   worldWidth: number;
   worldHeight: number;

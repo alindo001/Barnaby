@@ -22,21 +22,43 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
   onToggleUnlockAll,
   onClose
 }) => {
-  const [filterTier, setFilterTier] = useState<string>('all');
+  const [selectedWorld, setSelectedWorld] = useState<number | 'all'>('all');
+  const [selectedArchetype, setSelectedArchetype] = useState<string>('all');
   const [lockedNotice, setLockedNotice] = useState<string | null>(null);
 
   const totalAcorns = stats.totalLevelAcorns || (Object.values(stats.levelAcorns || {}) as number[]).reduce((a: number, b: number) => a + (b || 0), 0);
   const highestClearedId = stats.highestClearedLevelId || 0;
 
+  const worldsList = [
+    { id: 'all' as const, label: `All Worlds (${levels.length})` },
+    { id: 1, label: '🌲 W1: Woodlands' },
+    { id: 2, label: '💎 W2: Caverns' },
+    { id: 3, label: '🏜️ W3: Dunes' },
+    { id: 4, label: '❄️ W4: Glacier' },
+    { id: 5, label: '🪸 W5: Reef' },
+    { id: 6, label: '☣️ W6: Marsh' },
+    { id: 7, label: '☁️ W7: Skyway' },
+    { id: 8, label: '🌋 W8: Molten' },
+    { id: 9, label: '⚡ W9: Cyber' },
+    { id: 10, label: '🌌 W10: Void' },
+  ];
+
+  const archetypesList = [
+    { id: 'all', label: 'All Archetypes' },
+    { id: 'runner', label: '🏃 Flat Runners' },
+    { id: 'terrain', label: '🏔️ Terrain & Ledges' },
+    { id: 'rocketeer', label: '⚡ Rocketeer Flight' },
+    { id: 'gadget', label: '🎯 Gadget Trials' },
+  ];
+
   const filteredLevels = levels.filter(l => {
-    if (filterTier === 'all') return true;
-    if (filterTier === '1-10') return l.id >= 1 && l.id <= 10;
-    if (filterTier === '11-20') return l.id >= 11 && l.id <= 20;
-    if (filterTier === '21-27') return l.id >= 21 && l.id <= 27;
-    if (filterTier === '28-37') return l.id >= 28 && l.id <= 37;
-    if (filterTier === '38-47') return l.id >= 38 && l.id <= 47;
-    if (filterTier === '48-57') return l.id >= 48 && l.id <= 57;
-    if (filterTier === 'rocketeer') return l.category === 'rocketeer' || l.id >= 58;
+    const worldNum = l.worldNumber ?? Math.ceil(l.id / 10);
+    if (selectedWorld !== 'all' && worldNum !== selectedWorld) return false;
+    
+    if (selectedArchetype !== 'all') {
+      const gType = l.gameplayType ?? (l.category === 'rocketeer' || l.id >= 58 ? 'rocketeer' : 'terrain');
+      if (gType !== selectedArchetype) return false;
+    }
     return true;
   });
 
@@ -45,8 +67,8 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
   ).length;
 
   return (
-    <div id="modal-level-select" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl text-white relative">
+    <div id="modal-level-select" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-3xl w-full p-4 sm:p-6 shadow-2xl text-white relative">
         {/* Close Button */}
         <button
           id="btn-close-level-select"
@@ -57,7 +79,7 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
         </button>
 
         {/* Title & Acorn Progress Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-amber-500/20 rounded-xl border border-amber-500/30 text-amber-400">
               <Trophy size={24} />
@@ -69,7 +91,7 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
                   {unlockedCount} / {levels.length} Unlocked
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Collect Golden Acorns 🌰 in levels to unlock new stages</p>
+              <p className="text-xs text-slate-400">10 Themed Worlds &middot; 4 Archetypes &middot; 3 🌰 per Stage</p>
             </div>
           </div>
 
@@ -93,7 +115,7 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
 
         {/* Locked stage notification banner if user clicked a locked stage */}
         {lockedNotice && (
-          <div className="mb-3 p-2.5 bg-amber-950/80 border border-amber-500/60 rounded-xl text-amber-200 text-xs flex items-center justify-between animate-in fade-in duration-150">
+          <div className="mb-2.5 p-2.5 bg-amber-950/80 border border-amber-500/60 rounded-xl text-amber-200 text-xs flex items-center justify-between animate-in fade-in duration-150">
             <div className="flex items-center gap-2">
               <AlertCircle size={16} className="text-amber-400 shrink-0" />
               <span>{lockedNotice}</span>
@@ -107,35 +129,49 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
           </div>
         )}
 
-        {/* Tier filter buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-3 text-xs scrollbar-none">
-          {[
-            { id: 'all', label: `All (${levels.length})` },
-            { id: 'rocketeer', label: '⚡ Rocketeer (No Platforms!)', highlight: true },
-            { id: '1-10', label: 'Classic (1 - 10)' },
-            { id: '11-20', label: 'Ascent (11 - 20)' },
-            { id: '21-27', label: 'Masters (21 - 27)' },
-            { id: '28-37', label: '🚀 Jetpack I (28 - 37)' },
-            { id: '38-47', label: '🚀 Jetpack II (38 - 47)' },
-            { id: '48-57', label: '🚀 Titan Finale (48 - 57)' }
-          ].map(f => (
+        {/* World Tabs filter row */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-2 text-xs scrollbar-none">
+          {worldsList.map(w => (
             <button
-              key={f.id}
+              key={String(w.id)}
               onClick={() => {
-                setFilterTier(f.id);
+                setSelectedWorld(w.id);
                 setLockedNotice(null);
               }}
               className={`px-2.5 py-1 rounded-lg font-semibold transition-all whitespace-nowrap text-xs ${
-                filterTier === f.id
-                  ? f.id === 'rocketeer'
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-orange-500/30'
-                    : 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : f.id === 'rocketeer'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60'
+                selectedWorld === w.id
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60 border border-slate-700/50'
               }`}
             >
-              {f.label}
+              {w.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Archetype filter pills row */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-2.5 text-[11px] border-b border-slate-800/80">
+          <span className="text-slate-400 font-medium shrink-0 mr-1">Archetype:</span>
+          {archetypesList.map(a => (
+            <button
+              key={a.id}
+              onClick={() => {
+                setSelectedArchetype(a.id);
+                setLockedNotice(null);
+              }}
+              className={`px-2 py-0.5 rounded-md font-medium transition-all whitespace-nowrap text-[11px] ${
+                selectedArchetype === a.id
+                  ? a.id === 'rocketeer'
+                    ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                    : a.id === 'runner'
+                    ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm'
+                    : a.id === 'gadget'
+                    ? 'bg-purple-500 text-white font-bold shadow-sm'
+                    : 'bg-slate-200 text-slate-950 font-bold shadow-sm'
+                  : 'bg-slate-800/60 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+              }`}
+            >
+              {a.label}
             </button>
           ))}
         </div>
@@ -148,8 +184,8 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
             const highScore = stats.highScores[level.id] || 0;
             const acornsFound = stats.levelAcorns[level.id] || 0;
             const isCurrent = originalIndex === currentLevelIndex;
-            const isRocketeer = level.category === 'rocketeer' || level.id >= 58;
-            const hasJetpackItem = isRocketeer || level.collectibles.some(c => c.type === 'jetpack' || c.type === 'jetpack_fuel') || level.id >= 28;
+            const gType = level.gameplayType ?? (level.category === 'rocketeer' || level.id >= 58 ? 'rocketeer' : 'terrain');
+            const isRocketeer = gType === 'rocketeer';
 
             const unlockStatus = checkLevelUnlockStatus(level.id, totalAcorns, highestClearedId, unlockAllLevels);
             const isUnlocked = unlockStatus.unlocked;
@@ -188,15 +224,23 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
                       }`}>
                         {level.title}
                       </span>
-                      {isRocketeer ? (
+                      {gType === 'rocketeer' ? (
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/25 text-amber-300 border border-amber-500/50 text-[9px] font-bold uppercase tracking-wider">
                           <Rocket size={10} className="rotate-45 text-amber-400" /> ROCKETEER
                         </span>
-                      ) : hasJetpackItem ? (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px] font-bold uppercase tracking-wider">
-                          <Rocket size={10} className="rotate-45" /> JETPACK
+                      ) : gType === 'runner' ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold uppercase tracking-wider">
+                          🏃 RUNNER
                         </span>
-                      ) : null}
+                      ) : gType === 'gadget' ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[9px] font-bold uppercase tracking-wider">
+                          🎯 GADGET
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[9px] font-bold uppercase tracking-wider">
+                          🏔️ TERRAIN
+                        </span>
+                      )}
                     </div>
                     
                     {/* Stars or Lock Icon */}
@@ -219,6 +263,10 @@ export const LevelSelectModal: React.FC<LevelSelectModalProps> = ({
                         <Lock size={11} /> LOCKED
                       </span>
                     )}
+                  </div>
+
+                  <div className="text-[10px] text-slate-400 mb-1 font-medium">
+                    {level.worldName || `World ${level.worldNumber || Math.ceil(level.id / 10)}`}
                   </div>
 
                   <p className={`text-xs line-clamp-2 mb-2.5 ${!isUnlocked ? 'text-slate-500' : 'text-slate-400'}`}>
