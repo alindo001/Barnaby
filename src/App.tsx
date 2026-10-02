@@ -124,6 +124,18 @@ export default function App() {
     };
   }, []);
 
+  // Global Dev Shortcut: Press F2 anywhere to toggle Level Editor / Modder
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'F2' || e.code === 'F2') {
+        e.preventDefault();
+        setShowEditor(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
   // Action Handlers
   const handleStartGame = useCallback(() => {
     if (engineRef.current) {
