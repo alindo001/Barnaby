@@ -22,16 +22,24 @@ interface ControlsHelpModalProps {
   onClose: () => void;
   dpadSize: TouchButtonSize;
   touchOpacity: number;
+  collectibleStyle?: 'acorn' | 'feather';
+  unlockAllLevels?: boolean;
   onSetDpadSize: (size: TouchButtonSize) => void;
   onSetTouchOpacity: (opacity: number) => void;
+  onSetCollectibleStyle?: (style: 'acorn' | 'feather') => void;
+  onToggleUnlockAll?: () => void;
 }
 
 export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({ 
   onClose,
   dpadSize,
   touchOpacity,
+  collectibleStyle = 'acorn',
+  unlockAllLevels = false,
   onSetDpadSize,
-  onSetTouchOpacity
+  onSetTouchOpacity,
+  onSetCollectibleStyle,
+  onToggleUnlockAll
 }) => {
   const [activeTab, setActiveTab] = useState<'settings' | 'guide'>('settings');
 
@@ -263,6 +271,67 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* 4. COLLECTIBLE THEME: ACORNS VS FEATHERS */}
+              {onSetCollectibleStyle && (
+                <div className="p-3 bg-slate-950/70 rounded-xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-slate-300">Bird Collectible Theme:</span>
+                    <span className="text-[10px] text-amber-400 font-semibold">
+                      {collectibleStyle === 'acorn' ? '🌰 Golden Acorns (Classic)' : '🪶 Golden Feathers (Plumage)'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => onSetCollectibleStyle('acorn')}
+                      className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+                        collectibleStyle === 'acorn'
+                          ? 'bg-amber-600/30 text-amber-300 border-amber-500/70 shadow-sm'
+                          : 'bg-slate-900/60 text-slate-400 border-slate-700/60 hover:text-slate-200'
+                      }`}
+                    >
+                      <span>🌰</span>
+                      <span>Golden Acorns</span>
+                    </button>
+                    <button
+                      onClick={() => onSetCollectibleStyle('feather')}
+                      className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+                        collectibleStyle === 'feather'
+                          ? 'bg-amber-600/30 text-amber-300 border-amber-500/70 shadow-sm'
+                          : 'bg-slate-900/60 text-slate-400 border-slate-700/60 hover:text-slate-200'
+                      }`}
+                    >
+                      <span>🪶</span>
+                      <span>Golden Feathers</span>
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-slate-400">
+                    Switch between woodland cache acorns or celestial bird feathers for special stage unlock items!
+                  </p>
+                </div>
+              )}
+
+              {/* 5. LINEAR PROGRESSION & FREE PLAY TOGGLE */}
+              {onToggleUnlockAll && (
+                <div className="p-3 bg-slate-950/70 rounded-xl border border-slate-800 flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-xs text-slate-300 block">Linear Progression Lock</span>
+                    <span className="text-[10px] text-slate-400">
+                      {unlockAllLevels ? '🔓 Free Play Mode: All 60 stages unlocked' : '🔒 Linear Mode: Levels require Golden Acorns'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={onToggleUnlockAll}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                      unlockAllLevels
+                        ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/60'
+                        : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                    }`}
+                  >
+                    {unlockAllLevels ? 'Unlock All (ON)' : 'Linear Mode (Default)'}
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             /* GUIDE & KEYBINDINGS TAB */
@@ -302,9 +371,21 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
               {/* Gameplay Mechanics */}
               <div>
                 <h3 className="font-semibold text-slate-200 flex items-center gap-1.5 mb-2 text-sm text-emerald-400">
-                  <Zap size={16} /> Key Mechanics
+                  <Zap size={16} /> Key Mechanics & Progression
                 </h3>
                 <div className="space-y-2">
+                  <div className="p-2.5 bg-amber-950/50 rounded-xl border border-amber-500/60 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-amber-500/20 text-amber-300 rounded-lg mt-0.5 text-base">
+                      🌰
+                    </div>
+                    <div>
+                      <div className="font-bold text-amber-300">Golden Acorns & Linear Adventure Progression</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Every stage features <strong>3 hidden Golden Acorns</strong> (or Feathers) to collect! Collecting acorns and clearing levels linearly unlocks the next stages up to Level 60. Revisit previously beaten stages anytime via Level Select to collect all 3 acorns.
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="p-2.5 bg-cyan-950/40 rounded-xl border border-cyan-400/50 flex items-start gap-2.5 shadow-sm">
                     <div className="p-1 bg-cyan-500/20 text-cyan-400 rounded-lg mt-0.5">
                       <Shield size={14} />

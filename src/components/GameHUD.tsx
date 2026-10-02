@@ -36,6 +36,7 @@ interface GameHUDProps {
   onLaunchJetpack?: (direction: LaunchDirection) => void;
   onShootBlaster?: () => void;
   onOpenCharacterSelect?: () => void;
+  onOpenEnemyGallery?: () => void;
 }
 
 export const GameHUD: React.FC<GameHUDProps> = ({
@@ -53,7 +54,8 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   onToggleDpadSize,
   onLaunchJetpack,
   onShootBlaster,
-  onOpenCharacterSelect
+  onOpenCharacterSelect,
+  onOpenEnemyGallery
 }) => {
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -111,6 +113,27 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               <Sparkles size={11} />
               <span>{stats.gems}</span>
             </div>
+
+            {/* Golden Acorn count in current level */}
+            <div 
+              id="hud-acorn-counter"
+              className="flex items-center gap-1 text-amber-300 font-bold shrink-0 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/40 text-[10px] sm:text-xs" 
+              title="Golden Acorns found in this stage (Needed to unlock future stages!)"
+            >
+              <span className="text-xs">🌰</span>
+              <span>{stats.acorns || 0}/3</span>
+            </div>
+
+            {/* Enemies Defeated badge (Click to open Codex) */}
+            <button
+              id="hud-enemy-counter"
+              onClick={onOpenEnemyGallery}
+              className="flex items-center gap-1 text-red-300 font-bold shrink-0 bg-red-950/40 hover:bg-red-900/60 px-1.5 py-0.5 rounded border border-red-500/40 text-[10px] sm:text-xs transition-colors cursor-pointer"
+              title="Critters Defeated (Click to open Critter Codex & Enemy Gallery!)"
+            >
+              <span className="text-xs">🐾</span>
+              <span>{stats.totalEnemiesDefeated || 0}</span>
+            </button>
 
             <div className="font-mono text-emerald-400 ml-auto text-[10px] sm:text-xs shrink-0">
               {formatTime(stats.time)}
@@ -242,6 +265,17 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             title="Character Locker (Barnaby, Ribbit, Lottie, Chilli)"
           >
             <Sparkles size={14} className="text-emerald-400" />
+          </button>
+        )}
+
+        {onOpenEnemyGallery && (
+          <button
+            id="btn-hud-enemy-gallery"
+            onClick={onOpenEnemyGallery}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-300 hover:text-amber-200 active:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            title={`Critter Codex & Enemy Gallery (Defeated: ${stats.totalEnemiesDefeated || 0})`}
+          >
+            <span className="text-sm">🐾</span>
           </button>
         )}
 

@@ -9,15 +9,18 @@ import {
   Particle,
   ScorePopup,
   LaunchedJetpack,
-  BlasterBullet
+  BlasterBullet,
+  EnemyProjectile
 } from '../types/game';
 import { renderCharacter } from './characterRenderer';
 import { DEFAULT_CHARACTER_CONFIGS } from './characters';
+import { drawEnemyFigure, drawEnemyProjectileFigure } from './enemyRenderer';
 
 export class GameRenderer {
   private ctx: CanvasRenderingContext2D;
   private canvas: HTMLCanvasElement;
   private gameTime: number = 0;
+  public collectibleStyle: 'acorn' | 'feather' = 'acorn';
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -78,6 +81,11 @@ export class GameRenderer {
     level.enemies.forEach(e => {
       if (!e.isDead) this.drawEnemy(e);
     });
+
+    // 8.5 Draw Enemy Projectiles (ants, logs, stink clouds, honk waves)
+    if (level.enemyProjectiles && level.enemyProjectiles.length > 0) {
+      level.enemyProjectiles.forEach(ep => this.drawEnemyProjectile(ep));
+    }
 
     // 9. Draw Player
     if (!player.isDead) {
@@ -688,79 +696,146 @@ export class GameRenderer {
       ctx.textAlign = 'center';
       ctx.fillText('SHIELD', cx, cy - radius - 5);
       ctx.restore();
+    } else if (c.type === 'acorn') {
+      // Golden Bird Acorn (with optional feather plumage style)
+      const cx = c.x + c.width / 2;
+      const cy = c.y + c.height / 2 + bob;
+      const isFeather = this.collectibleStyle === 'feather';
+
+      if (isFeather) {
+        // Celestial Golden Feather
+        const aura = Math.sin(this.gameTime * 4) * 0.15 + 0.35;
+        ctx.fillStyle = `rgba(245, 158, 11, ${aura})`;
+        ctx.beginPath();
+        ctx.arc(cx, cy, c.width * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(0.25 + Math.sin(this.gameTime * 3) * 0.08);
+
+        // Vanes (Gold plumage)
+        ctx.fillStyle = '#F59E0B';
+        ctx.beginPath();
+        ctx.moveTo(0, -14);
+        ctx.bezierCurveTo(7, -8, 8, 4, 0, 12);
+        ctx.bezierCurveTo(-8, 4, -7, -8, 0, -14);
+        ctx.fill();
+
+        // Inner quill highlight
+        ctx.fillStyle = '#FEF08A';
+        ctx.beginPath();
+        ctx.moveTo(0, -12);
+        ctx.bezierCurveTo(3, -6, 3, 2, 0, 9);
+        ctx.bezierCurveTo(-3, 2, -3, -6, 0, -12);
+        ctx.fill();
+
+        // Quill spine
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, -14);
+        ctx.lineTo(0, 14);
+        ctx.stroke();
+
+        ctx.restore();
+
+        ctx.fillStyle = '#FBBF24';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('FEATHER', cx, cy - 16);
+      } else {
+        // Glowing Golden Acorn
+        const aura = Math.sin(this.gameTime * 4) * 0.15 + 0.35;
+        ctx.fillStyle = `rgba(245, 158, 11, ${aura})`;
+        ctx.beginPath();
+        ctx.arc(cx, cy, c.width * 0.95, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        const wobble = Math.sin(this.gameTime * 3 + c.x * 0.02) * 0.08;
+        ctx.rotate(wobble);
+
+        // Nut gradient
+        const nutGrad = ctx.createLinearGradient(-8, -4, 8, 10);
+        nutGrad.addColorStop(0, '#FDE047');
+        nutGrad.addColorStop(0.5, '#F59E0B');
+        nutGrad.addColorStop(1, '#B45309');
+
+        ctx.fillStyle = nutGrad;
+        ctx.beginPath();
+        ctx.moveTo(-8, -2);
+        ctx.bezierCurveTo(-8, 6, -5, 11, 0, 13);
+        ctx.bezierCurveTo(5, 11, 8, 6, 8, -2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Nut specular glint
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.beginPath();
+        ctx.ellipse(-3, 2, 2.5, 5, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Acorn Cupule / Wooden Cap
+        ctx.fillStyle = '#78350F';
+        ctx.beginPath();
+        ctx.ellipse(0, -3, 9, 5, 0, Math.PI, 0);
+        ctx.fill();
+
+        // Cap rim
+        ctx.fillStyle = '#92400E';
+        ctx.beginPath();
+        ctx.ellipse(0, -3, 9, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cap crosshatch / texture lines
+        ctx.strokeStyle = '#451A03';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-6, -3);
+        ctx.lineTo(-2, -7);
+        ctx.moveTo(0, -3);
+        ctx.lineTo(2, -7);
+        ctx.moveTo(5, -3);
+        ctx.lineTo(6, -6);
+        ctx.stroke();
+
+        // Acorn Stem at top
+        ctx.strokeStyle = '#451A03';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, -7);
+        ctx.quadraticCurveTo(2, -12, 4, -13);
+        ctx.stroke();
+
+        // Sparkle stars around acorn
+        const sparkTime = this.gameTime * 4;
+        const sparkX = Math.cos(sparkTime) * 11;
+        const sparkY = Math.sin(sparkTime) * 11;
+        ctx.fillStyle = '#FEF08A';
+        ctx.beginPath();
+        ctx.arc(sparkX, sparkY, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+
+        // Floating label
+        ctx.fillStyle = '#FBBF24';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌰 ACORN', cx, cy - 16);
+      }
     }
   }
 
   private drawEnemy(e: Enemy) {
-    const { ctx } = this;
+    drawEnemyFigure(this.ctx, e, this.gameTime);
+  }
 
-    if (e.type === 'slime') {
-      // Squishy Patrolling Slime
-      const squish = Math.sin(this.gameTime * 10) * 2;
-      const ew = e.width + squish;
-      const eh = e.height - squish;
-      const ex = e.x - squish * 0.5;
-      const ey = e.y + squish;
-
-      // Slime Body
-      ctx.fillStyle = '#10B981';
-      ctx.beginPath();
-      ctx.ellipse(ex + ew / 2, ey + eh / 2, ew / 2, eh / 2, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Slime highlight dome
-      ctx.fillStyle = '#34D399';
-      ctx.beginPath();
-      ctx.ellipse(ex + ew / 2, ey + eh * 0.35, ew * 0.35, eh * 0.25, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eyes
-      const eyeOffsetX = e.facing === 1 ? 4 : -4;
-      ctx.fillStyle = '#064E3B';
-      ctx.beginPath();
-      ctx.arc(ex + ew / 2 + eyeOffsetX - 3, ey + eh * 0.45, 2.5, 0, Math.PI * 2);
-      ctx.arc(ex + ew / 2 + eyeOffsetX + 3, ey + eh * 0.45, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye glints
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.arc(ex + ew / 2 + eyeOffsetX - 3, ey + eh * 0.42, 1, 0, Math.PI * 2);
-      ctx.arc(ex + ew / 2 + eyeOffsetX + 3, ey + eh * 0.42, 1, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (e.type === 'flyer') {
-      // Flying Bat / Drone
-      const wingFlap = Math.sin(this.gameTime * 14) * 8;
-      const cx = e.x + e.width / 2;
-      const cy = e.y + e.height / 2;
-
-      // Wings
-      ctx.fillStyle = '#7C3AED';
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx - 16, cy - wingFlap);
-      ctx.lineTo(cx - 8, cy + 4);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + 16, cy - wingFlap);
-      ctx.lineTo(cx + 8, cy + 4);
-      ctx.closePath();
-      ctx.fill();
-
-      // Body Core
-      ctx.fillStyle = '#4C1D95';
-      ctx.beginPath();
-      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Glowing red visor / eye
-      ctx.fillStyle = '#EF4444';
-      const eyeX = cx + e.facing * 3;
-      ctx.fillRect(eyeX - 2, cy - 2, 4, 3);
-    }
+  private drawEnemyProjectile(ep: EnemyProjectile) {
+    drawEnemyProjectileFigure(this.ctx, ep, this.gameTime);
   }
 
   private drawGoal(goal: LevelData['goal']) {

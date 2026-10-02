@@ -7,6 +7,7 @@ import { LevelSelectModal } from './components/LevelSelectModal';
 import { ControlsHelpModal } from './components/ControlsHelpModal';
 import { LevelEditorModal } from './components/LevelEditorModal';
 import { CharacterSelectModal } from './components/CharacterSelectModal';
+import { EnemyGalleryModal } from './components/EnemyGalleryModal';
 import { GameState, GameStats, LevelData, InputState, LaunchDirection, TouchButtonSize, CharacterConfig } from './types/game';
 import { sound } from './game/audio';
 import { loadCharacterConfig } from './game/characters';
@@ -56,7 +57,30 @@ export default function App() {
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [showCharacterSelect, setShowCharacterSelect] = useState<boolean>(false);
+  const [showEnemyGallery, setShowEnemyGallery] = useState<boolean>(false);
   const [characterConfig, setCharacterConfig] = useState<CharacterConfig>(() => loadCharacterConfig());
+  const [unlockAllLevels, setUnlockAllLevels] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('platformer_game_progress');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return !!parsed.unlockAllLevels;
+      }
+    } catch {}
+    return false;
+  });
+  const [collectibleStyle, setCollectibleStyle] = useState<'acorn' | 'feather'>(() => {
+    try {
+      const saved = localStorage.getItem('platformer_game_progress');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.collectibleStyle === 'feather' || parsed.collectibleStyle === 'acorn') {
+          return parsed.collectibleStyle;
+        }
+      }
+    } catch {}
+    return 'acorn';
+  });
 
   // Initialize Game Engine
   useEffect(() => {
@@ -233,6 +257,23 @@ export default function App() {
     } catch {}
   }, []);
 
+  const handleToggleUnlockAll = useCallback(() => {
+    setUnlockAllLevels(prev => {
+      const next = !prev;
+      if (engineRef.current) {
+        engineRef.current.setUnlockAllLevels(next);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSetCollectibleStyle = useCallback((style: 'acorn' | 'feather') => {
+    setCollectibleStyle(style);
+    if (engineRef.current) {
+      engineRef.current.setCollectibleStyle(style);
+    }
+  }, []);
+
   return (
     <div 
       id="platformer-app-root"
@@ -266,6 +307,7 @@ export default function App() {
           onLaunchJetpack={handleLaunchJetpack}
           onShootBlaster={handleShootBlaster}
           onOpenCharacterSelect={() => setShowCharacterSelect(true)}
+          onOpenEnemyGallery={() => setShowEnemyGallery(true)}
         />
       )}
 
@@ -305,6 +347,7 @@ export default function App() {
           onOpenHelp={() => setShowHelp(true)}
           onOpenEditor={() => setShowEditor(true)}
           onOpenCharacterSelect={() => setShowCharacterSelect(true)}
+          onOpenEnemyGallery={() => setShowEnemyGallery(true)}
           onToggleSound={handleToggleSound}
           onSetDpadSize={handleSetDpadSize}
           onSetTouchOpacity={handleSetTouchOpacity}
@@ -317,7 +360,9 @@ export default function App() {
           levels={engineRef.current.levels}
           currentLevelIndex={stats.levelIndex}
           stats={stats}
+          unlockAllLevels={unlockAllLevels}
           onSelectLevel={handleSelectLevel}
+          onToggleUnlockAll={handleToggleUnlockAll}
           onClose={() => setShowLevelSelect(false)}
         />
       )}
@@ -337,8 +382,12 @@ export default function App() {
           onClose={() => setShowHelp(false)}
           dpadSize={dpadSize}
           touchOpacity={touchOpacity}
+          collectibleStyle={collectibleStyle}
+          unlockAllLevels={unlockAllLevels}
           onSetDpadSize={handleSetDpadSize}
           onSetTouchOpacity={handleSetTouchOpacity}
+          onSetCollectibleStyle={handleSetCollectibleStyle}
+          onToggleUnlockAll={handleToggleUnlockAll}
         />
       )}
 
@@ -347,6 +396,15 @@ export default function App() {
         <LevelEditorModal
           onPlayCustomLevel={handlePlayCustomLevel}
           onClose={() => setShowEditor(false)}
+        />
+      )}
+
+      {/* Critter Codex & Enemy Gallery Modal */}
+      {showEnemyGallery && (
+        <EnemyGalleryModal
+          enemiesDefeated={stats.enemiesDefeated}
+          totalEnemiesDefeated={stats.totalEnemiesDefeated}
+          onClose={() => setShowEnemyGallery(false)}
         />
       )}
     </div>

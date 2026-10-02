@@ -13,9 +13,11 @@ import {
   Volume2,
   VolumeX,
   SlidersHorizontal,
-  Flag
+  Flag,
+  Lock
 } from 'lucide-react';
 import { GameState, GameStats, LevelData, TouchButtonSize, CharacterConfig } from '../types/game';
+import { checkLevelUnlockStatus, MAX_POSSIBLE_ACORNS } from '../game/acorns';
 import { TitleScreen } from './TitleScreen';
 import { BarnabyLogo } from './BarnabyLogo';
 
@@ -38,6 +40,7 @@ interface GameOverlayProps {
   onOpenHelp: () => void;
   onOpenEditor?: () => void;
   onOpenCharacterSelect?: () => void;
+  onOpenEnemyGallery?: () => void;
   onToggleSound: () => void;
   onSetDpadSize?: (size: TouchButtonSize) => void;
   onSetTouchOpacity?: (opacity: number) => void;
@@ -62,6 +65,7 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
   onOpenHelp,
   onOpenEditor,
   onOpenCharacterSelect,
+  onOpenEnemyGallery,
   onToggleSound,
   onSetDpadSize,
   onSetTouchOpacity
@@ -91,6 +95,7 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
           onOpenHelp={onOpenHelp}
           onOpenCharacterSelect={onOpenCharacterSelect}
           onOpenEditor={onOpenEditor}
+          onOpenEnemyGallery={onOpenEnemyGallery}
           onToggleSound={onToggleSound}
         />
       )}
@@ -162,6 +167,22 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
               >
                 <Sparkles size={16} className="text-emerald-400" />
                 <span>Change Character</span>
+              </button>
+            )}
+
+            {onOpenEnemyGallery && (
+              <button
+                id="btn-pause-enemy-gallery"
+                onClick={onOpenEnemyGallery}
+                className="w-full py-2.5 px-4 bg-amber-950/40 hover:bg-amber-900/50 text-amber-200 hover:text-white font-semibold text-sm rounded-xl border border-amber-600/40 flex items-center justify-between gap-2 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <span>🐾</span>
+                  <span>Critter Codex</span>
+                </div>
+                <span className="text-xs text-amber-300 font-mono bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/30">
+                  {stats.totalEnemiesDefeated || 0} Defeated
+                </span>
               </button>
             )}
 
@@ -269,7 +290,7 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
           <p className="text-xs text-amber-300/80 mb-4">{currentLevel.title}</p>
 
           {/* Stars */}
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 mb-4">
             {[1, 2, 3].map((starIdx) => (
               <Star
                 key={starIdx}
@@ -283,8 +304,36 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
             ))}
           </div>
 
+          {/* Golden Acorns Found In This Stage */}
+          <div className="w-full bg-amber-950/40 border border-amber-500/40 rounded-xl p-3 mb-4 flex items-center justify-between">
+            <div className="flex flex-col text-left">
+              <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider">Golden Acorns Found</span>
+              <span className="text-xs text-slate-300">
+                {stats.acorns || 0} of 3 collected ({stats.totalLevelAcorns || 0} banked)
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {[1, 2, 3].map((acornNum) => {
+                const earned = acornNum <= (stats.acorns || 0);
+                return (
+                  <div
+                    key={acornNum}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg border transition-all ${
+                      earned
+                        ? 'bg-amber-500/30 border-amber-400 text-amber-300 shadow-md shadow-amber-500/20 scale-105'
+                        : 'bg-slate-800/60 border-slate-700/60 text-slate-600 grayscale opacity-40'
+                    }`}
+                    title={earned ? 'Golden Acorn Acquired!' : 'Missed Acorn'}
+                  >
+                    🌰
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Stats Breakdown */}
-          <div className="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 mb-6 grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="w-full bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 mb-5 grid grid-cols-3 gap-2 text-center text-xs">
             <div className="flex flex-col items-center">
               <span className="text-slate-400 flex items-center gap-1 mb-1">
                 <Clock size={12} /> Time
@@ -315,14 +364,41 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
 
           <div className="w-full flex flex-col gap-2.5">
             {!isLastLevel ? (
-              <button
-                id="btn-next-level"
-                onClick={onNextLevel}
-                className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all"
-              >
-                <span>Next Level</span>
-                <ArrowRight size={18} />
-              </button>
+              (() => {
+                const nextLevelId = currentLevel.id + 1;
+                const totalAcorns = stats.totalLevelAcorns || (Object.values(stats.levelAcorns || {}) as number[]).reduce((a: number, b: number) => a + (b || 0), 0);
+                const nextStatus = checkLevelUnlockStatus(nextLevelId, totalAcorns, stats.highestClearedLevelId || 0, false);
+                const isNextUnlocked = nextStatus.unlocked;
+
+                if (isNextUnlocked) {
+                  return (
+                    <button
+                      id="btn-next-level"
+                      onClick={onNextLevel}
+                      className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all"
+                    >
+                      <span>Next Level</span>
+                      <ArrowRight size={18} />
+                    </button>
+                  );
+                } else {
+                  return (
+                    <div className="flex flex-col gap-2">
+                      <div className="py-2.5 px-3 bg-amber-950/70 border border-amber-500/50 rounded-xl text-amber-300 text-xs flex items-center justify-center gap-2 font-semibold">
+                        <Lock size={14} className="text-amber-400 shrink-0" />
+                        <span>Next Stage Locked: Need {nextStatus.requiredAcorns} 🌰 Acorns (Have {totalAcorns})</span>
+                      </div>
+                      <button
+                        onClick={onRestart}
+                        className="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
+                      >
+                        <RotateCcw size={14} />
+                        <span>Replay to Collect Missing Acorns ({stats.acorns || 0}/3)</span>
+                      </button>
+                    </div>
+                  );
+                }
+              })()
             ) : (
               <button
                 id="btn-claim-victory"
@@ -353,6 +429,22 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
                 <span>All Levels</span>
               </button>
             </div>
+
+            {onOpenEnemyGallery && (
+              <button
+                id="btn-complete-enemy-gallery"
+                onClick={onOpenEnemyGallery}
+                className="w-full py-2 px-4 bg-amber-950/40 hover:bg-amber-900/50 text-amber-200 hover:text-white font-semibold text-xs rounded-xl border border-amber-600/40 flex items-center justify-between gap-2 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <span>🐾</span>
+                  <span>Critter Codex</span>
+                </div>
+                <span className="text-xs text-amber-300 font-mono bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/30">
+                  {stats.totalEnemiesDefeated || 0} Defeated
+                </span>
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -407,6 +499,16 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
               <Layers size={16} />
               <span>Select Level</span>
             </button>
+
+            {onOpenEnemyGallery && (
+              <button
+                id="btn-over-enemy-gallery"
+                onClick={onOpenEnemyGallery}
+                className="w-full py-2.5 px-4 bg-amber-950/40 hover:bg-amber-900/50 text-amber-200 hover:text-white font-semibold text-xs sm:text-sm rounded-xl border border-amber-600/40 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <span>🐾 Critter Codex & Bestiary ({stats.totalEnemiesDefeated || 0} Defeated)</span>
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -425,23 +527,41 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
             Incredible! You guided Barnaby through all {totalLevelsCount} challenging levels across the skies, volcanoes, grottos, and deep space starships!
           </p>
 
-          {/* Grand Star Tally */}
-          <div className="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-4 mb-6 flex items-center justify-around">
+          {/* Grand Star & Acorn Tally */}
+          <div className="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-4 mb-6 grid grid-cols-4 gap-2 text-center">
             <div className="flex flex-col items-center">
-              <span className="text-xs text-slate-400 mb-1">Total Stars</span>
-              <div className="flex items-center gap-1 text-amber-400 font-bold text-lg">
-                <Star size={18} fill="currentColor" />
+              <span className="text-[11px] text-slate-400 mb-1">Stars</span>
+              <div className="flex items-center gap-1 text-amber-400 font-bold text-sm">
+                <Star size={14} fill="currentColor" />
                 <span>
-                  {(Object.values(stats.levelStars) as number[]).reduce((a: number, b: number) => a + b, 0)} / {totalLevelsCount * 3}
+                  {(Object.values(stats.levelStars) as number[]).reduce((a: number, b: number) => a + b, 0)}
                 </span>
               </div>
             </div>
 
-            <div className="h-8 w-px bg-slate-700" />
+            <div className="flex flex-col items-center border-x border-slate-700/60 px-1">
+              <span className="text-[11px] text-slate-400 mb-1">Acorns</span>
+              <div className="flex items-center gap-1 text-amber-300 font-bold text-sm">
+                <span>🌰</span>
+                <span>
+                  {stats.totalLevelAcorns || 0}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center border-r border-slate-700/60 px-1">
+              <span className="text-[11px] text-slate-400 mb-1">Defeated</span>
+              <div className="flex items-center gap-1 text-red-400 font-bold text-sm">
+                <span>🐾</span>
+                <span>
+                  {stats.totalEnemiesDefeated || 0}
+                </span>
+              </div>
+            </div>
 
             <div className="flex flex-col items-center">
-              <span className="text-xs text-slate-400 mb-1">Total Deaths</span>
-              <span className="font-mono font-bold text-slate-200 text-lg">
+              <span className="text-[11px] text-slate-400 mb-1">Deaths</span>
+              <span className="font-mono font-bold text-slate-200 text-sm">
                 {stats.deaths}
               </span>
             </div>
@@ -456,6 +576,16 @@ export const GameOverlay: React.FC<GameOverlayProps> = ({
               <RotateCcw size={18} />
               <span>Play From Beginning</span>
             </button>
+
+            {onOpenEnemyGallery && (
+              <button
+                id="btn-victory-enemy-gallery"
+                onClick={onOpenEnemyGallery}
+                className="w-full py-2.5 px-4 bg-amber-950/40 hover:bg-amber-900/50 text-amber-200 hover:text-white font-semibold text-sm rounded-xl border border-amber-600/40 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <span>🐾 View Critter Codex & Bestiary</span>
+              </button>
+            )}
 
             <button
               id="btn-victory-levels"

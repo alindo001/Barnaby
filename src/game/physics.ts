@@ -23,6 +23,7 @@ export class PhysicsEngine {
   private readonly SPRING_FORCE = -14.8;
   private readonly COYOTE_TIME = 0.12;
   private readonly JUMP_BUFFER = 0.12;
+  private gameTime: number = 0;
 
   public update(
     player: Player,
@@ -33,9 +34,13 @@ export class PhysicsEngine {
     onPlayerDeath: () => void,
     onLevelComplete: () => void,
     onScoreAdd: (pts: number) => void,
-    onCheckpointActivated?: (cp: { x: number; y: number; hasJetpack: boolean; hasShield?: boolean }) => void
+    onCheckpointActivated?: (cp: { x: number; y: number; hasJetpack: boolean; hasShield?: boolean }) => void,
+    onAcornCollected?: () => void,
+    onEnemyDefeated?: (enemy: Enemy) => void
   ) {
     if (player.isDead) return;
+
+    this.gameTime += dt;
 
     const fpsRatio = Math.min(2.0, dt * 60);
 
@@ -155,8 +160,8 @@ export class PhysicsEngine {
       player.vy = this.MAX_FALL_SPEED;
     }
 
-    // 5. Update Dynamic Level Elements (Moving platforms, crumbling blocks, hazards, enemies, launched jetpacks)
-    this.updateLevelElements(player, level, particles, dt, fpsRatio, onScoreAdd);
+    // 5. Update Dynamic Level Elements (Moving platforms, crumbling blocks, hazards, enemies, launched jetpacks, enemy projectiles)
+    this.updateLevelElements(player, level, particles, dt, fpsRatio, onScoreAdd, onEnemyDefeated, onPlayerDeath);
 
     // 6. Sub-step Collision Resolution for Player
     player.wasGrounded = player.isGrounded;
@@ -180,7 +185,7 @@ export class PhysicsEngine {
     player.scaleY += (1 - player.scaleY) * 0.15 * fpsRatio;
 
     // 8. Collectibles Check
-    this.checkCollectibles(player, level.collectibles, particles, onScoreAdd);
+    this.checkCollectibles(player, level.collectibles, particles, onScoreAdd, onAcornCollected);
 
     // 9. Checkpoints Check
     if (level.checkpoints) {
@@ -188,7 +193,7 @@ export class PhysicsEngine {
     }
 
     // 10. Enemies Collision Check (Stomp vs Hurt)
-    this.checkEnemies(player, level.enemies, particles, onPlayerDeath, onScoreAdd);
+    this.checkEnemies(player, level.enemies, particles, onPlayerDeath, onScoreAdd, onEnemyDefeated);
 
     // 11. Hazards & World Bounds Check
     this.checkHazards(player, level, particles, onPlayerDeath);
@@ -203,7 +208,9 @@ export class PhysicsEngine {
     particles: ParticleSystem, 
     dt: number, 
     fpsRatio: number,
-    onScoreAdd: (pts: number) => void
+    onScoreAdd: (pts: number) => void,
+    onEnemyDefeated?: (enemy: Enemy) => void,
+    onPlayerDeath?: () => void
   ) {
     // 1. Moving Platforms
     level.platforms.forEach(p => {
@@ -334,10 +341,14 @@ export class PhysicsEngine {
       }
     });
 
-    // 3. Enemies Patrol
+    // 3. Enemies Patrol & Silly Animal Behaviors
     level.enemies.forEach(e => {
       if (e.isDead) return;
+
+      // Base patrol movement (unless rolling or preparing attack)
       e.x += e.vx * fpsRatio;
+
+      // Min/Max patrol bounds
       if (e.minX !== undefined && e.maxX !== undefined) {
         if (e.x < e.minX) {
           e.x = e.minX;
@@ -359,7 +370,263 @@ export class PhysicsEngine {
           e.vy = -Math.abs(e.vy);
         }
       }
+
+      // SILLY ANIMAL 1: ANTEATER (shoots fast ants along the ground)
+      if (e.type === 'anteater') {
+        if (e.shootTimer === undefined) e.shootTimer = 1.8 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0) {
+          e.shootTimer = 3.2;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 14;
+          level.enemyProjectiles.push({
+            id: `ant_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + e.height - 12,
+            vx: e.facing * 3.6,
+            vy: 0,
+            width: 16,
+            height: 12,
+            type: 'ant',
+            life: 0,
+            maxLife: 5.0
+          });
+          particles.emitDust(projX, e.y + e.height - 4, 6, '#78350F');
+        }
+      }
+
+      // SILLY ANIMAL 2: BEAVER (tosses rolling timber logs)
+      if (e.type === 'beaver') {
+        if (e.shootTimer === undefined) e.shootTimer = 2.0 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0) {
+          e.shootTimer = 3.4;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 22;
+          level.enemyProjectiles.push({
+            id: `log_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 4,
+            vx: e.facing * 2.8,
+            vy: -3.2,
+            width: 22,
+            height: 16,
+            type: 'log',
+            rotation: 0,
+            life: 0,
+            maxLife: 6.0,
+            bounces: 0
+          });
+          particles.emitDust(projX, e.y + e.height - 4, 8, '#92400E');
+        }
+      }
+
+      // SILLY ANIMAL 3: HEDGEHOG (curls into spiky ball when player is near)
+      if (e.type === 'hedgehog') {
+        const dist = Math.hypot(player.x - (e.x + e.width / 2), player.y - (e.y + e.height / 2));
+        if (dist < 130) {
+          e.state = 'rolling';
+          e.isSpiky = true;
+          // Spin roll towards player
+          e.vx = player.x < e.x ? -1.6 : 1.6;
+        } else {
+          e.state = 'walking';
+          e.isSpiky = false;
+        }
+      }
+
+      // SILLY ANIMAL 4: FROG (high spring hops)
+      if (e.type === 'frog') {
+        if (e.jumpTimer === undefined) e.jumpTimer = 1.5 + Math.random() * 1.2;
+        e.jumpTimer -= dt;
+        if (e.jumpTimer <= 0 && (!e.vy || e.vy === 0)) {
+          e.jumpTimer = 2.4 + Math.random() * 0.8;
+          e.vy = -7.5;
+          e.state = 'jumping';
+          particles.emitDust(e.x + e.width / 2, e.y + e.height, 5, '#10B981');
+        }
+
+        if (e.vy !== 0 || e.state === 'jumping') {
+          e.vy += 0.45 * fpsRatio;
+          e.y += e.vy * fpsRatio;
+          const groundY = e.minY !== undefined ? e.minY : (e.maxY !== undefined ? e.maxY : 520 - e.height);
+          if (e.y >= groundY) {
+            e.y = groundY;
+            e.vy = 0;
+            e.state = 'idle';
+          }
+        }
+      }
+
+      // SILLY ANIMAL 5: PIGEON (swoop flapping)
+      if (e.type === 'pigeon') {
+        e.y += Math.sin(this.gameTime * 4 + e.x * 0.04) * 1.8 * fpsRatio;
+      }
+
+      // SILLY ANIMAL 6: SKUNK (periodically stops and sprays giggly stink clouds behind it)
+      if (e.type === 'skunk') {
+        if (e.shootTimer === undefined) e.shootTimer = 2.0 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0) {
+          e.shootTimer = 3.8;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x - 12 : e.x + e.width;
+          level.enemyProjectiles.push({
+            id: `stink_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 4,
+            vx: -e.facing * 1.5,
+            vy: -0.6,
+            width: 24,
+            height: 24,
+            type: 'stink_cloud',
+            life: 0,
+            maxLife: 4.5
+          });
+          particles.emitSparkles(projX + 12, e.y + 8, '#84CC16', 8);
+          particles.addPopup(e.x + e.width / 2, e.y - 10, 'PUFF! 🦨', '#84CC16');
+        }
+      }
+
+      // SILLY ANIMAL 7: GOOSE (fast aggressive charge + sonic honk shockwave)
+      if (e.type === 'goose') {
+        // Fast runner
+        e.vx = e.facing * 2.6;
+        if (e.shootTimer === undefined) e.shootTimer = 2.4 + Math.random() * 2.0;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0) {
+          e.shootTimer = 4.2;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 24;
+          level.enemyProjectiles.push({
+            id: `honk_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 2,
+            vx: e.facing * 4.4,
+            vy: 0,
+            width: 26,
+            height: 26,
+            type: 'honk_wave',
+            life: 0,
+            maxLife: 3.2
+          });
+          sound.playHit();
+          particles.emitSparkles(projX + 12, e.y + 12, '#F97316', 8);
+          particles.addPopup(e.x + e.width / 2, e.y - 12, 'HONK! 🪿', '#F97316');
+        }
+      }
     });
+
+    // 3.8 Update Enemy Projectiles (ants, tumbling logs, stink clouds, honk waves)
+    if (level.enemyProjectiles && level.enemyProjectiles.length > 0) {
+      for (let i = level.enemyProjectiles.length - 1; i >= 0; i--) {
+        const ep = level.enemyProjectiles[i];
+        ep.life += dt;
+
+        if (ep.type === 'log') {
+          ep.vy += 0.35 * fpsRatio;
+          ep.x += ep.vx * fpsRatio;
+          ep.y += ep.vy * fpsRatio;
+          ep.rotation = (ep.rotation || 0) + (ep.vx > 0 ? 0.16 : -0.16) * fpsRatio;
+
+          // Platform bounces
+          for (const p of level.platforms) {
+            if (
+              ep.x + ep.width > p.x &&
+              ep.x < p.x + p.width &&
+              ep.y + ep.height >= p.y &&
+              ep.y + ep.height <= p.y + 16 &&
+              ep.vy > 0
+            ) {
+              ep.y = p.y - ep.height;
+              ep.vy = -Math.abs(ep.vy) * 0.55;
+              ep.bounces = (ep.bounces || 0) + 1;
+              particles.emitDust(ep.x + ep.width / 2, ep.y + ep.height, 4, '#78350F');
+              break;
+            }
+          }
+        } else if (ep.type === 'stink_cloud') {
+          // Drifts slowly upward with wavy float
+          ep.x += ep.vx * fpsRatio;
+          ep.y += (ep.vy + Math.sin(ep.life * 4) * 0.5) * fpsRatio;
+          particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#84CC16', 1);
+        } else if (ep.type === 'honk_wave') {
+          // Sonic honk shockwave expands and speeds forward
+          ep.x += ep.vx * fpsRatio;
+          ep.width = 26 + ep.life * 6;
+          ep.height = 26 + ep.life * 6;
+        } else {
+          // Ant: crawls forward along ground
+          ep.x += ep.vx * fpsRatio;
+          for (const p of level.platforms) {
+            if (
+              ep.x + ep.width > p.x &&
+              ep.x < p.x + p.width &&
+              ep.y + ep.height >= p.y - 6 &&
+              ep.y + ep.height <= p.y + 12
+            ) {
+              ep.y = p.y - ep.height;
+              break;
+            }
+          }
+        }
+
+        // Collision with Player
+        if (this.isOverlapping(player, ep)) {
+          const playerBottom = player.y + player.height;
+          // Player stomping on ant: squish ant!
+          if (ep.type === 'ant' && player.vy > 0 && playerBottom <= ep.y + ep.height * 0.5 + 8) {
+            player.vy = -6.5;
+            sound.playStomp();
+            particles.emitEnemyPop(ep.x + ep.width / 2, ep.y + ep.height / 2, '#EF4444', 10);
+            particles.addPopup(ep.x + ep.width / 2, ep.y, 'ANT SQUISHED! +100', '#EF4444');
+            onScoreAdd(100);
+            level.enemyProjectiles.splice(i, 1);
+            continue;
+          }
+
+          // Otherwise player hit by projectile
+          if (player.invulnerableTimer <= 0) {
+            if (player.hasShield) {
+              this.popPlayerShield(player, particles);
+              level.enemyProjectiles.splice(i, 1);
+              continue;
+            } else if (onPlayerDeath) {
+              this.killPlayer(player, particles, onPlayerDeath);
+              level.enemyProjectiles.splice(i, 1);
+              continue;
+            }
+          }
+        }
+
+        // Collision with Blaster Bullets
+        if (level.blasterBullets && level.blasterBullets.length > 0) {
+          let destroyed = false;
+          for (let bi = level.blasterBullets.length - 1; bi >= 0; bi--) {
+            const bb = level.blasterBullets[bi];
+            const bbBox = { x: bb.x - bb.radius, y: bb.y - bb.radius, width: bb.radius * 2, height: bb.radius * 2 };
+            if (this.isOverlapping(bbBox, ep)) {
+              sound.playBlasterHit();
+              const popColor = ep.type === 'log' ? '#78350F' : (ep.type === 'stink_cloud' ? '#84CC16' : (ep.type === 'honk_wave' ? '#F97316' : '#EF4444'));
+              const popLabel = ep.type === 'log' ? 'LOG SMASHED! +150' : (ep.type === 'stink_cloud' ? 'FUMES DISPERSED! +120' : (ep.type === 'honk_wave' ? 'HONK CANCELLED! +150' : 'ANT BLASTED! +100'));
+              particles.emitEnemyPop(ep.x + ep.width / 2, ep.y + ep.height / 2, popColor, 12);
+              particles.addPopup(ep.x + ep.width / 2, ep.y, popLabel, '#38BDF8');
+              onScoreAdd(ep.type === 'log' ? 150 : 100);
+              level.blasterBullets.splice(bi, 1);
+              level.enemyProjectiles.splice(i, 1);
+              destroyed = true;
+              break;
+            }
+          }
+          if (destroyed) continue;
+        }
+
+        // Expire off-screen or max life
+        if (ep.life >= ep.maxLife || ep.x < -100 || ep.x > level.worldWidth + 100 || ep.y > level.worldHeight + 100) {
+          level.enemyProjectiles.splice(i, 1);
+        }
+      }
+    }
 
     // 3.5 Dynamic Collectibles Respawn (Mid-air fuel canisters regeneration)
     level.collectibles.forEach(c => {
@@ -399,6 +666,7 @@ export class PhysicsEngine {
           if (enemy.isDead) continue;
           if (this.isOverlapping(jp, enemy)) {
             enemy.isDead = true;
+            if (onEnemyDefeated) onEnemyDefeated(enemy);
             sound.playExplosion();
             particles.emitEnemyPop(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#EF4444', 22);
             particles.emitSparkles(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#38BDF8', 16);
@@ -460,6 +728,7 @@ export class PhysicsEngine {
             b.y <= enemy.y + enemy.height
           ) {
             enemy.isDead = true;
+            if (onEnemyDefeated) onEnemyDefeated(enemy);
             sound.playBlasterHit();
             particles.emitEnemyPop(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#EF4444', 20);
             particles.emitSparkles(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#38BDF8', 18);
@@ -620,7 +889,8 @@ export class PhysicsEngine {
     player: Player, 
     collectibles: Collectible[], 
     particles: ParticleSystem,
-    onScoreAdd: (pts: number) => void
+    onScoreAdd: (pts: number) => void,
+    onAcornCollected?: () => void
   ) {
     collectibles.forEach(c => {
       if (c.collected) return;
@@ -636,6 +906,14 @@ export class PhysicsEngine {
           sound.playGem();
           particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#A855F7', 14);
           particles.addPopup(c.x + c.width / 2, c.y, '+500', '#C084FC');
+        } else if (c.type === 'acorn') {
+          sound.playAcorn();
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#F59E0B', 24);
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#FDE047', 16);
+          particles.addPopup(c.x + c.width / 2, c.y - 14, '🌰 GOLDEN ACORN! +1500', '#F59E0B');
+          if (onAcornCollected) {
+            onAcornCollected();
+          }
         } else if (c.type === 'blaster') {
           player.hasBlaster = true;
           player.blasterAmmo = 30;
@@ -716,7 +994,8 @@ export class PhysicsEngine {
     enemies: Enemy[], 
     particles: ParticleSystem,
     onPlayerDeath: () => void,
-    onScoreAdd: (pts: number) => void
+    onScoreAdd: (pts: number) => void,
+    onEnemyDefeated?: (enemy: Enemy) => void
   ) {
     enemies.forEach(e => {
       if (e.isDead) return;
@@ -726,15 +1005,30 @@ export class PhysicsEngine {
         const enemyTop = e.y + e.height * 0.4;
 
         if (player.vy > 0 && playerBottom <= enemyTop + 10) {
-          // Stomped enemy
+          // If the enemy is currently spiky (like curled hedgehog)
+          if (e.isSpiky) {
+            if (player.hasShield) {
+              this.popPlayerShield(player, particles);
+              player.vy = -7.5;
+            } else if (player.invulnerableTimer <= 0) {
+              sound.playHit();
+              particles.addPopup(e.x + e.width / 2, e.y - 12, 'OUCH! SPIKY QUILLS!', '#F43F5E');
+              this.killPlayer(player, particles, onPlayerDeath);
+            }
+            return;
+          }
+
+          // Stomped enemy!
           e.isDead = true;
           player.vy = -8.5; // Stomp bounce
           player.scaleX = 0.75;
           player.scaleY = 1.35;
           sound.playStomp();
-          particles.emitEnemyPop(e.x + e.width / 2, e.y + e.height / 2, '#10B981', 14);
-          particles.addPopup(e.x + e.width / 2, e.y, '+250', '#34D399');
-          onScoreAdd(250);
+          if (onEnemyDefeated) onEnemyDefeated(e);
+          particles.emitEnemyPop(e.x + e.width / 2, e.y + e.height / 2, '#10B981', 16);
+          const pts = e.type === 'goose' ? 450 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' ? 350 : 250));
+          particles.addPopup(e.x + e.width / 2, e.y, `+${pts}`, '#34D399');
+          onScoreAdd(pts);
         } else {
           // Player hit by enemy
           if (player.invulnerableTimer <= 0) {

@@ -193,6 +193,32 @@ class SoundEngine {
   }
 
   // HURT / DEATH SOUND
+  public playHit() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(70, now + 0.18);
+
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.19);
+    } catch {}
+  }
+
+  // HURT / DEATH SOUND
   public playDeath() {
     if (!this.soundEnabled) return;
     this.initCtx();
@@ -275,6 +301,77 @@ class SoundEngine {
 
         osc.start(t);
         osc.stop(t + dur + 0.02);
+        t += dur * 0.85;
+      });
+    } catch {}
+  }
+
+  // GOLDEN ACORN / SPECIAL BIRD COLLECTIBLE PICKUP
+  public playAcorn() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      // Shimmering 4-note bell chime (F5, A5, C6, F6) with warm resonance
+      const notes = [698.46, 880.00, 1046.50, 1396.91];
+      const now = this.ctx.currentTime;
+
+      notes.forEach((freq, i) => {
+        if (!this.ctx || !this.masterGain) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const start = now + i * 0.045;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.24, start);
+        gain.gain.exponentialRampToValueAtTime(0.005, start + 0.32);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(start);
+        osc.stop(start + 0.35);
+      });
+    } catch {}
+  }
+
+  // NEW STAGE / LEVEL UNLOCKED FANFARE
+  public playLevelUnlock() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const chords = [
+        [523.25, 659.25, 783.99],       // C Major
+        [587.33, 739.99, 880.00],       // D Major
+        [659.25, 830.61, 987.77],       // E Major
+        [783.99, 987.77, 1174.66, 1567.98] // G Major triumphant
+      ];
+      let t = this.ctx.currentTime;
+
+      chords.forEach((chord, step) => {
+        const dur = step === chords.length - 1 ? 0.45 : 0.12;
+        chord.forEach(freq => {
+          if (!this.ctx || !this.masterGain) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + dur);
+
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+
+          osc.start(t);
+          osc.stop(t + dur + 0.02);
+        });
         t += dur * 0.85;
       });
     } catch {}

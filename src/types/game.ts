@@ -43,7 +43,7 @@ export interface Hazard {
   rotation?: number;
 }
 
-export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield';
+export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield' | 'acorn';
 
 export interface Collectible {
   id: string;
@@ -94,7 +94,24 @@ export interface BlasterBullet {
   maxLife: number;
 }
 
-export type EnemyType = 'slime' | 'patroller' | 'flyer';
+export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose';
+
+export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave';
+
+export interface EnemyProjectile {
+  id: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  width: number;
+  height: number;
+  type: EnemyProjectileType;
+  rotation?: number;
+  life: number;
+  maxLife: number;
+  bounces?: number;
+}
 
 export interface Enemy {
   id: string;
@@ -112,6 +129,12 @@ export interface Enemy {
   facing: 1 | -1;
   isDead?: boolean;
   deathTimer?: number;
+  shootTimer?: number;
+  shootCooldown?: number;
+  jumpTimer?: number;
+  state?: 'idle' | 'walking' | 'shooting' | 'rolling' | 'jumping';
+  isSpiky?: boolean;
+  animTimer?: number;
 }
 
 export interface Player {
@@ -264,7 +287,9 @@ export interface LevelData {
   enemies: Enemy[];
   launchedJetpacks?: LaunchedJetpack[];
   blasterBullets?: BlasterBullet[];
+  enemyProjectiles?: EnemyProjectile[];
   startWithJetpack?: boolean;
+  requiredAcorns?: number; // Total golden acorns needed across the game to unlock this stage
   parTime?: number; // target time in seconds
   threeStarScore?: number;
 }
@@ -277,18 +302,26 @@ export interface GameSettings {
   screenShake: boolean;
   touchControls: boolean;
   pixelArtMode: boolean;
+  collectibleStyle?: 'acorn' | 'feather';
+  unlockAllLevels?: boolean;
 }
 
 export interface GameStats {
   score: number;
   coins: number;
   gems: number;
+  acorns: number; // Golden acorns collected in current level run (0 - 3)
+  totalLevelAcorns: number; // Sum of best acorns collected across all levels (0 - 180)
+  levelAcorns: Record<number, number>; // levelId -> acorns collected (0 - 3)
+  highestClearedLevelId: number; // Highest level ID cleared (1 - 60)
   lives: number;
   time: number;
   levelIndex: number;
   levelStars: Record<number, number>; // levelId -> stars (1-3)
   highScores: Record<number, number>; // levelId -> highScore
   deaths: number;
+  enemiesDefeated: Record<string, number>; // enemyType -> count defeated
+  totalEnemiesDefeated: number; // total defeated
   hasJetpack?: boolean;
   jetpackFuel?: number;
   maxJetpackFuel?: number;

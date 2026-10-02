@@ -8,114 +8,87 @@ export { THEMES, ROCKETEER_LEVELS };
 
 const BASE_LEVELS: LevelData[] = [
   // ==========================================
-  // LEVEL 1: GREEN MEADOWS
-  // Long rolling hills, aerial exploration, 2 checkpoints, 8 enemies
+  // LEVEL 1: GREEN MEADOWS - WOODLAND TRAIL RUNNER
+  // Walk on continuous solid ground, leaping over fallen timber hurdles and dodging silly animals!
   // ==========================================
   {
     id: 1,
-    title: '1. Green Meadows',
-    description: 'Equip the Jetpack to soar over chasms and stomp patrollers across the vast rolling hills!',
-    worldWidth: 3200,
+    title: '1. Woodland Trail Runner',
+    description: 'Sprint along continuous solid ground, leap over fallen timber hurdles, and dodge silly creatures like log-throwing beavers and ant-snorting anteaters!',
+    worldWidth: 3300,
     worldHeight: 600,
     theme: THEMES.meadow,
     playerStart: { x: 80, y: 440 },
-    goal: { x: 3080, y: 380, width: 44, height: 60 },
+    goal: { x: 3120, y: 430, width: 44, height: 60 },
     checkpoints: [
-      { x: 1040, y: 260, width: 30, height: 40, activated: false },
-      { x: 2120, y: 280, width: 30, height: 40, activated: false }
+      { x: 1040, y: 480, width: 30, height: 40, activated: false },
+      { x: 2200, y: 480, width: 30, height: 40, activated: false }
     ],
     platforms: [
-      // Section 1: Intro ground & steps (0 - 1000)
-      { id: 'l1_p1', x: 0, y: 520, width: 420, height: 80, type: 'solid' },
-      { id: 'l1_p2', x: 200, y: 420, width: 110, height: 24, type: 'solid' },
-      { id: 'l1_p3', x: 360, y: 340, width: 100, height: 24, type: 'one-way' },
-      { id: 'l1_sky1', x: 480, y: 220, width: 130, height: 20, type: 'solid' },
-      { id: 'l1_p4', x: 480, y: 520, width: 400, height: 80, type: 'solid' },
-      { id: 'l1_spring1', x: 620, y: 504, width: 48, height: 16, type: 'bouncy' },
-      { id: 'l1_p5', x: 740, y: 360, width: 120, height: 24, type: 'solid' },
-      { id: 'l1_sky2', x: 820, y: 180, width: 140, height: 20, type: 'solid' },
+      // Section 1: Continuous Solid Floor (0 - 880) with jump hurdles
+      { id: 'l1_ground1', x: 0, y: 520, width: 880, height: 80, type: 'solid' },
+      { id: 'l1_hurdle1', x: 280, y: 476, width: 44, height: 44, type: 'solid' }, // Fallen timber stump
+      { id: 'l1_hurdle2', x: 560, y: 466, width: 48, height: 54, type: 'solid' }, // Mossy boulder
+      { id: 'l1_spring1', x: 740, y: 504, width: 44, height: 16, type: 'bouncy' },
 
-      // Checkpoint 1 Terrace (1000 - 1180)
-      { id: 'l1_cp1_plat', x: 980, y: 300, width: 160, height: 24, type: 'solid' },
+      // Section 2: Continuous Solid Floor (980 - 2080) with Checkpoint 1 & Beaver dam
+      { id: 'l1_ground2', x: 980, y: 520, width: 1100, height: 80, type: 'solid' },
+      { id: 'l1_hurdle3', x: 1220, y: 476, width: 48, height: 44, type: 'solid' }, // Log barrier
+      { id: 'l1_dam1', x: 1440, y: 464, width: 70, height: 56, type: 'solid' },    // Beaver timber mound
+      { id: 'l1_overpass', x: 1640, y: 420, width: 120, height: 24, type: 'solid' }, // Overhead tree branch
+      { id: 'l1_hurdle4', x: 1940, y: 470, width: 50, height: 50, type: 'solid' }, // Ant mound
 
-      // Section 2: Moving platforms, crumbling bridges & lake chasm (1180 - 2100)
-      { id: 'l1_p6', x: 1020, y: 520, width: 350, height: 80, type: 'solid' },
-      { 
-        id: 'l1_move1', 
-        x: 1240, y: 380, width: 90, height: 20, type: 'solid',
-        startX: 1240, startY: 380, distanceX: 140, distanceY: 0, speed: 1.4, vx: 1.4, vy: 0 
-      },
-      { id: 'l1_crumb1', x: 1460, y: 360, width: 65, height: 20, type: 'crumbling' },
-      { id: 'l1_crumb2', x: 1560, y: 330, width: 65, height: 20, type: 'crumbling' },
-      { id: 'l1_crumb3', x: 1660, y: 300, width: 65, height: 20, type: 'crumbling' },
-      { id: 'l1_p7', x: 1440, y: 520, width: 320, height: 80, type: 'solid' },
-      { id: 'l1_spring2', x: 1800, y: 504, width: 48, height: 16, type: 'bouncy' },
-      { id: 'l1_sky3', x: 1780, y: 220, width: 130, height: 20, type: 'solid' },
-      { id: 'l1_p8', x: 1880, y: 380, width: 150, height: 24, type: 'one-way' },
-
-      // Checkpoint 2 Plateau (2060 - 2240)
-      { id: 'l1_cp2_plat', x: 2060, y: 320, width: 180, height: 24, type: 'solid' },
-
-      // Section 3: High Windmill Ascent to Finish (2240 - 3200)
-      { id: 'l1_p9', x: 2180, y: 520, width: 400, height: 80, type: 'solid' },
-      { 
-        id: 'l1_move2', 
-        x: 2320, y: 400, width: 90, height: 20, type: 'solid',
-        startX: 2320, startY: 400, distanceX: 0, distanceY: -160, speed: 1.5, vx: 0, vy: -1.5 
-      },
-      { id: 'l1_p10', x: 2480, y: 260, width: 120, height: 24, type: 'solid' },
-      { id: 'l1_p11', x: 2660, y: 340, width: 110, height: 24, type: 'one-way' },
-      { id: 'l1_crumb4', x: 2820, y: 400, width: 70, height: 20, type: 'crumbling' },
-      { id: 'l1_p12', x: 2660, y: 520, width: 540, height: 80, type: 'solid' },
-      { id: 'l1_p13', x: 2950, y: 440, width: 230, height: 30, type: 'solid' }
+      // Section 3: Continuous Solid Floor (2160 - 3300) with Checkpoint 2 & Goose sprint
+      { id: 'l1_ground3', x: 2160, y: 520, width: 1140, height: 80, type: 'solid' },
+      { id: 'l1_hurdle5', x: 2420, y: 466, width: 48, height: 54, type: 'solid' }, // Rock hurdle
+      { id: 'l1_hurdle6', x: 2680, y: 470, width: 44, height: 50, type: 'solid' }, // Woodland gate
+      { id: 'l1_finish_base', x: 3040, y: 490, width: 220, height: 110, type: 'solid' }
     ],
     hazards: [
-      { id: 'l1_h1', x: 420, y: 580, width: 60, height: 20, type: 'spike' },
-      { id: 'l1_h2', x: 880, y: 580, width: 140, height: 20, type: 'spike' },
-      { id: 'l1_h3', x: 1370, y: 580, width: 70, height: 20, type: 'spike' },
-      { id: 'l1_h4', x: 1760, y: 580, width: 120, height: 20, type: 'spike' },
-      { id: 'l1_h5', x: 2580, y: 580, width: 80, height: 20, type: 'spike' }
+      { id: 'l1_thorn1', x: 420, y: 506, width: 36, height: 14, type: 'spike' },
+      { id: 'l1_pit1', x: 880, y: 580, width: 100, height: 20, type: 'spike' },
+      { id: 'l1_thorn2', x: 1820, y: 506, width: 40, height: 14, type: 'spike' },
+      { id: 'l1_pit2', x: 2080, y: 580, width: 80, height: 20, type: 'spike' }
     ],
     collectibles: [
-      // Jetpacks & Fuel
-      { id: 'l1_jetpack', x: 240, y: 380, width: 28, height: 28, type: 'jetpack', value: 1000 },
-      { id: 'l1_fuel1', x: 860, y: 140, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
-      { id: 'l1_fuel2', x: 1820, y: 180, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
-      { id: 'l1_fuel3', x: 2520, y: 220, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
+      // Jetpacks & Boosters
+      { id: 'l1_jetpack', x: 200, y: 470, width: 28, height: 28, type: 'jetpack', value: 1000 },
+      { id: 'l1_fuel1', x: 1000, y: 470, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
+      { id: 'l1_fuel2', x: 2260, y: 470, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
 
-      // Section 1 items
+      // Section 1 Coins & Gems
       { id: 'l1_c1', x: 160, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c2', x: 240, y: 360, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c3', x: 530, y: 180, width: 24, height: 24, type: 'gem', value: 500 },
-      { id: 'l1_c4', x: 700, y: 220, width: 24, height: 24, type: 'gem', value: 500 },
-      { id: 'l1_c5', x: 780, y: 320, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_c2', x: 280, y: 430, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_c3', x: 560, y: 420, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_c4', x: 740, y: 380, width: 20, height: 20, type: 'coin', value: 100 },
 
-      // Section 2 items
-      { id: 'l1_c6', x: 1120, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c7', x: 1300, y: 330, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c8', x: 1580, y: 280, width: 24, height: 24, type: 'gem', value: 500 },
-      { id: 'l1_c9', x: 1700, y: 250, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c10', x: 1920, y: 330, width: 20, height: 20, type: 'coin', value: 100 },
+      // Section 2 Coins & Gems
+      { id: 'l1_c5', x: 1120, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_c6', x: 1220, y: 430, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_c7', x: 1475, y: 410, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_c8', x: 1640, y: 360, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_c9', x: 1940, y: 420, width: 20, height: 20, type: 'coin', value: 100 },
 
-      // Section 3 items
-      { id: 'l1_c11', x: 2240, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c12', x: 2360, y: 240, width: 24, height: 24, type: 'gem', value: 500 },
-      { id: 'l1_c13', x: 2700, y: 290, width: 20, height: 20, type: 'coin', value: 100 },
-      { id: 'l1_c14', x: 2850, y: 350, width: 24, height: 24, type: 'gem', value: 500 },
-      { id: 'l1_c15', x: 3000, y: 400, width: 20, height: 20, type: 'coin', value: 100 }
+      // Section 3 Coins & Gems
+      { id: 'l1_c10', x: 2340, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_c11', x: 2420, y: 420, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_c12', x: 2580, y: 440, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_c13', x: 2880, y: 470, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_c14', x: 3080, y: 440, width: 20, height: 20, type: 'coin', value: 100 }
     ],
     enemies: [
-      { id: 'l1_e1', x: 540, y: 492, width: 28, height: 24, type: 'slime', vx: 1.1, vy: 0, minX: 490, maxX: 750, facing: 1 },
-      { id: 'l1_e2', x: 760, y: 332, width: 28, height: 24, type: 'slime', vx: 1.0, vy: 0, minX: 740, maxX: 850, facing: 1 },
-      { id: 'l1_e3', x: 1100, y: 492, width: 28, height: 24, type: 'slime', vx: 1.2, vy: 0, minX: 1040, maxX: 1320, facing: -1 },
-      { id: 'l1_e4', x: 1350, y: 220, width: 26, height: 22, type: 'flyer', vx: 1.5, vy: 0, minX: 1260, maxX: 1520, facing: 1 },
-      { id: 'l1_e5', x: 1520, y: 492, width: 28, height: 24, type: 'slime', vx: 1.3, vy: 0, minX: 1450, maxX: 1730, facing: 1 },
-      { id: 'l1_e6', x: 1950, y: 200, width: 26, height: 22, type: 'flyer', vx: 1.6, vy: 0, minX: 1820, maxX: 2100, facing: -1 },
-      { id: 'l1_e7', x: 2280, y: 492, width: 28, height: 24, type: 'slime', vx: 1.4, vy: 0, minX: 2190, maxX: 2500, facing: 1 },
-      { id: 'l1_e8', x: 2720, y: 250, width: 26, height: 22, type: 'flyer', vx: 1.8, vy: 0, minX: 2580, maxX: 2850, facing: 1 }
+      { id: 'l1_e1', x: 440, y: 492, width: 30, height: 26, type: 'anteater', vx: 0.9, vy: 0, minX: 360, maxX: 520, facing: 1 },
+      { id: 'l1_e2', x: 780, y: 494, width: 26, height: 24, type: 'frog', vx: 0.8, vy: 0, minX: 720, maxX: 850, facing: 1 },
+      { id: 'l1_e3', x: 1160, y: 390, width: 26, height: 22, type: 'pigeon', vx: 1.5, vy: 0, minX: 1060, maxX: 1260, facing: -1 },
+      { id: 'l1_e4', x: 1460, y: 436, width: 30, height: 26, type: 'beaver', vx: 0.6, vy: 0, minX: 1440, maxX: 1500, facing: 1 },
+      { id: 'l1_e5', x: 1620, y: 494, width: 26, height: 24, type: 'hedgehog', vx: 1.0, vy: 0, minX: 1560, maxX: 1720, facing: 1 },
+      { id: 'l1_e6', x: 1880, y: 492, width: 30, height: 26, type: 'anteater', vx: 0.8, vy: 0, minX: 1840, maxX: 1940, facing: 1 },
+      { id: 'l1_e7', x: 2360, y: 494, width: 30, height: 24, type: 'skunk', vx: 1.1, vy: 0, minX: 2300, maxX: 2420, facing: -1 },
+      { id: 'l1_e8', x: 2780, y: 492, width: 30, height: 26, type: 'goose', vx: 2.6, vy: 0, minX: 2620, maxX: 2980, facing: -1 },
+      { id: 'l1_e9', x: 2980, y: 464, width: 26, height: 24, type: 'frog', vx: 0.9, vy: 0, minX: 2920, maxX: 3040, facing: 1 }
     ],
-    parTime: 48,
-    threeStarScore: 3600
+    parTime: 45,
+    threeStarScore: 4200
   },
 
   // ==========================================
@@ -208,16 +181,16 @@ const BASE_LEVELS: LevelData[] = [
       { id: 'l2_c11', x: 3380, y: 240, width: 24, height: 24, type: 'gem', value: 500 }
     ],
     enemies: [
-      { id: 'l2_e1', x: 880, y: 342, width: 28, height: 24, type: 'slime', vx: 1.2, vy: 0, minX: 840, maxX: 1040, facing: 1 },
-      { id: 'l2_e2', x: 550, y: 260, width: 26, height: 22, type: 'flyer', vx: 1.5, vy: 0, minX: 420, maxX: 680, facing: 1 },
-      { id: 'l2_e3', x: 1400, y: 252, width: 28, height: 24, type: 'slime', vx: 1.1, vy: 0, minX: 1380, maxX: 1480, facing: 1 },
+      { id: 'l2_e1', x: 880, y: 342, width: 28, height: 24, type: 'hedgehog', vx: 1.1, vy: 0, minX: 840, maxX: 1040, facing: 1 },
+      { id: 'l2_e2', x: 550, y: 260, width: 26, height: 22, type: 'pigeon', vx: 1.5, vy: 0, minX: 420, maxX: 680, facing: 1 },
+      { id: 'l2_e3', x: 1400, y: 252, width: 28, height: 24, type: 'frog', vx: 1.1, vy: 0, minX: 1380, maxX: 1480, facing: 1 },
       { id: 'l2_e4', x: 1650, y: 220, width: 26, height: 22, type: 'flyer', vx: 1.6, vy: 0, minX: 1520, maxX: 1800, facing: -1 },
-      { id: 'l2_e5', x: 1760, y: 312, width: 28, height: 24, type: 'slime', vx: 1.3, vy: 0, minX: 1710, maxX: 1880, facing: 1 },
-      { id: 'l2_e6', x: 2260, y: 392, width: 28, height: 24, type: 'slime', vx: 1.2, vy: 0, minX: 2220, maxX: 2360, facing: -1 },
+      { id: 'l2_e5', x: 1760, y: 312, width: 28, height: 24, type: 'beaver', vx: 0.8, vy: 0, minX: 1710, maxX: 1880, facing: 1 },
+      { id: 'l2_e6', x: 2260, y: 392, width: 28, height: 24, type: 'anteater', vx: 1.0, vy: 0, minX: 2220, maxX: 2360, facing: -1 },
       { id: 'l2_e7', x: 2150, y: 220, width: 26, height: 22, type: 'flyer', vx: 1.7, vy: 0, minX: 2020, maxX: 2320, facing: 1 },
-      { id: 'l2_e8', x: 2720, y: 252, width: 28, height: 24, type: 'slime', vx: 1.3, vy: 0, minX: 2700, maxX: 2820, facing: 1 },
+      { id: 'l2_e8', x: 2720, y: 252, width: 28, height: 24, type: 'skunk', vx: 1.1, vy: 0, minX: 2700, maxX: 2820, facing: 1 },
       { id: 'l2_e9', x: 2950, y: 190, width: 26, height: 22, type: 'flyer', vx: 1.8, vy: 0, minX: 2820, maxX: 3120, facing: -1 },
-      { id: 'l2_e10', x: 3340, y: 272, width: 28, height: 24, type: 'slime', vx: 1.4, vy: 0, minX: 3280, maxX: 3450, facing: 1 }
+      { id: 'l2_e10', x: 3340, y: 272, width: 28, height: 24, type: 'goose', vx: 2.5, vy: 0, minX: 3280, maxX: 3450, facing: 1 }
     ],
     parTime: 55,
     threeStarScore: 4500

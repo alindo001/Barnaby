@@ -1,0 +1,207 @@
+import { EnemyType } from '../types/game';
+
+export interface EnemyCompendiumEntry {
+  type: EnemyType;
+  name: string;
+  species: string;
+  tagline: string;
+  description: string;
+  threatLevel: 'Gentle' | 'Tricky' | 'Menacing' | 'Chaotic' | 'Extreme';
+  threatStars: number;
+  attackName: string;
+  attackDescription: string;
+  weakness: string;
+  habitat: string;
+  points: number;
+  emoji: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+}
+
+export const ENEMY_COMPENDIUM: EnemyCompendiumEntry[] = [
+  {
+    type: 'anteater',
+    name: 'Snouty the Anteater',
+    species: 'Myrmecophaga Ridiculus',
+    tagline: 'Rapid-fire snout artillery with zero chill',
+    description: 'Equipped with a turbo-charged vacuum snout, this anteater stockpiles angry red ants and snorts them across the floor like marching machine-gun pellets. Never look down the barrel of its snout!',
+    threatLevel: 'Menacing',
+    threatStars: 4,
+    attackName: '🐜 Marching Ant Spitfire',
+    attackDescription: 'Pauses, takes a deep breath, and fires fast-scurrying ant projectiles along the ground. Jump over the ants or stomp them for bonus points!',
+    weakness: 'Vulnerable to stomping from above, laser blaster bolts, or high-speed jetpack rockets.',
+    habitat: 'Ant Hill Highway, Woodland Meadows, Savannah Trails',
+    points: 350,
+    emoji: '🐜',
+    color: '#F59E0B',
+    bgColor: 'bg-amber-950/40',
+    borderColor: 'border-amber-500/50'
+  },
+  {
+    type: 'beaver',
+    name: 'Chomper the Timber-Chucker',
+    species: 'Castor Lumberjackus',
+    tagline: 'Pound for pound, the most aggressive arborist in the forest',
+    description: 'Wearing a tiny safety hardhat, Chomper believes all open spaces should be dammed up immediately. When Barnaby draws near, Chomper hurls heavy tumbling logs that bounce and roll down hills.',
+    threatLevel: 'Chaotic',
+    threatStars: 4,
+    attackName: '🪵 Bouncing Log Barrel Toss',
+    attackDescription: 'Chucks heavy wooden logs that roll and tumble along the floor. Time your jumps carefully to hurdle over the rolling timber!',
+    weakness: 'Hop on his hardhat with a solid stomp, blast with plasma, or blow up with launched jetpacks.',
+    habitat: 'Beaver Creek, Forest Riverbanks, Timber Trails',
+    points: 400,
+    emoji: '🦫',
+    color: '#D97706',
+    bgColor: 'bg-amber-900/40',
+    borderColor: 'border-amber-600/50'
+  },
+  {
+    type: 'hedgehog',
+    name: 'Spikey Quill-Ball',
+    species: 'Erinaceus Pricklus',
+    tagline: 'Looks cuddly until it turns into a lethal pin-cushion',
+    description: 'A cheerful critter that loves snuffling through grass. However, as soon as Barnaby approaches, Spikey curls into an impenetrable spinning ball of razor-sharp quills!',
+    threatLevel: 'Tricky',
+    threatStars: 3,
+    attackName: '🦔 Razor Quill Curl',
+    attackDescription: 'Curls into a spiky ball when Barnaby draws near. Stomping while curled hurts like landing on metal spikes! Wait for it to uncurl or blast from a distance.',
+    weakness: 'Plasma Blaster laser bolts, Rocket recoil bombs, or stomping ONLY while uncurled.',
+    habitat: 'Meadow Trails, Hedge Corridors, Whispering Woods',
+    points: 300,
+    emoji: '🦔',
+    color: '#A855F7',
+    bgColor: 'bg-purple-950/40',
+    borderColor: 'border-purple-500/50'
+  },
+  {
+    type: 'frog',
+    name: 'Sir Ribbit-Hop',
+    species: 'Rana Hyper-Bouncia',
+    tagline: 'Defies gravity with absurd spring-loaded thighs',
+    description: 'This boastful green hopper loves showing off its colossal leap. It squishes down low before shooting high into the stratosphere, ribbiting with glee right over Barnaby’s head.',
+    threatLevel: 'Tricky',
+    threatStars: 2,
+    attackName: '🐸 Skyward Super-Hop',
+    attackDescription: 'Crouches and launches into high parabolic leaps, soaring over ground obstacles and trying to land on unwary heroes.',
+    weakness: 'Catch it right at the apex of its hop with a stomp, or blast it out of the air with laser fire.',
+    habitat: 'Lilypad Swamps, Meadow Creeks, Muddy Hollows',
+    points: 250,
+    emoji: '🐸',
+    color: '#10B981',
+    bgColor: 'bg-emerald-950/40',
+    borderColor: 'border-emerald-500/50'
+  },
+  {
+    type: 'pigeon',
+    name: 'Dapper City Pigeon',
+    species: 'Columba Fancy-Pants',
+    tagline: 'Always dressed to impress, constantly stealing French fries',
+    description: 'Sporting a stylish miniature top-hat and an iridescent purple scarf, this snooty city bird patrols the skies looking for snacks to swoop down upon.',
+    threatLevel: 'Tricky',
+    threatStars: 3,
+    attackName: '🐦 Swooping Dive-Bomb',
+    attackDescription: 'Flaps calmly at mid-altitude before swooping down towards Barnaby in a steep diagonal dive-bomb arc.',
+    weakness: 'Easily defeated with a mid-air jetpack stomp or a clean plasma laser shot.',
+    habitat: 'Cloudy Rooftops, Windmill Peaks, Stratosphere Gates',
+    points: 300,
+    emoji: '🐦',
+    color: '#38BDF8',
+    bgColor: 'bg-sky-950/40',
+    borderColor: 'border-sky-500/50'
+  },
+  {
+    type: 'slime',
+    name: 'Gooey Slime Blob',
+    species: 'Mucus Classicus',
+    tagline: 'The ever-reliable squishy green nuisance',
+    description: 'A wobbly, cheerful ball of radioactive gelatin. It patrols back and forth without a single thought behind its googly eyes.',
+    threatLevel: 'Gentle',
+    threatStars: 1,
+    attackName: '🟢 Mindless Squish-Patrol',
+    attackDescription: 'Slides along platforms and trails. Gentle but hazardous on direct side contact.',
+    weakness: 'The easiest target in the galaxy—stomp, shoot, or slide through with a shield.',
+    habitat: 'All Classic Levels, Underground Caves, Green Hills',
+    points: 250,
+    emoji: '🟢',
+    color: '#34D399',
+    bgColor: 'bg-emerald-950/40',
+    borderColor: 'border-emerald-500/40'
+  },
+  {
+    type: 'flyer',
+    name: 'Robo-Hornet Drone',
+    species: 'Mechanica Stinger-V3',
+    tagline: 'High-altitude robotic patroller with laser-etched wings',
+    description: 'A buzzing mechanized security flyer deployed across heavy tech zones and cosmic flight corridors to deter high-flying birds.',
+    threatLevel: 'Menacing',
+    threatStars: 4,
+    attackName: '⚡ High-Altitude Aerial Patrol',
+    attackDescription: 'Guards vertical flight corridors with rapid fluttering wings and proximity buzzsaws.',
+    weakness: 'Stomp on its metal visor from above or shoot it down with plasma blaster bolts.',
+    habitat: 'Rocketeer Stages, Jetpack Heavy Zones, Sky Corridors',
+    points: 350,
+    emoji: '🐝',
+    color: '#8B5CF6',
+    bgColor: 'bg-violet-950/40',
+    borderColor: 'border-violet-500/50'
+  },
+  {
+    type: 'skunk',
+    name: 'Stinky Sheldon the Skunk',
+    species: 'Mephitis Comic-Fumis',
+    tagline: 'Cute fluffy tail, apocalyptic aerosol defense system',
+    description: 'Sheldon gets startled easily. When Barnaby jogs nearby, Sheldon raises his bushy tail and lets loose comical puffs of green giggly stink-gas that float through the air.',
+    threatLevel: 'Tricky',
+    threatStars: 3,
+    attackName: '🦨 Giggle-Gas Stink Cloud',
+    attackDescription: 'Sprays rolling green cloud puffs behind him that linger in the air. Barnaby will cough and lose balance if he touches the cloud without a bubble shield!',
+    weakness: 'Approach from above and stomp before he raises his tail, or snipe from afar with the plasma blaster.',
+    habitat: 'Pine Woods, Forest Glades, Meadow Edge',
+    points: 300,
+    emoji: '🦨',
+    color: '#64748B',
+    bgColor: 'bg-slate-900/50',
+    borderColor: 'border-slate-400/50'
+  },
+  {
+    type: 'goose',
+    name: 'Honkers the Menacing Goose',
+    species: 'Branta Unhinged-Aggressivus',
+    tagline: 'Peace was never an option',
+    description: 'Armed with a ferocious hiss and an ear-splitting honk, this wild goose charges down trails at blistering speeds, wings flapping wide, daring anyone to cross its path.',
+    threatLevel: 'Extreme',
+    threatStars: 5,
+    attackName: '🪿 Sonic HONK! Rush',
+    attackDescription: 'Stretches its long neck forward and sprints at high speed, occasionally unleashing a sonic shockwave ring that knocks Barnaby back.',
+    weakness: 'Timing a clean jump to stomp directly on its head right as it dashes underneath you, or blasting it with rocket fireworks.',
+    habitat: 'Park Trails, Lakeside Boardwalks, Golf Course Greens',
+    points: 450,
+    emoji: '🪿',
+    color: '#F97316',
+    bgColor: 'bg-orange-950/40',
+    borderColor: 'border-orange-500/50'
+  },
+  {
+    type: 'patroller',
+    name: 'Clockwork Beaver Bot',
+    species: 'Automatum Castor-Mech',
+    tagline: 'A winding mechanical woodcutter with sharp brass gears',
+    description: 'Built by eccentric forest engineers, this brass automaton patrols rigid sentry routes with spinning bronze gear-teeth.',
+    threatLevel: 'Gentle',
+    threatStars: 2,
+    attackName: '⚙️ Brass Gear March',
+    attackDescription: 'Marches back and forth with steady mechanical precision, turning at ledge edges.',
+    weakness: 'A single solid stomp on the winding key on its back will dislodge the spring!',
+    habitat: 'Mechanical Dams, Timber Mills, Clockwork Outposts',
+    points: 200,
+    emoji: '⚙️',
+    color: '#EAB308',
+    bgColor: 'bg-amber-950/40',
+    borderColor: 'border-amber-500/40'
+  }
+];
+
+export function getEnemyEntry(type: EnemyType): EnemyCompendiumEntry {
+  return ENEMY_COMPENDIUM.find(e => e.type === type) || ENEMY_COMPENDIUM[0];
+}

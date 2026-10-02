@@ -7,7 +7,8 @@ import {
   GameStats, 
   GameSettings,
   LaunchDirection,
-  CharacterConfig
+  CharacterConfig,
+  Enemy
 } from '../types/game';
 import { INITIAL_LEVELS } from './levels';
 import { PhysicsEngine } from './physics';
@@ -15,6 +16,7 @@ import { ParticleSystem } from './particles';
 import { GameRenderer } from './renderer';
 import { sound } from './audio';
 import { loadCharacterConfig, saveCharacterConfig } from './characters';
+import { enrichLevelWithAcorns, checkLevelUnlockStatus } from './acorns';
 
 export class GameEngine {
   private canvas: HTMLCanvasElement;
@@ -43,12 +45,18 @@ export class GameEngine {
     score: 0,
     coins: 0,
     gems: 0,
+    acorns: 0,
+    totalLevelAcorns: 0,
+    levelAcorns: {},
+    highestClearedLevelId: 0,
     lives: 3,
     time: 0,
     levelIndex: 0,
     levelStars: {},
     highScores: {},
-    deaths: 0
+    deaths: 0,
+    enemiesDefeated: {},
+    totalEnemiesDefeated: 0
   };
 
   public settings: GameSettings = {
@@ -58,7 +66,9 @@ export class GameEngine {
     showFps: false,
     screenShake: true,
     touchControls: false,
-    pixelArtMode: false
+    pixelArtMode: false,
+    collectibleStyle: 'acorn',
+    unlockAllLevels: false
   };
 
   public characterConfig: CharacterConfig = loadCharacterConfig();
@@ -75,7 +85,14 @@ export class GameEngine {
     this.physics = new PhysicsEngine();
     this.particles = new ParticleSystem();
 
+    // Enrich all levels with 3 Golden Acorns and calculated unlock requirements
+    this.levels = INITIAL_LEVELS.map(lvl => enrichLevelWithAcorns(this.cloneLevel(lvl)));
+
     this.loadProgress();
+
+    if (this.settings.collectibleStyle) {
+      this.renderer.collectibleStyle = this.settings.collectibleStyle;
+    }
 
     this.currentLevel = this.cloneLevel(this.levels[0]);
     this.player = this.createPlayer(this.currentLevel.playerStart.x, this.currentLevel.playerStart.y);
@@ -91,6 +108,23 @@ export class GameEngine {
     this.setupKeyboardListeners();
   }
 
+  public recalculateTotalAcorns() {
+    this.stats.totalLevelAcorns = Object.values(this.stats.levelAcorns || {}).reduce((acc, count) => acc + (count || 0), 0);
+  }
+
+  public setCollectibleStyle(style: 'acorn' | 'feather') {
+    this.settings.collectibleStyle = style;
+    this.renderer.collectibleStyle = style;
+    this.saveProgress();
+    this.notifyState();
+  }
+
+  public setUnlockAllLevels(enabled: boolean) {
+    this.settings.unlockAllLevels = enabled;
+    this.saveProgress();
+    this.notifyState();
+  }
+
   private loadProgress() {
     try {
       const saved = localStorage.getItem('platformer_game_progress');
@@ -98,15 +132,36 @@ export class GameEngine {
         const parsed = JSON.parse(saved);
         if (parsed.levelStars) this.stats.levelStars = parsed.levelStars;
         if (parsed.highScores) this.stats.highScores = parsed.highScores;
+        if (parsed.levelAcorns) this.stats.levelAcorns = parsed.levelAcorns;
+        if (typeof parsed.highestClearedLevelId === 'number') this.stats.highestClearedLevelId = parsed.highestClearedLevelId;
+        if (parsed.collectibleStyle === 'acorn' || parsed.collectibleStyle === 'feather') {
+          this.settings.collectibleStyle = parsed.collectibleStyle;
+        }
+        if (typeof parsed.unlockAllLevels === 'boolean') {
+          this.settings.unlockAllLevels = parsed.unlockAllLevels;
+        }
+        if (parsed.enemiesDefeated && typeof parsed.enemiesDefeated === 'object') {
+          this.stats.enemiesDefeated = parsed.enemiesDefeated;
+        }
+        if (typeof parsed.totalEnemiesDefeated === 'number') {
+          this.stats.totalEnemiesDefeated = parsed.totalEnemiesDefeated;
+        }
       }
     } catch {}
+    this.recalculateTotalAcorns();
   }
 
   private saveProgress() {
     try {
       localStorage.setItem('platformer_game_progress', JSON.stringify({
         levelStars: this.stats.levelStars,
-        highScores: this.stats.highScores
+        highScores: this.stats.highScores,
+        levelAcorns: this.stats.levelAcorns,
+        highestClearedLevelId: this.stats.highestClearedLevelId,
+        collectibleStyle: this.settings.collectibleStyle,
+        unlockAllLevels: this.settings.unlockAllLevels,
+        enemiesDefeated: this.stats.enemiesDefeated,
+        totalEnemiesDefeated: this.stats.totalEnemiesDefeated
       }));
     } catch {}
   }
@@ -221,6 +276,7 @@ export class GameEngine {
     this.stats.score = 0;
     this.stats.coins = 0;
     this.stats.gems = 0;
+    this.stats.acorns = 0;
     this.stats.hasActiveCheckpoint = !!this.lastCheckpoint;
 
     this.camera.x = Math.max(0, Math.min(this.currentLevel.worldWidth - this.canvas.width, this.player.x - this.canvas.width / 2));
@@ -338,7 +394,18 @@ export class GameEngine {
   public nextLevel() {
     this.lastCheckpoint = null;
     if (this.currentLevelIndex + 1 < this.levels.length) {
-      this.startLevel(this.currentLevelIndex + 1, true);
+      const nextLvl = this.levels[this.currentLevelIndex + 1];
+      const unlockStatus = checkLevelUnlockStatus(
+        nextLvl.id,
+        this.stats.totalLevelAcorns,
+        this.stats.highestClearedLevelId,
+        this.settings.unlockAllLevels
+      );
+      if (unlockStatus.unlocked) {
+        this.startLevel(this.currentLevelIndex + 1, true);
+      } else {
+        this.notifyState();
+      }
     } else {
       this.gameState = 'VICTORY';
       this.notifyState();
@@ -383,6 +450,30 @@ export class GameEngine {
     sound.playWin();
     this.particles.emitConfetti(this.currentLevel.goal.x + 20, this.currentLevel.goal.y + 20, 50);
 
+    // Record highest cleared level for linear unlock progression
+    this.stats.highestClearedLevelId = Math.max(this.stats.highestClearedLevelId || 0, this.currentLevel.id);
+
+    // Record best acorns earned in this level
+    const currentRunAcorns = this.stats.acorns || 0;
+    const currentBestAcorns = this.stats.levelAcorns[this.currentLevel.id] || 0;
+    this.stats.levelAcorns[this.currentLevel.id] = Math.max(currentBestAcorns, currentRunAcorns);
+    this.recalculateTotalAcorns();
+
+    // Check if the next level was just unlocked by this run!
+    if (this.currentLevelIndex + 1 < this.levels.length) {
+      const nextLvl = this.levels[this.currentLevelIndex + 1];
+      const unlockStatus = checkLevelUnlockStatus(
+        nextLvl.id,
+        this.stats.totalLevelAcorns,
+        this.stats.highestClearedLevelId,
+        this.settings.unlockAllLevels
+      );
+      if (unlockStatus.unlocked) {
+        // Triumphant fanfare
+        setTimeout(() => sound.playLevelUnlock(), 600);
+      }
+    }
+
     // Calculate Star Rating (1 to 3 stars)
     const timeBonus = Math.max(0, Math.floor((60 - this.stats.time) * 20));
     const totalScore = this.stats.score + timeBonus;
@@ -401,6 +492,37 @@ export class GameEngine {
 
     const currentHigh = this.stats.highScores[this.currentLevel.id] || 0;
     this.stats.highScores[this.currentLevel.id] = Math.max(currentHigh, totalScore);
+
+    this.saveProgress();
+    this.notifyState();
+  }
+
+  private handleAcornCollected() {
+    this.stats.acorns = Math.min(3, (this.stats.acorns || 0) + 1);
+    const prevBest = this.stats.levelAcorns[this.currentLevel.id] || 0;
+    if (this.stats.acorns > prevBest) {
+      this.stats.levelAcorns[this.currentLevel.id] = this.stats.acorns;
+      this.recalculateTotalAcorns();
+      this.saveProgress();
+    }
+    this.notifyState();
+  }
+
+  public handleEnemyDefeated(enemy: Enemy) {
+    if (!this.stats.enemiesDefeated) {
+      this.stats.enemiesDefeated = {};
+    }
+    const currentCount = this.stats.enemiesDefeated[enemy.type] || 0;
+    this.stats.enemiesDefeated[enemy.type] = currentCount + 1;
+    this.stats.totalEnemiesDefeated = (this.stats.totalEnemiesDefeated || 0) + 1;
+
+    // Trigger funny popup or milestone badge
+    const count = this.stats.enemiesDefeated[enemy.type];
+    if (count === 1) {
+      this.particles.addPopup(enemy.x + enemy.width / 2, enemy.y - 24, 'FIRST DEFEAT! 🏆', '#F59E0B');
+    } else if (count % 10 === 0) {
+      this.particles.addPopup(enemy.x + enemy.width / 2, enemy.y - 24, `${count} DEFEATED! ⭐`, '#F59E0B');
+    }
 
     this.saveProgress();
     this.notifyState();
@@ -454,7 +576,9 @@ export class GameEngine {
             blasterAmmo: this.player ? this.player.blasterAmmo : 0
           };
           this.notifyState();
-        }
+        },
+        () => this.handleAcornCollected(),
+        (enemy) => this.handleEnemyDefeated(enemy)
       );
 
       // Decrement blaster cooldown

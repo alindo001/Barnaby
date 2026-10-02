@@ -29,6 +29,7 @@ interface TitleScreenProps {
   onOpenHelp: () => void;
   onOpenCharacterSelect?: () => void;
   onOpenEditor?: () => void;
+  onOpenEnemyGallery?: () => void;
   onToggleSound: () => void;
 }
 
@@ -42,6 +43,7 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
   onOpenHelp,
   onOpenCharacterSelect,
   onOpenEditor,
+  onOpenEnemyGallery,
   onToggleSound
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -272,17 +274,45 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
             <span>How to Play & Controls</span>
           </button>
 
-          {onOpenEditor && (
+          {onOpenEnemyGallery ? (
             <button
-              id="btn-menu-sandbox"
-              onClick={onOpenEditor}
-              className="py-2.5 px-4 bg-purple-950/30 hover:bg-purple-900/40 active:scale-[0.98] text-purple-300 hover:text-purple-100 font-semibold text-xs sm:text-sm rounded-xl border border-purple-800/40 flex items-center justify-center gap-2 transition-all"
+              id="btn-menu-enemy-gallery"
+              onClick={onOpenEnemyGallery}
+              className="py-2.5 px-4 bg-amber-950/40 hover:bg-amber-900/50 active:scale-[0.98] text-amber-200 hover:text-white font-bold text-xs sm:text-sm rounded-xl border border-amber-600/40 flex items-center justify-between gap-2 transition-all shadow-md group cursor-pointer"
             >
-              <Hammer size={15} className="text-purple-400" />
-              <span>Level Sandbox Builder</span>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🐾</span>
+                <span>Critter Codex</span>
+              </div>
+              <span className="px-2 py-0.5 bg-amber-950/90 text-amber-300 font-mono text-[11px] rounded-md border border-amber-500/40">
+                {stats.totalEnemiesDefeated || 0} Defeated
+              </span>
             </button>
+          ) : (
+            onOpenEditor && (
+              <button
+                id="btn-menu-sandbox"
+                onClick={onOpenEditor}
+                className="py-2.5 px-4 bg-purple-950/30 hover:bg-purple-900/40 active:scale-[0.98] text-purple-300 hover:text-purple-100 font-semibold text-xs sm:text-sm rounded-xl border border-purple-800/40 flex items-center justify-center gap-2 transition-all"
+              >
+                <Hammer size={15} className="text-purple-400" />
+                <span>Level Sandbox Builder</span>
+              </button>
+            )
           )}
         </div>
+
+        {/* Row 3: Level Sandbox Builder if both are present */}
+        {onOpenEnemyGallery && onOpenEditor && (
+          <button
+            id="btn-menu-sandbox"
+            onClick={onOpenEditor}
+            className="w-full py-2.5 px-4 bg-purple-950/30 hover:bg-purple-900/40 active:scale-[0.98] text-purple-300 hover:text-purple-100 font-semibold text-xs sm:text-sm rounded-xl border border-purple-800/40 flex items-center justify-center gap-2 transition-all"
+          >
+            <Hammer size={15} className="text-purple-400" />
+            <span>Level Sandbox & Tile Builder</span>
+          </button>
+        )}
       </div>
 
       {/* Bottom Progress & Stats Showcase */}
@@ -293,6 +323,21 @@ export const TitleScreen: React.FC<TitleScreenProps> = ({
             <span>{totalStars} / {maxPossibleStars}</span>
             <span className="text-[10px] text-slate-400 font-normal">Stars</span>
           </div>
+
+          <div className="flex items-center gap-1.5 text-amber-300 font-semibold" title="Total Golden Acorns collected across all levels">
+            <span>🌰</span>
+            <span>{stats.totalLevelAcorns || 0} / 180</span>
+            <span className="text-[10px] text-slate-400 font-normal">Acorns</span>
+          </div>
+
+          <button
+            onClick={onOpenEnemyGallery}
+            className="flex items-center gap-1.5 text-red-300 font-semibold hover:text-red-200 transition-colors cursor-pointer"
+            title="Critters Defeated (Click to open Critter Codex!)"
+          >
+            <span>🐾</span>
+            <span>{stats.totalEnemiesDefeated || 0} Defeated</span>
+          </button>
 
           {stats.score > 0 && (
             <div className="flex items-center gap-1 text-slate-300">
