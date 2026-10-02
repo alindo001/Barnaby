@@ -346,8 +346,8 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                     <span className="font-mono font-bold text-amber-300">A / D or ← / →</span>
                   </div>
                   <div className="flex items-center justify-between p-1.5 bg-slate-900/60 rounded-lg">
-                    <span className="text-slate-400">Jump / Double Jump</span>
-                    <span className="font-mono font-bold text-amber-300">Space / W / ↑ (Tap in Air)</span>
+                    <span className="text-slate-400">Jump / Fly</span>
+                    <span className="font-mono font-bold text-amber-300">Space / W / ↑</span>
                   </div>
                   <div className="flex items-center justify-between p-1.5 bg-slate-900/60 rounded-lg">
                     <span className="text-slate-400">Shoot Blaster</span>

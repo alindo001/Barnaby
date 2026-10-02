@@ -260,7 +260,6 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
           id="btn-touch-jump"
           onTouchStart={(e) => { e.preventDefault(); onInput('jumpPressed', true); }}
           onTouchEnd={(e) => { e.preventDefault(); onInput('jumpReleased', true); }}
-          onTouchCancel={(e) => { e.preventDefault(); onInput('jumpReleased', true); }}
           onMouseDown={() => onInput('jumpPressed', true)}
           onMouseUp={() => onInput('jumpReleased', true)}
           onMouseLeave={() => onInput('jumpReleased', true)}
