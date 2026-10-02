@@ -176,9 +176,6 @@ export interface Player {
   blasterCooldown?: number;
   // Shield state
   hasShield?: boolean;
-  // Double jump state (when not wearing jetpack)
-  canDoubleJump?: boolean;
-  hasDoubleJumped?: boolean;
   // Moving platform riding state
   ridingPlatformId?: string | null;
   ridingPlatformVy?: number;
