@@ -428,25 +428,28 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
 
   // Render visual canvas loop
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    try {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    const theme = level.theme || THEMES.meadow;
-    const w = canvas.width;
-    const h = canvas.height;
+      const theme = level.theme || THEMES.meadow;
+      const w = canvas.width;
+      const h = canvas.height;
 
-    // Background Sky Gradient
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-    bgGrad.addColorStop(0, theme.skyGradient[0]);
-    bgGrad.addColorStop(1, theme.skyGradient[1]);
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, w, h);
+      // Background Sky Gradient
+      const skyTop = theme?.skyColorTop || '#38BDF8';
+      const skyBottom = theme?.skyColorBottom || '#BAE6FD';
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+      bgGrad.addColorStop(0, skyTop);
+      bgGrad.addColorStop(1, skyBottom);
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
 
-    ctx.save();
-    ctx.scale(zoom, zoom);
-    ctx.translate(-cameraX, -cameraY);
+      ctx.save();
+      ctx.scale(zoom, zoom);
+      ctx.translate(-cameraX, -cameraY);
 
     // Grid Overlay (if enabled)
     if (gridSnap) {
@@ -474,7 +477,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     ctx.strokeRect(0, 0, level.worldWidth, level.worldHeight);
 
     // 1. Draw Platforms
-    level.platforms.forEach((p, idx) => {
+    (level.platforms || []).forEach((p, idx) => {
       const isSelected = selectedEntity?.kind === 'platform' && selectedEntity.index === idx;
 
       if (p.type === 'bouncy') {
@@ -512,7 +515,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     });
 
     // 2. Draw Hazards
-    level.hazards.forEach((haz, idx) => {
+    (level.hazards || []).forEach((haz, idx) => {
       const isSelected = selectedEntity?.kind === 'hazard' && selectedEntity.index === idx;
       ctx.fillStyle = '#EF4444';
       // Triangle Spikes
@@ -559,43 +562,45 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     }
 
     // 4. Draw Player Start
+    const pStart = level.playerStart || { x: 80, y: 300 };
     const isStartSelected = selectedEntity?.kind === 'start';
     ctx.fillStyle = '#38BDF8';
     ctx.beginPath();
-    ctx.arc(level.playerStart.x + 12, level.playerStart.y + 16, 14, 0, Math.PI * 2);
+    ctx.arc(pStart.x + 12, pStart.y + 16, 14, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#0F172A';
     ctx.font = 'bold 11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('START', level.playerStart.x + 12, level.playerStart.y - 6);
+    ctx.fillText('START', pStart.x + 12, pStart.y - 6);
     if (isStartSelected) {
       ctx.strokeStyle = '#FBBF24';
       ctx.lineWidth = 2;
-      ctx.strokeRect(level.playerStart.x - 4, level.playerStart.y - 4, 32, 40);
+      ctx.strokeRect(pStart.x - 4, pStart.y - 4, 32, 40);
     }
 
     // 5. Draw Goal Flag
+    const pGoal = level.goal || { x: (level.worldWidth || 1600) - 100, y: 300, width: 32, height: 64 };
     const isGoalSelected = selectedEntity?.kind === 'goal';
     ctx.fillStyle = '#F59E0B';
-    ctx.fillRect(level.goal.x + level.goal.width / 2 - 3, level.goal.y, 6, level.goal.height);
+    ctx.fillRect(pGoal.x + pGoal.width / 2 - 3, pGoal.y, 6, pGoal.height);
     ctx.fillStyle = '#FBBF24';
     ctx.beginPath();
-    ctx.moveTo(level.goal.x + level.goal.width / 2, level.goal.y + 4);
-    ctx.lineTo(level.goal.x + level.goal.width, level.goal.y + 18);
-    ctx.lineTo(level.goal.x + level.goal.width / 2, level.goal.y + 32);
+    ctx.moveTo(pGoal.x + pGoal.width / 2, pGoal.y + 4);
+    ctx.lineTo(pGoal.x + pGoal.width, pGoal.y + 18);
+    ctx.lineTo(pGoal.x + pGoal.width / 2, pGoal.y + 32);
     ctx.closePath();
     ctx.fill();
     ctx.font = 'bold 11px sans-serif';
     ctx.fillStyle = '#FBBF24';
-    ctx.fillText('FINISH', level.goal.x + level.goal.width / 2, level.goal.y - 8);
+    ctx.fillText('FINISH', pGoal.x + pGoal.width / 2, pGoal.y - 8);
     if (isGoalSelected) {
       ctx.strokeStyle = '#38BDF8';
       ctx.lineWidth = 2;
-      ctx.strokeRect(level.goal.x - 4, level.goal.y - 4, level.goal.width + 8, level.goal.height + 8);
+      ctx.strokeRect(pGoal.x - 4, pGoal.y - 4, pGoal.width + 8, pGoal.height + 8);
     }
 
     // 6. Draw Collectibles
-    level.collectibles.forEach((c, idx) => {
+    (level.collectibles || []).forEach((c, idx) => {
       const isSelected = selectedEntity?.kind === 'collectible' && selectedEntity.index === idx;
 
       if (c.type === 'acorn') {
@@ -681,7 +686,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     });
 
     // 7. Draw Enemies & Patrol Boundaries
-    level.enemies.forEach((e, idx) => {
+    (level.enemies || []).forEach((e, idx) => {
       const isSelected = selectedEntity?.kind === 'enemy' && selectedEntity.index === idx;
 
       // Draw Patrol Boundary line
@@ -741,15 +746,15 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     ctx.strokeRect(mmX, mmY, mmW, mmH);
 
     // Minimap platforms
-    const scaleMmX = mmW / level.worldWidth;
+    const scaleMmX = mmW / (level.worldWidth || 1600);
     ctx.fillStyle = '#10B981';
-    level.platforms.forEach(p => {
+    (level.platforms || []).forEach(p => {
       ctx.fillRect(mmX + p.x * scaleMmX, mmY + 4, Math.max(2, p.width * scaleMmX), mmH - 8);
     });
 
     // Minimap collectibles
     ctx.fillStyle = '#F59E0B';
-    level.collectibles.forEach(c => {
+    (level.collectibles || []).forEach(c => {
       ctx.fillRect(mmX + c.x * scaleMmX, mmY + 2, 2, 4);
     });
 
@@ -759,7 +764,9 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     ctx.strokeStyle = '#38BDF8';
     ctx.lineWidth = 2;
     ctx.strokeRect(vpX, mmY - 1, vpW, mmH + 2);
-
+    } catch (err) {
+      console.error('Canvas render error in Level Editor:', err);
+    }
   }, [level, cameraX, cameraY, zoom, selectedEntity, gridSnap]);
 
   // Canvas Mouse Down: Select & Drag
@@ -774,10 +781,17 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     const worldX = mouseCanvasX / zoom + cameraX;
     const worldY = mouseCanvasY / zoom + cameraY;
 
+    const collectibles = level.collectibles || [];
+    const enemies = level.enemies || [];
+    const hazards = level.hazards || [];
+    const platforms = level.platforms || [];
+    const pStart = level.playerStart || { x: 80, y: 300 };
+    const pGoal = level.goal || { x: (level.worldWidth || 1600) - 100, y: 300, width: 32, height: 64 };
+
     // Check hit testing
     // 1. Collectibles (highest priority)
-    for (let i = level.collectibles.length - 1; i >= 0; i--) {
-      const c = level.collectibles[i];
+    for (let i = collectibles.length - 1; i >= 0; i--) {
+      const c = collectibles[i];
       if (worldX >= c.x - 8 && worldX <= c.x + c.width + 8 &&
           worldY >= c.y - 8 && worldY <= c.y + c.height + 8) {
         pushUndo(level);
@@ -789,8 +803,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     }
 
     // 2. Enemies
-    for (let i = level.enemies.length - 1; i >= 0; i--) {
-      const en = level.enemies[i];
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const en = enemies[i];
       if (worldX >= en.x - 8 && worldX <= en.x + en.width + 8 &&
           worldY >= en.y - 8 && worldY <= en.y + en.height + 8) {
         pushUndo(level);
@@ -802,8 +816,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     }
 
     // 3. Hazards
-    for (let i = level.hazards.length - 1; i >= 0; i--) {
-      const hz = level.hazards[i];
+    for (let i = hazards.length - 1; i >= 0; i--) {
+      const hz = hazards[i];
       if (worldX >= hz.x - 6 && worldX <= hz.x + hz.width + 6 &&
           worldY >= hz.y - 6 && worldY <= hz.y + hz.height + 6) {
         pushUndo(level);
@@ -815,8 +829,8 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     }
 
     // 4. Platforms
-    for (let i = level.platforms.length - 1; i >= 0; i--) {
-      const p = level.platforms[i];
+    for (let i = platforms.length - 1; i >= 0; i--) {
+      const p = platforms[i];
       if (worldX >= p.x && worldX <= p.x + p.width &&
           worldY >= p.y && worldY <= p.y + p.height) {
         pushUndo(level);
@@ -828,21 +842,21 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
     }
 
     // 5. Player Start
-    if (Math.hypot(worldX - (level.playerStart.x + 12), worldY - (level.playerStart.y + 16)) < 24) {
+    if (Math.hypot(worldX - (pStart.x + 12), worldY - (pStart.y + 16)) < 24) {
       pushUndo(level);
       setSelectedEntity({ kind: 'start', id: 'start', index: 0 });
       isDraggingRef.current = true;
-      dragOffsetRef.current = { x: worldX - level.playerStart.x, y: worldY - level.playerStart.y };
+      dragOffsetRef.current = { x: worldX - pStart.x, y: worldY - pStart.y };
       return;
     }
 
     // 6. Goal Flag
-    if (worldX >= level.goal.x && worldX <= level.goal.x + level.goal.width &&
-        worldY >= level.goal.y && worldY <= level.goal.y + level.goal.height) {
+    if (worldX >= pGoal.x && worldX <= pGoal.x + pGoal.width &&
+        worldY >= pGoal.y && worldY <= pGoal.y + pGoal.height) {
       pushUndo(level);
       setSelectedEntity({ kind: 'goal', id: 'goal', index: 0 });
       isDraggingRef.current = true;
-      dragOffsetRef.current = { x: worldX - level.goal.x, y: worldY - level.goal.y };
+      dragOffsetRef.current = { x: worldX - pGoal.x, y: worldY - pGoal.y };
       return;
     }
 

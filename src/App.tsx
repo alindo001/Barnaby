@@ -8,6 +8,7 @@ import { ControlsHelpModal } from './components/ControlsHelpModal';
 import { LevelEditorModal } from './components/LevelEditorModal';
 import { CharacterSelectModal } from './components/CharacterSelectModal';
 import { EnemyGalleryModal } from './components/EnemyGalleryModal';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { GameState, GameStats, LevelData, InputState, LaunchDirection, TouchButtonSize, CharacterConfig } from './types/game';
 import { sound } from './game/audio';
 import { loadCharacterConfig } from './game/characters';
@@ -121,18 +122,6 @@ export default function App() {
       engine.stop();
       resizeObserver.disconnect();
     };
-  }, []);
-
-  // Global Dev Shortcut: Press F2 anywhere to toggle Level Editor / Modder
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F2' || e.code === 'F2') {
-        e.preventDefault();
-        setShowEditor(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
   // Action Handlers
@@ -410,12 +399,14 @@ export default function App() {
 
       {/* Level Sandbox / Builder Modal (DEV ONLY) */}
       {showEditor && (
-        <LevelEditorModal
-          initialLevelIndex={stats.levelIndex}
-          levels={engineRef.current?.levels || ALL_100_LEVELS}
-          onPlayCustomLevel={handlePlayCustomLevel}
-          onClose={() => setShowEditor(false)}
-        />
+        <ErrorBoundary fallbackName="Level Editor Error" onReset={() => setShowEditor(false)}>
+          <LevelEditorModal
+            initialLevelIndex={stats.levelIndex}
+            levels={engineRef.current?.levels || ALL_100_LEVELS}
+            onPlayCustomLevel={handlePlayCustomLevel}
+            onClose={() => setShowEditor(false)}
+          />
+        </ErrorBoundary>
       )}
 
       {/* Critter Codex & Enemy Gallery Modal */}
