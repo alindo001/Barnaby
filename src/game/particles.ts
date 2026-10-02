@@ -59,6 +59,42 @@ export class ParticleSystem {
     }
   }
 
+  // Double jump cloud poof and sparkles under feet
+  public emitDoubleJump(x: number, y: number, color: string = '#60A5FA') {
+    for (let i = 0; i < 10; i++) {
+      const angle = (Math.PI * 0.15) + (i / 10) * (Math.PI * 0.7);
+      const speed = 1.6 + Math.random() * 2.2;
+      this.particles.push({
+        x: x + (Math.random() - 0.5) * 12,
+        y: y + 2,
+        vx: Math.cos(angle) * (i % 2 === 0 ? speed : -speed),
+        vy: Math.sin(angle) * speed * 0.4 + 0.4,
+        size: 3.5 + Math.random() * 3,
+        color: i % 2 === 0 ? '#FFFFFF' : color,
+        alpha: 0.85,
+        life: 0,
+        maxLife: 0.35 + Math.random() * 0.2,
+        shape: 'circle',
+        gravity: 0.04
+      });
+    }
+    for (let i = 0; i < 4; i++) {
+      this.particles.push({
+        x: x + (Math.random() - 0.5) * 10,
+        y: y,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: -1.0 - Math.random() * 1.5,
+        size: 3 + Math.random() * 2,
+        color: '#FDE047',
+        alpha: 0.9,
+        life: 0,
+        maxLife: 0.3,
+        shape: 'sparkle',
+        gravity: 0.05
+      });
+    }
+  }
+
   // Dust when running
   public emitFootstep(x: number, y: number, facing: number, color: string = '#E2E8F0') {
     if (Math.random() > 0.4) return;

@@ -42,9 +42,6 @@ const BASE_LEVELS: LevelData[] = [
       { id: 'l1_pit2', x: 2080, y: 580, width: 80, height: 20, type: 'spike' }
     ],
     collectibles: [
-      { id: 'l1_jetpack', x: 200, y: 470, width: 28, height: 28, type: 'jetpack', value: 1000 },
-      { id: 'l1_fuel1', x: 1000, y: 470, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
-      { id: 'l1_fuel2', x: 2260, y: 470, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
       { id: 'l1_c1', x: 110, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
       { id: 'l1_c2', x: 280, y: 430, width: 20, height: 20, type: 'coin', value: 100 },
       { id: 'l1_c3', x: 560, y: 420, width: 24, height: 24, type: 'gem', value: 500 },
@@ -52,8 +49,11 @@ const BASE_LEVELS: LevelData[] = [
       { id: 'l1_c5', x: 1120, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
       { id: 'l1_c6', x: 1220, y: 430, width: 20, height: 20, type: 'coin', value: 100 },
       { id: 'l1_c7', x: 1475, y: 410, width: 24, height: 24, type: 'gem', value: 500 },
-      { id: 'l1_c8', x: 1640, y: 360, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_c8', x: 1580, y: 360, width: 24, height: 24, type: 'gem', value: 500 },
+      { id: 'l1_jetpack', x: 1690, y: 375, width: 28, height: 28, type: 'jetpack', value: 1000 },
       { id: 'l1_c9', x: 1940, y: 420, width: 20, height: 20, type: 'coin', value: 100 },
+      { id: 'l1_fuel1', x: 2060, y: 440, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
+      { id: 'l1_fuel2', x: 2260, y: 470, width: 22, height: 22, type: 'jetpack_fuel', value: 200 },
       { id: 'l1_c10', x: 2340, y: 470, width: 20, height: 20, type: 'coin', value: 100 },
       { id: 'l1_c11', x: 2420, y: 420, width: 24, height: 24, type: 'gem', value: 500 },
       { id: 'l1_c12', x: 2580, y: 440, width: 20, height: 20, type: 'coin', value: 100 },
