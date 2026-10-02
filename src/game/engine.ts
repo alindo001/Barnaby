@@ -197,8 +197,6 @@ export class GameEngine {
       invulnerableTimer: 0,
       hasShield: false,
       hasJetpack: false,
-      canDoubleJump: true,
-      hasDoubleJumped: false,
       jetpackFuel: 100,
       maxJetpackFuel: 100,
       isJetpacking: false,
@@ -315,8 +313,6 @@ export class GameEngine {
     this.player.vx = 0;
     this.player.vy = 0;
     this.player.isGrounded = true;
-    this.player.canDoubleJump = true;
-    this.player.hasDoubleJumped = false;
     this.player.invulnerableTimer = 2.0; // 2.0s invulnerability on respawn
 
     if (this.currentLevel.startWithJetpack || this.currentLevel.category === 'rocketeer') {

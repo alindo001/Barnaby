@@ -80,11 +80,9 @@ export class PhysicsEngine {
       particles.emitFootstep(player.x + player.width / 2, player.y + player.height, player.facing, level.theme.platformTop);
     }
 
-    // 3. Jump Logic (Coyote Time + Jump Buffering + Variable Jump Cut + Double Jump)
+    // 3. Jump Logic (Coyote Time + Jump Buffering + Variable Jump Cut)
     if (player.isGrounded) {
       player.coyoteTimer = this.COYOTE_TIME;
-      player.canDoubleJump = true;
-      player.hasDoubleJumped = false;
 
       // Recharging jetpack fuel while resting on the ground
       if (player.hasJetpack) {
@@ -98,8 +96,6 @@ export class PhysicsEngine {
 
     const canJump = player.coyoteTimer > 0;
     const wantsJump = player.jumpBufferTimer > 0;
-    // Check if player has any active powerup: jetpack, bubble shield, blaster, speed boost, jump boost
-    const hasAnyPowerup = player.hasJetpack || !!player.hasShield || !!player.hasBlaster || player.speedBoostTimer > 0 || player.jumpBoostTimer > 0;
 
     if (wantsJump && canJump) {
       const jumpVel = player.jumpBoostTimer > 0 ? this.JUMP_FORCE * 1.25 : this.JUMP_FORCE;
@@ -119,21 +115,6 @@ export class PhysicsEngine {
 
       sound.playJump();
       particles.emitDust(player.x + player.width / 2, player.y + player.height, 6, level.theme.platformTop);
-    } else if (wantsJump && !canJump && !player.isGrounded && !hasAnyPowerup && player.canDoubleJump) {
-      // MID-AIR DOUBLE JUMP (When not wearing jetpack or any other powerup)
-      player.vy = this.JUMP_FORCE * 0.95;
-      player.canDoubleJump = false;
-      player.hasDoubleJumped = true;
-      player.isJumping = true;
-      player.jumpBufferTimer = 0;
-
-      // Squash & Stretch acrobatic leap
-      player.scaleX = 0.8;
-      player.scaleY = 1.3;
-
-      sound.playDoubleJump();
-      particles.emitDoubleJump(player.x + player.width / 2, player.y + player.height);
-      particles.addPopup(player.x + player.width / 2, player.y - 12, 'DOUBLE JUMP! 🪶', '#60A5FA');
     }
 
     // Jetpack Flight Logic (holding jump button in the air)
@@ -287,8 +268,6 @@ export class PhysicsEngine {
           player.ridingPlatformId = p.id;
           player.ridingPlatformVy = p.vy || 0;
           player.coyoteTimer = this.COYOTE_TIME; // Guarantees jump is always immediately available!
-          player.canDoubleJump = true;
-          player.hasDoubleJumped = false;
         } else if (player.ridingPlatformId === p.id) {
           player.ridingPlatformId = null;
           player.ridingPlatformVy = 0;
@@ -851,8 +830,6 @@ export class PhysicsEngine {
           player.isGrounded = true;
           player.isJumping = false;
           player.coyoteTimer = this.COYOTE_TIME;
-          player.canDoubleJump = true;
-          player.hasDoubleJumped = false;
         }
         continue;
       }
@@ -869,8 +846,6 @@ export class PhysicsEngine {
             player.isGrounded = false;
             player.isJumping = true;
             player.ridingPlatformId = null;
-            player.canDoubleJump = true;
-            player.hasDoubleJumped = false;
             player.scaleX = 0.65;
             player.scaleY = 1.45;
             sound.playSpring();
@@ -881,8 +856,6 @@ export class PhysicsEngine {
             player.isGrounded = true;
             player.isJumping = false;
             player.coyoteTimer = this.COYOTE_TIME;
-            player.canDoubleJump = true;
-            player.hasDoubleJumped = false;
 
             // Landing squash effect
             if (!player.wasGrounded) {

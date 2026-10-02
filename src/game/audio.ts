@@ -85,35 +85,7 @@ class SoundEngine {
     }
   }
 
-  // DOUBLE JUMP SOUND (Crisp upward double chime)
-  public playDoubleJump() {
-    if (!this.soundEnabled) return;
-    this.initCtx();
-    if (!this.ctx || !this.masterGain) return;
-
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(280, now);
-      osc.frequency.exponentialRampToValueAtTime(620, now + 0.07);
-      osc.frequency.setValueAtTime(680, now + 0.07);
-      osc.frequency.exponentialRampToValueAtTime(940, now + 0.16);
-
-      gain.gain.setValueAtTime(0.24, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
-
-      osc.connect(gain);
-      gain.connect(this.masterGain);
-
-      osc.start(now);
-      osc.stop(now + 0.17);
-    } catch {}
-  }
-
-  // SPRING JUMP SOUND
+  // DOUBLE / SPRING JUMP SOUND
   public playSpring() {
     if (!this.soundEnabled) return;
     this.initCtx();
