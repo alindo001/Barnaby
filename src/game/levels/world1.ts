@@ -228,20 +228,23 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: Grand Sky Pinnacle Summit (x: 3100 to 4000)
       // ==========================================
-      // Stepped mountain monolith ascending to the sky
-      { id: "l2_summit_step1", x: 3150, y: 360, width: 100, height: 400, type: "solid" },
-      { id: "l2_summit_step2", x: 3290, y: 280, width: 110, height: 480, type: "solid" },
-      { id: "l2_summit_step3", x: 3440, y: 200, width: 120, height: 560, type: "solid" },
+      // LAYER 5: Grand Sky Pinnacle Summit (x: 3100 to 4000)
+      // ==========================================
+      // Stepped mountain monoliths with open cavern underpass below!
+      { id: "l2_summit_step1", x: 3150, y: 360, width: 100, height: 160, type: "solid" },
+      { id: "l2_summit_step2", x: 3290, y: 280, width: 110, height: 240, type: "solid" },
+      { id: "l2_summit_step3", x: 3440, y: 200, width: 120, height: 320, type: "solid" },
       // Highest Sky Needle
       { id: "l2_sky_needle", x: 3580, y: 140, width: 70, height: 20, type: "one-way" },
       // Suspended crumbling arch
       { id: "l2_summit_crumb1", x: 3670, y: 170, width: 60, height: 16, type: "crumbling" },
+      // Lower Valley Below Pinnacle with rescue spring (wide continuous underpass under monoliths)
       { id: "l2_summit_crumb2", x: 3750, y: 200, width: 60, height: 16, type: "crumbling" },
       // Goal Peak
       { id: "l2_summit_goal_base", x: 3830, y: 280, width: 170, height: 480, type: "solid" },
-      // Lower Valley Below Pinnacle with rescue spring
-      { id: "l2_summit_lower", x: 3150, y: 680, width: 500, height: 120, type: "solid" },
-      { id: "l2_summit_valley_spring", x: 3500, y: 664, width: 44, height: 16, type: "bouncy" }
+      // Lower Valley Below Pinnacle with rescue spring (wide continuous underpass under monoliths)
+      { id: "l2_summit_lower", x: 3000, y: 680, width: 680, height: 120, type: "solid" },
+      { id: "l2_summit_valley_spring", x: 3600, y: 664, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       { id: "l2_chasm_spikes1", x: 770, y: 860, width: 560, height: 20, type: "spike" },
@@ -281,10 +284,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l2_jetpack", x: 2890, y: 110, width: 28, height: 28, type: "jetpack", value: 1000 },
       { id: "l2_fuel1", x: 3040, y: 160, width: 22, height: 22, type: "jetpack_fuel", value: 200 },
 
-      // Layer 5: Grand Sky Pinnacle Summit
-      { id: "l2_c15", x: 3220, y: 630, width: 20, height: 20, type: "coin", value: 100 },
-      { id: "l2_c16", x: 3320, y: 630, width: 20, height: 20, type: "coin", value: 100 },
-      { id: "l2_c17", x: 3420, y: 630, width: 20, height: 20, type: "coin", value: 100 },
+      // Layer 5: Grand Sky Pinnacle Summit (Coins positioned in open underpass under monoliths!)
+      { id: "l2_c15", x: 3200, y: 640, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l2_c16", x: 3340, y: 640, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l2_c17", x: 3480, y: 640, width: 20, height: 20, type: "coin", value: 100 },
       { id: "l2_c18", x: 3840, y: 230, width: 20, height: 20, type: "coin", value: 100 },
       { id: "l2_g4", x: 3890, y: 150, width: 24, height: 24, type: "gem", value: 500 },
       { id: "l2_c19", x: 3940, y: 230, width: 20, height: 20, type: "coin", value: 100 }
@@ -394,10 +397,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: Caldera Summit & The Dragon's Crown (x: 3200 to 4200)
       // ==========================================
-      // Stepped obsidian spires
-      { id: "l3_summit_step1", x: 3200, y: 360, width: 110, height: 420, type: "solid" },
-      { id: "l3_summit_step2", x: 3360, y: 280, width: 110, height: 500, type: "solid" },
-      { id: "l3_summit_step3", x: 3520, y: 200, width: 120, height: 580, type: "solid" },
+      // Stepped obsidian spires with open lower underpass
+      { id: "l3_summit_step1", x: 3200, y: 360, width: 110, height: 180, type: "solid" },
+      { id: "l3_summit_step2", x: 3360, y: 280, width: 110, height: 260, type: "solid" },
+      { id: "l3_summit_step3", x: 3520, y: 200, width: 120, height: 340, type: "solid" },
       // Dragon's Needle peak
       { id: "l3_dragon_needle", x: 3680, y: 130, width: 70, height: 20, type: "one-way" },
       // Suspended crumbling bridges
@@ -405,9 +408,9 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l3_summit_crumb2", x: 3870, y: 200, width: 60, height: 16, type: "crumbling" },
       // Goal Bastion
       { id: "l3_goal_bastion", x: 3980, y: 280, width: 180, height: 500, type: "solid" },
-      // Lower Magma Shore with rescue spring
-      { id: "l3_summit_lower", x: 3200, y: 700, width: 540, height: 100, type: "solid" },
-      { id: "l3_summit_spring", x: 3580, y: 684, width: 44, height: 16, type: "bouncy" }
+      // Lower Magma Shore with rescue spring (wide continuous underpass under spires)
+      { id: "l3_summit_lower", x: 3100, y: 700, width: 680, height: 100, type: "solid" },
+      { id: "l3_summit_spring", x: 3700, y: 684, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       { id: "l3_pit1", x: 340, y: 880, width: 280, height: 20, type: "lava" },
@@ -570,10 +573,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: Megatower Zenith Summit (x: 3200 to 4200)
       // ==========================================
-      // Stepped skyscraper pinnacles ascending to the stratosphere
-      { id: "l4_zenith_step1", x: 3200, y: 360, width: 110, height: 420, type: "solid" },
-      { id: "l4_zenith_step2", x: 3360, y: 280, width: 110, height: 500, type: "solid" },
-      { id: "l4_zenith_step3", x: 3520, y: 200, width: 120, height: 580, type: "solid" },
+      // Stepped skyscraper pinnacles with open lower underpass
+      { id: "l4_zenith_step1", x: 3200, y: 360, width: 110, height: 180, type: "solid" },
+      { id: "l4_zenith_step2", x: 3360, y: 280, width: 110, height: 260, type: "solid" },
+      { id: "l4_zenith_step3", x: 3520, y: 200, width: 120, height: 340, type: "solid" },
       // Broadcast Antenna Needle Peak
       { id: "l4_antenna_needle", x: 3680, y: 130, width: 70, height: 20, type: "one-way" },
       // Suspended glitch bridges
@@ -581,9 +584,9 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l4_zenith_glitch2", x: 3870, y: 200, width: 60, height: 16, type: "crumbling" },
       // Goal Megatower Pinnacle
       { id: "l4_goal_pinnacle", x: 3980, y: 280, width: 180, height: 500, type: "solid" },
-      // Lower Alley with rescue grav spring
-      { id: "l4_zenith_lower", x: 3200, y: 700, width: 540, height: 100, type: "solid" },
-      { id: "l4_zenith_spring", x: 3580, y: 684, width: 48, height: 16, type: "bouncy" }
+      // Lower Alley with rescue grav spring (continuous underpass under pinnacles)
+      { id: "l4_zenith_lower", x: 3100, y: 700, width: 680, height: 100, type: "solid" },
+      { id: "l4_zenith_spring", x: 3700, y: 684, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       { id: "l4_alley_spikes1", x: 340, y: 860, width: 280, height: 20, type: "spike" },
@@ -763,10 +766,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: Quantum Nexus Apex & Finish Gate (x: 3380 to 4400)
       // ==========================================
-      // Stepped crystalline server monoliths reaching to the heavens
-      { id: "l5_nexus_step1", x: 3380, y: 400, width: 110, height: 440, type: "solid" },
-      { id: "l5_nexus_step2", x: 3540, y: 320, width: 110, height: 520, type: "solid" },
-      { id: "l5_nexus_step3", x: 3700, y: 240, width: 120, height: 600, type: "solid" },
+      // Stepped crystalline server monoliths with open lower underpass
+      { id: "l5_nexus_step1", x: 3380, y: 400, width: 110, height: 180, type: "solid" },
+      { id: "l5_nexus_step2", x: 3540, y: 320, width: 110, height: 260, type: "solid" },
+      { id: "l5_nexus_step3", x: 3700, y: 240, width: 120, height: 340, type: "solid" },
       // Apex High Antenna Needle Spires (Stratosphere Secret Roost)
       { id: "l5_antenna_spire", x: 3860, y: 130, width: 70, height: 20, type: "one-way" },
       { id: "l5_trans_needle", x: 3960, y: 100, width: 60, height: 18, type: "one-way" },
@@ -775,9 +778,9 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l5_apex_glitch2", x: 4070, y: 220, width: 60, height: 16, type: "crumbling" },
       // Goal Gateway Monolith
       { id: "l5_goal_monolith", x: 4160, y: 300, width: 200, height: 540, type: "solid" },
-      // Lower Safety Alley with emergency rescue grav-spring
-      { id: "l5_lower_rescue_deck", x: 3380, y: 760, width: 620, height: 120, type: "solid" },
-      { id: "l5_rescue_spring", x: 3800, y: 744, width: 48, height: 16, type: "bouncy" }
+      // Lower Safety Alley with emergency rescue grav-spring (continuous underpass under monoliths)
+      { id: "l5_lower_rescue_deck", x: 3280, y: 760, width: 720, height: 120, type: "solid" },
+      { id: "l5_rescue_spring", x: 3860, y: 744, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       { id: "l5_hz_acid1", x: 740, y: 920, width: 920, height: 20, type: "lava" },
@@ -946,9 +949,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: Command Bridge Apex & Warp Gate (x: 3420 to 4400)
       // ==========================================
-      { id: "l6_step1", x: 3420, y: 420, width: 110, height: 420, type: "solid" },
-      { id: "l6_step2", x: 3580, y: 340, width: 110, height: 500, type: "solid" },
-      { id: "l6_step3", x: 3740, y: 260, width: 120, height: 580, type: "solid" },
+      // Stepped command bridge pillars with open lower underpass
+      { id: "l6_step1", x: 3420, y: 420, width: 110, height: 180, type: "solid" },
+      { id: "l6_step2", x: 3580, y: 340, width: 110, height: 260, type: "solid" },
+      { id: "l6_step3", x: 3740, y: 260, width: 120, height: 340, type: "solid" },
       // Stratosphere Sensor Spire (Golden Acorn #3)
       { id: "l6_spire1", x: 3880, y: 140, width: 70, height: 20, type: "one-way" },
       { id: "l6_mast", x: 3960, y: 100, width: 60, height: 18, type: "one-way" },
@@ -957,8 +961,9 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l6_final_meteor2", x: 4080, y: 240, width: 60, height: 16, type: "crumbling" },
       // Goal Monolith & Safety Deck
       { id: "l6_goal_monolith", x: 4160, y: 300, width: 200, height: 540, type: "solid" },
-      { id: "l6_safety_deck", x: 3420, y: 780, width: 620, height: 100, type: "solid" },
-      { id: "l6_safety_spring", x: 3820, y: 764, width: 48, height: 16, type: "bouncy" }
+      // Safety Deck with rescue spring (continuous underpass under pillars)
+      { id: "l6_safety_deck", x: 3320, y: 780, width: 720, height: 100, type: "solid" },
+      { id: "l6_safety_spring", x: 3900, y: 764, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       { id: "l6_hz_void1", x: 760, y: 920, width: 920, height: 20, type: "lava" },
@@ -1120,9 +1125,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: Nebula Citadel Apex & Starlight Warp Gate (x: 3450 to 4400)
       // ==========================================
-      { id: "l7_apex_step1", x: 3460, y: 400, width: 110, height: 440, type: "solid" },
-      { id: "l7_apex_step2", x: 3620, y: 320, width: 110, height: 520, type: "solid" },
-      { id: "l7_apex_step3", x: 3780, y: 240, width: 120, height: 600, type: "solid" },
+      // Stepped citadel apex spires with open lower underpass
+      { id: "l7_apex_step1", x: 3460, y: 400, width: 110, height: 180, type: "solid" },
+      { id: "l7_apex_step2", x: 3620, y: 320, width: 110, height: 260, type: "solid" },
+      { id: "l7_apex_step3", x: 3780, y: 240, width: 120, height: 340, type: "solid" },
       // Stratosphere Sensor Spire (Golden Acorn #3)
       { id: "l7_spire1", x: 3920, y: 130, width: 70, height: 20, type: "one-way" },
       { id: "l7_mast", x: 4000, y: 90, width: 60, height: 18, type: "one-way" },
@@ -1131,8 +1137,9 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l7_final_meteor2", x: 4120, y: 230, width: 60, height: 16, type: "crumbling" },
       // Goal Monolith & Safety Recovery Deck
       { id: "l7_goal_monolith", x: 4180, y: 280, width: 200, height: 560, type: "solid" },
-      { id: "l7_safety_deck", x: 3460, y: 780, width: 620, height: 100, type: "solid" },
-      { id: "l7_safety_spring", x: 3860, y: 764, width: 48, height: 16, type: "bouncy" }
+      // Safety Recovery Deck with rescue spring (continuous underpass under spires)
+      { id: "l7_safety_deck", x: 3360, y: 780, width: 720, height: 100, type: "solid" },
+      { id: "l7_safety_spring", x: 3920, y: 764, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       { id: "l7_hz_void1", x: 760, y: 920, width: 920, height: 20, type: "lava" },
@@ -1297,9 +1304,10 @@ export const WORLD_1_LEVELS: LevelData[] = [
       // ==========================================
       // LAYER 5: The Infernal Summit & Molten Portal (x: 3450 to 4400)
       // ==========================================
-      { id: "l8_summit_step1", x: 3460, y: 400, width: 110, height: 440, type: "solid" },
-      { id: "l8_summit_step2", x: 3620, y: 320, width: 110, height: 520, type: "solid" },
-      { id: "l8_summit_step3", x: 3780, y: 240, width: 120, height: 600, type: "solid" },
+      // Stepped volcanic spires with open lower underpass
+      { id: "l8_summit_step1", x: 3460, y: 400, width: 110, height: 180, type: "solid" },
+      { id: "l8_summit_step2", x: 3620, y: 320, width: 110, height: 260, type: "solid" },
+      { id: "l8_summit_step3", x: 3780, y: 240, width: 120, height: 340, type: "solid" },
       // Stratosphere Volcanic Spire (Holding Golden Acorn #3)
       { id: "l8_spire1", x: 3920, y: 130, width: 70, height: 20, type: "one-way" },
       { id: "l8_mast", x: 4000, y: 90, width: 60, height: 18, type: "one-way" },
@@ -1308,8 +1316,9 @@ export const WORLD_1_LEVELS: LevelData[] = [
       { id: "l8_final_crumb2", x: 4120, y: 230, width: 60, height: 16, type: "crumbling" },
       // Goal Portal Monolith & Safety Recovery Deck
       { id: "l8_goal_monolith", x: 4180, y: 280, width: 200, height: 560, type: "solid" },
-      { id: "l8_safety_deck", x: 3460, y: 780, width: 620, height: 100, type: "solid" },
-      { id: "l8_safety_spring", x: 3860, y: 764, width: 48, height: 16, type: "bouncy" }
+      // Safety Recovery Deck with rescue spring (continuous underpass under spires)
+      { id: "l8_safety_deck", x: 3360, y: 780, width: 720, height: 100, type: "solid" },
+      { id: "l8_safety_spring", x: 3920, y: 764, width: 48, height: 16, type: "bouncy" }
     ],
     hazards: [
       // SURGING RISING & FALLING LAVA PIT 1 (Surges up and down across Layer 1)
