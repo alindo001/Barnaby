@@ -114,6 +114,10 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
           delete parsed[12];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[13] && (parsed[13].worldHeight < 800 || !parsed[13].title?.includes('Citadel') || parsed[13].theme?.id !== 'medieval_castle')) {
+          delete parsed[13];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         const targetId = levels[levelIndex]?.id;
         if (targetId && parsed[targetId]) {
           return JSON.parse(JSON.stringify(parsed[targetId]));
@@ -200,6 +204,22 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         }
         if (parsed[9] && (parsed[9].worldHeight <= 650 || !parsed[9].title?.includes('Borealis Glacier') || !parsed[9].theme?.name?.includes('Glacier'))) {
           delete parsed[9];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[10] && (parsed[10].worldHeight <= 650 || (!parsed[10].title?.includes('Citadel') && !parsed[10].title?.includes('Glacier')) || !parsed[10].theme?.name?.includes('Glacier') || (parsed[10].platforms && parsed[10].platforms.some((p: any) => p.id === 'l10_deck_start')))) {
+          delete parsed[10];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[11] && (parsed[11].worldHeight <= 650 || !parsed[11].title?.includes('Rocketeer') || !parsed[11].theme?.name?.includes('Glacier'))) {
+          delete parsed[11];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[12] && (parsed[12].worldHeight < 950 || parsed[12].worldWidth < 5100 || !parsed[12].description?.includes('continuous swimming') || !parsed[12].theme?.name?.includes('Deep Sea'))) {
+          delete parsed[12];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[13] && (parsed[13].worldHeight < 800 || !parsed[13].title?.includes('Citadel') || parsed[13].theme?.id !== 'medieval_castle')) {
+          delete parsed[13];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         if (parsed[nextLvl.id]) {
