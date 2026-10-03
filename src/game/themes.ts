@@ -202,5 +202,22 @@ export const THEMES: Record<string, LevelTheme> = {
     bioluminescence: '#38BDF8',
     bubbleColor: 'rgba(186, 230, 253, 0.7)',
     coralGlow: 'rgba(45, 212, 191, 0.45)'
+  },
+  medievalCastle: {
+    id: 'medieval_castle',
+    name: 'Gothic Castle Keep',
+    skyColorTop: '#080612',      // Deep midnight gothic void
+    skyColorBottom: '#1E1532',   // Ominous twilight plum/violet horizon
+    cloudColor: '#2C2244',       // Heavy rolling thunderhead clouds
+    mountainColor: '#120D22',    // Distant mountain crags & gothic spires
+    platformFill: '#24222E',     // Weathered fortress ashlar stone masonry
+    platformTop: '#78350F',      // Carved timber & stone battlement flagstones
+    platformBorder: '#1A1824',   // Iron-reinforced mortar seams
+    accentColor: '#F59E0B',      // Royal heraldic amber gold
+    torchGlow: 'rgba(245, 158, 11, 0.45)', // Warm flickering brazier light
+    bannerRed: '#991B1B',        // Royal crimson heraldry banner
+    bannerGold: '#FBBF24',       // Gilded gold tassels and embroidery
+    ironTrim: '#475569',         // Cast iron portcullis bars & brackets
+    stainedGlass: '#818CF8'      // Cathedral rosette window glow
   }
 };

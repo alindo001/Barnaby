@@ -300,6 +300,11 @@ export interface LevelTheme {
   bubbleColor?: string;
   coralGlow?: string;
   bioluminescence?: string;
+  torchGlow?: string;
+  bannerRed?: string;
+  bannerGold?: string;
+  ironTrim?: string;
+  stainedGlass?: string;
 }
 
 export type LevelGameplayType = 'runner' | 'terrain' | 'rocketeer' | 'gadget';

@@ -284,6 +284,10 @@ export class GameRenderer {
     return theme.id === 'deep_sea' || (theme.name ? theme.name.toLowerCase().includes('deep sea') || theme.name.toLowerCase().includes('abyssal') : false);
   }
 
+  private isMedievalCastleTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'medieval_castle' || (theme.name ? theme.name.toLowerCase().includes('castle') || theme.name.toLowerCase().includes('citadel') || theme.name.toLowerCase().includes('keep') : false);
+  }
+
   private drawBackground(level: LevelData, camera: Camera, width: number, height: number) {
     const { ctx } = this;
     const { theme } = level;
@@ -315,6 +319,12 @@ export class GameRenderer {
     // Check if Abyssal Deep Sea aesthetic
     if (this.isDeepSeaTheme(theme)) {
       this.drawDeepSeaBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Medieval Castle Keep aesthetic
+    if (this.isMedievalCastleTheme(theme)) {
+      this.drawMedievalCastleBackground(level, camera, width, height);
       return;
     }
 
@@ -1259,6 +1269,257 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawMedievalCastleBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+    const { theme } = level;
+
+    // 1. Deep Midnight Gothic Sky Gradient
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, theme.skyColorTop || '#080612');      // Obsidian gothic void
+    skyGrad.addColorStop(0.55, '#150E26');                        // Stormy twilight purple
+    skyGrad.addColorStop(1, theme.skyColorBottom || '#1E1532');   // Deep plum horizon
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Large Mystic Blood/Pale Full Moon with Ominous Glow
+    ctx.save();
+    const moonX = ((width * 0.72 - camera.x * 0.03) % (width + 300) + width + 300) % (width + 300) - 150;
+    const moonY = height * 0.22;
+    const moonR = Math.min(65, Math.max(45, height * 0.12));
+
+    // Outer moon halo glow
+    const moonGlow = ctx.createRadialGradient(moonX, moonY, moonR * 0.6, moonX, moonY, moonR * 2.2);
+    moonGlow.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
+    moonGlow.addColorStop(0.5, 'rgba(147, 51, 234, 0.12)');
+    moonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = moonGlow;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, moonR * 2.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Moon disc
+    const moonGrad = ctx.createRadialGradient(moonX - moonR * 0.3, moonY - moonR * 0.3, moonR * 0.2, moonX, moonY, moonR);
+    moonGrad.addColorStop(0, '#FEF3C7');
+    moonGrad.addColorStop(0.7, '#FDE68A');
+    moonGrad.addColorStop(1, '#D97706');
+    ctx.fillStyle = moonGrad;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lunar Maria / Crater silhouettes
+    ctx.fillStyle = 'rgba(180, 83, 9, 0.25)';
+    ctx.beginPath();
+    ctx.arc(moonX - moonR * 0.25, moonY - moonR * 0.1, moonR * 0.32, 0, Math.PI * 2);
+    ctx.arc(moonX + moonR * 0.3, moonY + moonR * 0.2, moonR * 0.22, 0, Math.PI * 2);
+    ctx.arc(moonX + moonR * 0.05, moonY + moonR * 0.35, moonR * 0.18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 3. Rolling Gothic Thunderhead Clouds across sky
+    ctx.save();
+    ctx.fillStyle = 'rgba(30, 21, 50, 0.45)';
+    for (let c = 0; c < 5; c++) {
+      const cx = ((c * 260 + this.gameTime * 6 - camera.x * 0.04) % (width + 300) + width + 300) % (width + 300) - 150;
+      const cy = height * 0.15 + (c % 3) * 35;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 55, 0, Math.PI * 2);
+      ctx.arc(cx + 45, cy - 10, 45, 0, Math.PI * 2);
+      ctx.arc(cx + 90, cy + 5, 50, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 4. Parallax Layer 1: Distant Crags & Gothic Spire Towers (camera.x * 0.06)
+    ctx.save();
+    ctx.fillStyle = '#0D091A';
+    ctx.strokeStyle = '#18112C';
+    ctx.lineWidth = 1.2;
+    const distantOffset = (camera.x * 0.06) % 600;
+    ctx.beginPath();
+    ctx.moveTo(-600, height);
+    for (let x = -600; x < width + 600; x += 150) {
+      const px = x - distantOffset;
+      const towerHeight = 220 + Math.abs(Math.sin(x * 0.015)) * 140;
+      const py = height - towerHeight;
+      // Castle spire profile
+      ctx.lineTo(px, height - 120);
+      ctx.lineTo(px + 30, py + 50);
+      ctx.lineTo(px + 45, py); // Spire peak
+      ctx.lineTo(px + 60, py + 50);
+      ctx.lineTo(px + 90, height - 130);
+    }
+    ctx.lineTo(width + 600, height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    // 5. Parallax Layer 2: Mid-ground Fortress Ramparts, Buttresses & Stained Glass Rosettes (camera.x * 0.18)
+    ctx.save();
+    const rampartOffset = (camera.x * 0.18) % 400;
+    const midWallGrad = ctx.createLinearGradient(0, height - 260, 0, height);
+    midWallGrad.addColorStop(0, '#1A1429');
+    midWallGrad.addColorStop(1, '#0C0816');
+    ctx.fillStyle = midWallGrad;
+    ctx.strokeStyle = '#281E3E';
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath();
+    ctx.moveTo(-400, height);
+    for (let x = -400; x < width + 400; x += 200) {
+      const rx = x - rampartOffset;
+      const wallTop = height - 200 - ((Math.abs(x) / 200) % 2 === 0 ? 40 : 0);
+      ctx.lineTo(rx, wallTop);
+      // Crenellations
+      for (let cr = 0; cr < 4; cr++) {
+        const cx = rx + cr * 50;
+        ctx.lineTo(cx + 10, wallTop);
+        ctx.lineTo(cx + 10, wallTop + 14);
+        ctx.lineTo(cx + 25, wallTop + 14);
+        ctx.lineTo(cx + 25, wallTop);
+        ctx.lineTo(cx + 45, wallTop);
+      }
+    }
+    ctx.lineTo(width + 400, height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Midground Gothic Arched Stained Glass Windows
+    for (let x = -400; x < width + 400; x += 200) {
+      const wx = x - rampartOffset + 60;
+      const wy = height - 160;
+      // Stained glass arched window frame
+      ctx.fillStyle = '#0F0B18';
+      ctx.beginPath();
+      ctx.arc(wx + 16, wy, 16, Math.PI, 0);
+      ctx.lineTo(wx + 32, wy + 45);
+      ctx.lineTo(wx, wy + 45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#3B2D54';
+      ctx.stroke();
+
+      // Glowing Stained Glass panes (amber/ruby/amethyst)
+      const glowGrad = ctx.createLinearGradient(wx, wy - 16, wx, wy + 45);
+      glowGrad.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
+      glowGrad.addColorStop(0.5, 'rgba(219, 39, 119, 0.4)');
+      glowGrad.addColorStop(1, 'rgba(129, 140, 248, 0.35)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(wx + 16, wy, 13, Math.PI, 0);
+      ctx.lineTo(wx + 29, wy + 42);
+      ctx.lineTo(wx + 3, wy + 42);
+      ctx.closePath();
+      ctx.fill();
+
+      // Window tracery mullions
+      ctx.strokeStyle = 'rgba(15, 11, 24, 0.8)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(wx + 16, wy - 13);
+      ctx.lineTo(wx + 16, wy + 42);
+      ctx.moveTo(wx + 3, wy + 16);
+      ctx.lineTo(wx + 29, wy + 16);
+      ctx.stroke();
+    }
+
+    // Midground Wall Torches with Animated Fire & Embers
+    for (let x = -400; x < width + 400; x += 200) {
+      const tx = x - rampartOffset + 140;
+      const ty = height - 145;
+
+      // Iron bracket
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(tx - 2, ty + 6, 4, 16);
+      ctx.fillRect(tx - 4, ty + 18, 8, 3);
+      // Brazier cup
+      ctx.fillStyle = '#1E293B';
+      ctx.beginPath();
+      ctx.moveTo(tx - 6, ty + 6);
+      ctx.lineTo(tx + 6, ty + 6);
+      ctx.lineTo(tx + 4, ty + 12);
+      ctx.lineTo(tx - 4, ty + 12);
+      ctx.closePath();
+      ctx.fill();
+
+      // Warm torchlight glow aura
+      const tGlow = ctx.createRadialGradient(tx, ty, 4, tx, ty, 55);
+      tGlow.addColorStop(0, 'rgba(245, 158, 11, 0.32)');
+      tGlow.addColorStop(0.4, 'rgba(239, 68, 68, 0.16)');
+      tGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = tGlow;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 55, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Animated flickering flame
+      const flameWobble = Math.sin(this.gameTime * 12 + x) * 2;
+      const flameH = 12 + Math.cos(this.gameTime * 14 + x) * 3;
+      const fGrad = ctx.createLinearGradient(tx, ty + 6, tx + flameWobble, ty + 6 - flameH);
+      fGrad.addColorStop(0, '#EF4444');
+      fGrad.addColorStop(0.5, '#F97316');
+      fGrad.addColorStop(1, '#FEF08A');
+      ctx.fillStyle = fGrad;
+      ctx.beginPath();
+      ctx.moveTo(tx - 5, ty + 6);
+      ctx.quadraticCurveTo(tx - 3, ty, tx + flameWobble, ty + 6 - flameH);
+      ctx.quadraticCurveTo(tx + 3, ty, tx + 5, ty + 6);
+      ctx.closePath();
+      ctx.fill();
+
+      // Sparks / Embers rising
+      ctx.fillStyle = '#FDE047';
+      for (let em = 0; em < 2; em++) {
+        const eProg = (this.gameTime * 2.5 + em * 0.5 + (x % 7) * 0.2) % 1;
+        const ex = tx + Math.sin(this.gameTime * 4 + em * 3) * 6;
+        const ey = ty - eProg * 28;
+        ctx.globalAlpha = 1 - eProg;
+        ctx.fillRect(ex - 1, ey - 1, 2, 2);
+      }
+      ctx.globalAlpha = 1;
+
+      // Royal heraldry banner hanging beneath the torch
+      const bannerW = 22;
+      const bannerH = 46;
+      const bx = tx - 11;
+      const by = ty + 24;
+      const sway = Math.sin(this.gameTime * 2.2 + x) * 2.5;
+
+      ctx.fillStyle = theme.bannerRed || '#991B1B';
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx + bannerW, by);
+      ctx.lineTo(bx + bannerW + sway, by + bannerH);
+      ctx.lineTo(bx + bannerW / 2 + sway, by + bannerH - 8); // Swallowtail
+      ctx.lineTo(bx + sway, by + bannerH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Gold embroidery trim
+      ctx.strokeStyle = theme.bannerGold || '#FBBF24';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Gold heraldic emblem (diamond / fleur)
+      ctx.fillStyle = theme.bannerGold || '#FBBF24';
+      ctx.fillRect(bx + bannerW / 2 - 2 + sway * 0.5, by + 12, 4, 8);
+      ctx.fillRect(bx + bannerW / 2 - 4 + sway * 0.5, by + 14, 8, 4);
+    }
+    ctx.restore();
+
+    // 6. Ambient Mist over the fortress foundations
+    ctx.save();
+    const mistGrad = ctx.createLinearGradient(0, height - 90, 0, height);
+    mistGrad.addColorStop(0, 'rgba(30, 21, 50, 0)');
+    mistGrad.addColorStop(0.5, 'rgba(30, 21, 50, 0.2)');
+    mistGrad.addColorStop(1, 'rgba(15, 10, 25, 0.45)');
+    ctx.fillStyle = mistGrad;
+    ctx.fillRect(0, height - 90, width, 90);
+    ctx.restore();
+  }
+
   private drawVolcanoPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
     const orange = theme.accentColor || '#F97316';
@@ -1779,6 +2040,255 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawMedievalCastlePlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const gold = theme.accentColor || '#F59E0B';
+    const border = theme.platformBorder || '#1A1824';
+    const iron = theme.ironTrim || '#475569';
+
+    // 1. BOUNCY PLATFORM: Royal Velvet Spring Cushion
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Heavy wrought-iron base frame
+      ctx.fillStyle = '#1A1824';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = iron;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Heavy coiled iron spring
+      const coilSteps = 3;
+      const stepH = (p.height - 10) / coilSteps;
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i < coilSteps; i++) {
+        const sy = p.y + p.height - 6 - i * stepH;
+        ctx.moveTo(p.x + 8, sy);
+        ctx.lineTo(p.x + p.width - 8, sy - stepH * 0.5);
+      }
+      ctx.stroke();
+
+      // Royal velvet cushion top plate
+      const pulse = Math.sin(this.gameTime * 8) * 3;
+      ctx.fillStyle = theme.bannerRed || '#991B1B';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + pulse, p.width - 4, 9, 4);
+      ctx.fill();
+
+      // Gilded gold tassels & embroidered crest
+      ctx.fillStyle = theme.bannerGold || '#FBBF24';
+      ctx.fillRect(p.x + 6, p.y + pulse + 2, p.width - 12, 2.5);
+
+      // Brass studs along cushion
+      for (let bx = p.x + 8; bx < p.x + p.width - 6; bx += 14) {
+        ctx.beginPath();
+        ctx.arc(bx, p.y + pulse + 5, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. CRUMBLING PLATFORM: Fractured Fortress Flagstones
+    if (p.type === 'crumbling') {
+      ctx.save();
+      const shakeOffset = (p.crumbling && p.crumbleTimer !== undefined)
+        ? Math.sin(p.crumbleTimer * 40) * 2.5
+        : 0;
+
+      const alpha = p.respawnTimer ? 0.3 : 1;
+      ctx.globalAlpha = alpha;
+
+      // Weathered stone slab body
+      ctx.fillStyle = '#2E2A38';
+      ctx.fillRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      // Fractures and deep cracks
+      ctx.strokeStyle = '#120F18';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let cx = p.x + 12; cx < p.x + p.width - 10; cx += 24) {
+        ctx.moveTo(cx + shakeOffset, p.y);
+        ctx.lineTo(cx + 6 + shakeOffset, p.y + p.height * 0.6);
+        ctx.lineTo(cx + 2 + shakeOffset, p.y + p.height);
+      }
+      ctx.stroke();
+
+      // Worn stone top lip
+      ctx.fillStyle = '#5A5266';
+      ctx.fillRect(p.x + shakeOffset, p.y, p.width, 2.5);
+
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      // Crumbling stone dust falling when triggered
+      if (p.crumbling) {
+        ctx.fillStyle = '#64748B';
+        for (let d = 0; d < 3; d++) {
+          const dx = p.x + ((d * 29 + this.gameTime * 70) % p.width);
+          const dy = p.y + p.height + ((this.gameTime * 50 + d * 15) % 18);
+          ctx.fillRect(dx, dy, 2, 2);
+        }
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 3. ONE-WAY PLATFORM: Ancient Drawbridge Oak Timber
+    if (p.type === 'one-way') {
+      ctx.save();
+      // Rich dark oak timber planks
+      const oakGrad = ctx.createLinearGradient(0, p.y, 0, p.y + p.height);
+      oakGrad.addColorStop(0, '#5C2D11');
+      oakGrad.addColorStop(1, '#3B1B08');
+      ctx.fillStyle = oakGrad;
+      ctx.beginPath();
+      ctx.roundRect(p.x, p.y, p.width, p.height, [3, 3, 4, 4]);
+      ctx.fill();
+
+      // Iron strapping bands with bolt heads
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(p.x + 6, p.y, 4, p.height);
+      ctx.fillRect(p.x + p.width - 10, p.y, 4, p.height);
+
+      // Rivet bolts on iron bands
+      ctx.fillStyle = '#94A3B8';
+      ctx.fillRect(p.x + 7, p.y + 2, 2, 2);
+      ctx.fillRect(p.x + 7, p.y + p.height - 4, 2, 2);
+      ctx.fillRect(p.x + p.width - 9, p.y + 2, 2, 2);
+      ctx.fillRect(p.x + p.width - 9, p.y + p.height - 4, 2, 2);
+
+      // Heraldic upward-pointing arrowheads
+      ctx.fillStyle = '#F59E0B';
+      for (let ax = p.x + 24; ax < p.x + p.width - 20; ax += 32) {
+        ctx.beginPath();
+        ctx.moveTo(ax, p.y + p.height - 3);
+        ctx.lineTo(ax + 4, p.y + 2);
+        ctx.lineTo(ax + 8, p.y + p.height - 3);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Top wood-grain edge
+      ctx.fillStyle = '#78350F';
+      ctx.fillRect(p.x + 1, p.y, p.width - 2, 2);
+
+      ctx.strokeStyle = '#1E1510';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+      ctx.restore();
+      return;
+    }
+
+    // 4. SOLID PLATFORM: Castle Ashlar Stone Fortress Masonry
+    ctx.save();
+    // Heavy stone masonry fill
+    const fillGrad = ctx.createLinearGradient(0, p.y, 0, p.y + p.height);
+    fillGrad.addColorStop(0, '#282535');
+    fillGrad.addColorStop(0.3, '#1E1C29');
+    fillGrad.addColorStop(1, '#13111C');
+    ctx.fillStyle = fillGrad;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+
+    // Ashlar stone block courses with mortar lines
+    ctx.strokeStyle = '#14121C';
+    ctx.lineWidth = 1.2;
+    const blockH = 18;
+    const blockW = 34;
+    const rows = Math.ceil(p.height / blockH);
+    for (let r = 0; r < rows; r++) {
+      const by = p.y + r * blockH;
+      // Horizontal mortar line
+      if (r > 0) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, by);
+        ctx.lineTo(p.x + p.width, by);
+        ctx.stroke();
+      }
+      // Vertical mortar seams staggered by half a block
+      const xOffset = (r % 2) * (blockW * 0.5);
+      for (let bx = p.x + xOffset; bx < p.x + p.width; bx += blockW) {
+        ctx.beginPath();
+        ctx.moveTo(bx, by);
+        ctx.lineTo(bx, Math.min(p.y + p.height, by + blockH));
+        ctx.stroke();
+      }
+    }
+
+    // Battlement flagstone top rim
+    const topGrad = ctx.createLinearGradient(0, p.y, 0, p.y + 6);
+    topGrad.addColorStop(0, '#473E55');
+    topGrad.addColorStop(1, '#2E273A');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(p.x, p.y, p.width, 6);
+
+    // Carved gold/amber masonry edge highlight
+    ctx.fillStyle = '#B45309';
+    ctx.fillRect(p.x, p.y, p.width, 1.8);
+
+    // Cast-iron corner reinforcing brackets
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(p.x, p.y, 4, 8);
+    ctx.fillRect(p.x, p.y, 8, 4);
+    ctx.fillRect(p.x + p.width - 4, p.y, 4, 8);
+    ctx.fillRect(p.x + p.width - 8, p.y, 8, 4);
+
+    // Decorative chains hanging underneath large solid platforms
+    if (p.width >= 90 && p.height >= 24) {
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      for (let chX = p.x + 25; chX <= p.x + p.width - 25; chX += 50) {
+        ctx.beginPath();
+        const chainLen = 8 + (chX % 7) * 2;
+        ctx.moveTo(chX, p.y + p.height);
+        ctx.lineTo(chX, p.y + p.height + chainLen);
+        ctx.stroke();
+        // Iron weight / ring at end
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.arc(chX, p.y + p.height + chainLen + 2, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Moving Platform: Castle Clockwork Chains & Suspension Pulleys
+    if (p.speed && p.speed > 0) {
+      // Iron trim border
+      ctx.strokeStyle = gold;
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+
+      // Heavy suspension chains going upward from both ends of the platform
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 2;
+      const chainY = Math.max(0, p.y - 40);
+      ctx.beginPath();
+      ctx.moveTo(p.x + 10, p.y);
+      ctx.lineTo(p.x + 10, chainY);
+      ctx.moveTo(p.x + p.width - 10, p.y);
+      ctx.lineTo(p.x + p.width - 10, chainY);
+      ctx.stroke();
+
+      // Spinning brass chain gear cog atop the chains
+      ctx.fillStyle = '#D97706';
+      ctx.beginPath();
+      ctx.arc(p.x + 10, chainY, 4, 0, Math.PI * 2);
+      ctx.arc(p.x + p.width - 10, chainY, 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+    }
+
+    ctx.restore();
+  }
+
   private drawPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
 
@@ -1809,6 +2319,12 @@ export class GameRenderer {
     // Check if Abyssal Deep Sea theme platform styles
     if (this.isDeepSeaTheme(theme)) {
       this.drawDeepSeaPlatform(p, theme);
+      return;
+    }
+
+    // Check if Medieval Castle theme platform styles
+    if (this.isMedievalCastleTheme(theme)) {
+      this.drawMedievalCastlePlatform(p, theme);
       return;
     }
 
@@ -2542,10 +3058,11 @@ export class GameRenderer {
     const isNeon = theme ? this.isNeonTheme(theme) : false;
     const isSpace = theme ? this.isSpaceTheme(theme) : false;
     const isGlacier = theme ? this.isGlacierTheme(theme) : false;
+    const isCastle = theme ? this.isMedievalCastleTheme(theme) : false;
 
     if (h.type === 'spike') {
-      ctx.fillStyle = isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : '#DC2626'));
-      ctx.strokeStyle = isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : '#991B1B'));
+      ctx.fillStyle = isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : (isCastle ? '#334155' : '#DC2626')));
+      ctx.strokeStyle = isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : (isCastle ? '#64748B' : '#991B1B')));
       ctx.lineWidth = 1.5;
 
       const numSpikes = Math.max(1, Math.floor(h.width / 14));
@@ -2563,13 +3080,13 @@ export class GameRenderer {
       ctx.stroke();
 
       // Gleam on spike tips
-      ctx.fillStyle = (isNeon || isSpace || isGlacier) ? '#FFFFFF' : '#FCA5A5';
+      ctx.fillStyle = (isNeon || isSpace || isGlacier) ? '#FFFFFF' : (isCastle ? '#F59E0B' : '#FCA5A5');
       for (let i = 0; i < numSpikes; i++) {
         const sx = h.x + i * spikeW;
         ctx.fillRect(sx + spikeW * 0.45, h.y + 2, 2, 4);
       }
     } else if (h.type === 'saw') {
-      // Spinning Buzzsaw / Orbital Plasma Orb / Glacial Ice Chakram
+      // Spinning Buzzsaw / Orbital Plasma Orb / Glacial Ice Chakram / Medieval Spiked Flail
       ctx.save();
       const cx = h.x + h.width / 2;
       const cy = h.y + h.height / 2;
@@ -2582,11 +3099,14 @@ export class GameRenderer {
       if (isSpace || isGlacier) {
         ctx.shadowColor = '#38BDF8';
         ctx.shadowBlur = 8;
+      } else if (isCastle) {
+        ctx.shadowColor = '#F59E0B';
+        ctx.shadowBlur = 6;
       }
 
       // Outer saw teeth
-      ctx.fillStyle = isGlacier ? '#0F2642' : ((isNeon || isSpace) ? '#0E172A' : '#E2E8F0');
-      ctx.strokeStyle = (isSpace || isGlacier) ? '#38BDF8' : (isNeon ? '#00F0FF' : '#64748B');
+      ctx.fillStyle = isGlacier ? '#0F2642' : ((isNeon || isSpace) ? '#0E172A' : (isCastle ? '#1E293B' : '#E2E8F0'));
+      ctx.strokeStyle = (isSpace || isGlacier) ? '#38BDF8' : (isNeon ? '#00F0FF' : (isCastle ? '#94A3B8' : '#64748B'));
       ctx.lineWidth = 2;
       ctx.beginPath();
       const teeth = 8;
@@ -2601,12 +3121,12 @@ export class GameRenderer {
       ctx.stroke();
 
       // Center core
-      ctx.fillStyle = isGlacier ? '#7DD3FC' : (isSpace ? '#818CF8' : (isNeon ? '#FF007F' : '#EF4444'));
+      ctx.fillStyle = isGlacier ? '#7DD3FC' : (isSpace ? '#818CF8' : (isNeon ? '#FF007F' : (isCastle ? '#B45309' : '#EF4444')));
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : '#F87171'));
+      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : (isCastle ? '#FDE047' : '#F87171')));
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.2, 0, Math.PI * 2);
       ctx.fill();
@@ -2616,7 +3136,7 @@ export class GameRenderer {
       const isVolcano = theme ? this.isVolcanoTheme(theme) : false;
       const fillHeight = Math.max(h.height, 960 - h.y);
 
-      // Deep Molten Magma / Plasma Void / Sub-Zero Cryo Gradient
+      // Deep Molten Magma / Plasma Void / Sub-Zero Cryo / Boiling Pitch Gradient
       const lavaGrad = ctx.createLinearGradient(0, h.y, 0, h.y + fillHeight);
       if (isGlacier) {
         lavaGrad.addColorStop(0, '#E0F2FE');
@@ -2632,6 +3152,12 @@ export class GameRenderer {
         lavaGrad.addColorStop(0, '#FF007F');
         lavaGrad.addColorStop(0.3, '#701A75');
         lavaGrad.addColorStop(1, '#0B0726');
+      } else if (isCastle) {
+        // Boiling pitch & molten brimstone
+        lavaGrad.addColorStop(0, '#78350F');
+        lavaGrad.addColorStop(0.12, '#451A03');
+        lavaGrad.addColorStop(0.45, '#1C1917');
+        lavaGrad.addColorStop(1, '#0A080C');
       } else {
         // Volcanic Incandescent Molten Magma
         lavaGrad.addColorStop(0, '#F97316');
@@ -2642,8 +3168,8 @@ export class GameRenderer {
       ctx.fillStyle = lavaGrad;
       ctx.fillRect(h.x, h.y, h.width, fillHeight);
 
-      // Bubbling Magma / Freezing Nitrogen Wave Crest
-      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : '#FEF08A'));
+      // Bubbling Magma / Freezing Nitrogen / Boiling Pitch Wave Crest
+      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : (isCastle ? '#F59E0B' : '#FEF08A')));
       ctx.beginPath();
       ctx.moveTo(h.x, h.y);
       for (let x = h.x; x <= h.x + h.width; x += 16) {
@@ -2655,7 +3181,7 @@ export class GameRenderer {
       ctx.closePath();
       ctx.fill();
 
-      // Bubbling Magma & Floating Charred Crust Rocks / Floating Icebergs
+      // Bubbling Magma & Floating Charred Crust Rocks / Floating Icebergs / Boiling Pitch Slag
       if (isGlacier) {
         // Floating ice floe chunks in the cryo pool
         ctx.fillStyle = 'rgba(224, 242, 254, 0.85)';
@@ -2676,6 +3202,27 @@ export class GameRenderer {
 
         // Sub-zero nitrogen vapor bubbles
         ctx.fillStyle = '#FFFFFF';
+        for (let i = 0; i < 4; i++) {
+          const bx = h.x + ((i * 113 + this.gameTime * 35) % Math.max(10, h.width - 20)) + 10;
+          const bWave = h.y + Math.sin(bx * 0.05 + this.gameTime * 6) * 4.5;
+          const bRadius = 2 + Math.abs(Math.sin(this.gameTime * 8 + i * 2)) * 3;
+          ctx.beginPath();
+          ctx.arc(bx, bWave, bRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (isCastle) {
+        // Floating charred slag & brimstone crust in boiling pitch
+        ctx.fillStyle = '#1C1917';
+        const chunkSpacing = 44;
+        const numChunks = Math.floor(h.width / chunkSpacing);
+        for (let i = 0; i < numChunks; i++) {
+          const cx = h.x + 10 + i * chunkSpacing + Math.sin(this.gameTime * 2 + i) * 6;
+          const waveY = h.y + Math.sin(cx * 0.05 + this.gameTime * 6) * 4.5;
+          ctx.fillRect(cx, waveY - 2, 12, 4);
+        }
+
+        // Fiery Tar Bubbles
+        ctx.fillStyle = '#F59E0B';
         for (let i = 0; i < 4; i++) {
           const bx = h.x + ((i * 113 + this.gameTime * 35) % Math.max(10, h.width - 20)) + 10;
           const bWave = h.y + Math.sin(bx * 0.05 + this.gameTime * 6) * 4.5;

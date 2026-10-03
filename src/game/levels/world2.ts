@@ -318,24 +318,161 @@ export const WORLD_2_LEVELS: LevelData[] = [
   },
   {
     id: 13,
-    title: "13. Crystal Caverns: Heights Exploration",
+    title: "13. Citadel of Shadows: The Grand Keep",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
+    worldName: "Citadel of Shadows",
     gameplayType: "terrain",
     category: "classic",
-    description: "Explore the vertical elevations, moving platforms, and hidden secrets of Crystal Caverns.",
-    worldWidth: 3940,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":3800,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1379,"y":470,"width":30,"height":40,"activated":false},{"x":2679,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l3_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w2_l3_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w2_l3_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w2_l3_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w2_l3_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w2_l3_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w2_l3_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.5599999999999998,"distanceX":140,"startX":2075,"startY":490,"vx":1.5599999999999998},{"id":"w2_l3_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w2_l3_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w2_l3_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w2_l3_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w2_l3_finish_base","x":3560,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w2_l3_secret_p1","x":1064,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w2_l3_secret_p2","x":2206,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w2_l3_secret_p3","x":3660,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l3_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l3_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w2_l3_acorn_1","x":1096,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l3_acorn_2","x":2228,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l3_acorn_3","x":3697,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l3_c_1","x":547,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_2","x":833,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_4","x":1407,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_5","x":1693,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_6","x":1980,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l3_c_7","x":2267,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_8","x":2553,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_9","x":2840,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l3_c_10","x":3127,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l3_c_11","x":3413,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l3_e_1","x":491,"y":400,"width":28,"height":26,"type":"frog","vx":0.97,"vy":0,"minX":386,"maxX":623,"facing":1,"minY":356,"maxY":426},{"id":"w2_l3_e_2","x":1170,"y":300,"width":26,"height":22,"type":"pigeon","vx":-1.3599999999999999,"vy":0,"minX":1058,"maxX":1309,"facing":-1},{"id":"w2_l3_e_3","x":1452,"y":289,"width":28,"height":26,"type":"skunk","vx":0.97,"vy":0,"minX":1379,"maxX":1553,"facing":1},{"id":"w2_l3_e_4","x":1800,"y":389,"width":28,"height":26,"type":"goose","vx":-0.97,"vy":0,"minX":1697,"maxX":1931,"facing":-1},{"id":"w2_l3_e_5","x":2171,"y":464,"width":28,"height":26,"type":"patroller","vx":0.97,"vy":0,"minX":2081,"maxX":2289,"facing":1},{"id":"w2_l3_e_6","x":2771,"y":278,"width":28,"height":26,"type":"slime","vx":-0.97,"vy":0,"minX":2704,"maxX":2865,"facing":-1}],
-    parTime: 67,
-    threeStarScore: 7200
+    description: "Infiltrate the colossal Citadel of Shadows! Traverse the perilous moat drawbridges, navigate the treacherous dungeon undercroft, scale the moving chain-lifts of the Clocktower, and brave the wind-swept outer ramparts to breach the Royal Keep.",
+    worldWidth: 5200,
+    worldHeight: 860,
+    theme: THEMES.medievalCastle,
+    playerStart: { x: 80, y: 700 },
+    goal: { x: 5080, y: 300, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1380, y: 680, width: 30, height: 40, activated: false },
+      { x: 2720, y: 440, width: 30, height: 40, activated: false },
+      { x: 4160, y: 520, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The Outer Moat & Portcullis Gatehouse (x: 0 - 1400)
+      { id: "w13_p_start_courtyard", x: 0, y: 740, width: 280, height: 120, type: "solid" },
+      { id: "w13_p1_timber", x: 340, y: 680, width: 150, height: 18, type: "one-way" },
+      { id: "w13_p2_crumb", x: 550, y: 630, width: 100, height: 18, type: "crumbling" },
+      { id: "w13_p3_drawbridge", x: 710, y: 590, width: 140, height: 18, type: "one-way" },
+      { id: "w13_p4_bouncy", x: 910, y: 680, width: 80, height: 26, type: "bouncy" },
+      { id: "w13_p5_gatehouse_top", x: 1040, y: 480, width: 160, height: 26, type: "solid" },
+      // Secret lower dungeon alcove below moat (Golden Acorn #1)
+      { id: "w13_p_secret_lower", x: 520, y: 760, width: 120, height: 20, type: "solid" },
+      { id: "w13_p_secret_spring", x: 670, y: 760, width: 60, height: 22, type: "bouncy" },
+      // Gatehouse descent to CP1
+      { id: "w13_p6_descent_beam", x: 1240, y: 580, width: 110, height: 18, type: "one-way" },
+      { id: "w13_p_cp1_base", x: 1360, y: 720, width: 200, height: 140, type: "solid" },
+
+      // SECTOR 2: The Dungeon Undercroft & Oubliette Shaft (x: 1400 - 2750)
+      // Vertical moving chain-lift 1
+      { id: "w13_p_lift1", x: 1620, y: 720, width: 90, height: 22, type: "solid", startX: 1620, startY: 720, distanceX: 0, distanceY: -180, speed: 1.8, vx: 0, vy: -1.8 },
+      { id: "w13_p_cell_mid", x: 1770, y: 520, width: 130, height: 24, type: "solid" },
+      { id: "w13_p_cell_crumb", x: 1940, y: 490, width: 90, height: 20, type: "crumbling" },
+      // Horizontal moving chain-shuttle 1
+      { id: "w13_p_shuttle1", x: 2070, y: 460, width: 100, height: 20, type: "solid", startX: 2070, startY: 460, distanceX: 150, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+      // High rafters secret alcove (Golden Acorn #2)
+      { id: "w13_p_rafter1", x: 2120, y: 260, width: 80, height: 18, type: "one-way" },
+      { id: "w13_p_rafter_acorn", x: 2260, y: 210, width: 90, height: 18, type: "solid" },
+      // Lower undercroft path & spring
+      { id: "w13_p_lower_bed", x: 2240, y: 640, width: 180, height: 26, type: "solid" },
+      { id: "w13_p_spring2", x: 2460, y: 620, width: 80, height: 26, type: "bouncy" },
+      { id: "w13_p_clock_ledge", x: 2570, y: 480, width: 120, height: 22, type: "solid" },
+      { id: "w13_p_cp2_base", x: 2710, y: 480, width: 160, height: 380, type: "solid" },
+
+      // SECTOR 3: The Grand Hall & Clocktower Ascent (x: 2750 - 4180)
+      { id: "w13_p_tower_beam1", x: 2920, y: 420, width: 130, height: 18, type: "one-way" },
+      // Vertical moving chain-lift 2
+      { id: "w13_p_lift2", x: 3100, y: 500, width: 90, height: 22, type: "solid", startX: 3100, startY: 500, distanceX: 0, distanceY: -160, speed: 2.0, vx: 0, vy: -2.0 },
+      { id: "w13_p_arch_high", x: 3240, y: 300, width: 120, height: 22, type: "solid" },
+      { id: "w13_p_clock_crumb1", x: 3410, y: 340, width: 85, height: 18, type: "crumbling" },
+      // Horizontal moving chain-shuttle 2
+      { id: "w13_p_shuttle2", x: 3540, y: 380, width: 100, height: 22, type: "solid", startX: 3540, startY: 380, distanceX: 160, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "w13_p_bridge_high", x: 3760, y: 320, width: 120, height: 18, type: "one-way" },
+      { id: "w13_p_stair1", x: 3930, y: 400, width: 90, height: 20, type: "solid" },
+      { id: "w13_p_stair2", x: 4050, y: 480, width: 80, height: 20, type: "crumbling" },
+      { id: "w13_p_cp3_base", x: 4150, y: 560, width: 180, height: 300, type: "solid" },
+
+      // SECTOR 4: Outer Ramparts & Royal Throne Keep (x: 4180 - 5200)
+      { id: "w13_p_rampart1", x: 4360, y: 500, width: 150, height: 24, type: "solid" },
+      { id: "w13_p_rampart_spring", x: 4540, y: 500, width: 70, height: 26, type: "bouncy" },
+      // Secret High Turret (Golden Acorn #3)
+      { id: "w13_p_turret_high", x: 4620, y: 200, width: 90, height: 18, type: "solid" },
+      { id: "w13_p_parapet_crumb", x: 4660, y: 380, width: 80, height: 18, type: "crumbling" },
+      { id: "w13_p_parapet_timber", x: 4780, y: 360, width: 120, height: 18, type: "one-way" },
+      { id: "w13_p_goal_bridge", x: 4940, y: 360, width: 90, height: 18, type: "crumbling" },
+      { id: "w13_p_goal_throne", x: 5020, y: 360, width: 180, height: 500, type: "solid" }
+    ],
+    hazards: [
+      // Sector 1: Boiling Pitch Moat & Swinging Flail
+      { id: "w13_hz_moat", x: 280, y: 810, width: 1080, height: 80, type: "lava" },
+      { id: "w13_hz_flail1", x: 620, y: 480, width: 36, height: 36, type: "saw", startX: 620, startY: 480, distanceX: 0, distanceY: 90, speed: 2.0, vx: 0, vy: 2.0 },
+      { id: "w13_hz_spikes1", x: 880, y: 790, width: 70, height: 20, type: "spike" },
+
+      // Sector 2: Dungeon Undercroft Spikes & Flail
+      { id: "w13_hz_spikes2", x: 1580, y: 810, width: 260, height: 20, type: "spike" },
+      { id: "w13_hz_flail2", x: 2200, y: 190, width: 34, height: 34, type: "saw", startX: 2200, startY: 190, distanceX: 60, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "w13_hz_spikes3", x: 2360, y: 810, width: 200, height: 20, type: "spike" },
+
+      // Sector 3: Grand Hall Boiling Pitch & Clocktower Flail
+      { id: "w13_hz_hall_pitch", x: 2880, y: 810, width: 1200, height: 80, type: "lava" },
+      { id: "w13_hz_flail3", x: 3670, y: 290, width: 38, height: 38, type: "saw", startX: 3670, startY: 290, distanceX: 0, distanceY: 100, speed: 2.4, vx: 0, vy: 2.4 },
+
+      // Sector 4: Rampart Chasm Spikes & Executioner Blade
+      { id: "w13_hz_rampart_spikes", x: 4520, y: 810, width: 380, height: 20, type: "spike" },
+      { id: "w13_hz_flail4", x: 4730, y: 310, width: 36, height: 36, type: "saw", startX: 4730, startY: 310, distanceX: 0, distanceY: 80, speed: 2.2, vx: 0, vy: 2.2 }
+    ],
+    collectibles: [
+      // 3 Golden Acorns
+      { id: "w13_acorn_1", x: 570, y: 715, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w13_acorn_2", x: 2290, y: 165, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w13_acorn_3", x: 4650, y: 155, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Castle Gadgets & Health
+      { id: "w13_shield", x: 1470, y: 680, width: 28, height: 28, type: "bubble_shield", value: 600 },
+      { id: "w13_blaster", x: 2780, y: 440, width: 28, height: 28, type: "blaster", value: 600 },
+      { id: "w13_ammo1", x: 2820, y: 445, width: 20, height: 20, type: "blaster_ammo", value: 200 },
+      { id: "w13_ammo2", x: 3970, y: 370, width: 20, height: 20, type: "blaster_ammo", value: 200 },
+      { id: "w13_heart1", x: 1280, y: 540, width: 22, height: 22, type: "heart", value: 300 },
+      { id: "w13_heart2", x: 4260, y: 520, width: 22, height: 22, type: "heart", value: 300 },
+
+      // Gold Coins & Rubies (Sectors 1 - 4)
+      { id: "w13_c1", x: 400, y: 640, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c2", x: 590, y: 590, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_gem1", x: 760, y: 540, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w13_c3", x: 940, y: 600, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c4", x: 1100, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+
+      { id: "w13_gem2", x: 1650, y: 660, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w13_c5", x: 1820, y: 470, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c6", x: 1980, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c7", x: 2110, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c8", x: 2320, y: 590, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_gem3", x: 2500, y: 540, width: 24, height: 24, type: "gem", value: 500 },
+
+      { id: "w13_c9", x: 2970, y: 370, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_gem4", x: 3140, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w13_c10", x: 3290, y: 260, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c11", x: 3450, y: 300, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c12", x: 3590, y: 330, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_gem5", x: 3810, y: 270, width: 24, height: 24, type: "gem", value: 500 },
+
+      { id: "w13_c13", x: 4420, y: 450, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_gem6", x: 4570, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w13_c14", x: 4700, y: 340, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_c15", x: 4830, y: 310, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w13_gem7", x: 4970, y: 310, width: 24, height: 24, type: "gem", value: 500 }
+    ],
+    enemies: [
+      // Ground enemies strictly on platforms with constrained patrol bounds:
+      // 1. Skunk on outer drawbridge timber (platform y: 680, height: 26 -> y: 654)
+      { id: "w13_e_skunk1", x: 390, y: 654, width: 28, height: 26, type: "skunk", vx: 0.95, vy: 0, minX: 345, maxX: 460, facing: 1 },
+      // 2. Patroller atop outer gatehouse (platform y: 480, height: 26 -> y: 454)
+      { id: "w13_e_patrol1", x: 1080, y: 454, width: 28, height: 26, type: "patroller", vx: 0.95, vy: 0, minX: 1045, maxX: 1170, facing: 1 },
+      // 3. Anteater in dungeon prison cell (platform y: 520, height: 26 -> y: 494)
+      { id: "w13_e_anteater1", x: 1810, y: 494, width: 28, height: 26, type: "anteater", vx: 0.95, vy: 0, minX: 1775, maxX: 1870, facing: 1 },
+      // 4. Frog on lower undercroft floor (platform y: 640, height: 26 -> y: 614)
+      { id: "w13_e_frog1", x: 2280, y: 614, width: 28, height: 26, type: "frog", vx: 0.95, vy: 0, minX: 2245, maxX: 2390, facing: 1, minY: 570, maxY: 640 },
+      // 5. Hedgehog on clocktower lower beam (platform y: 420, height: 26 -> y: 394)
+      { id: "w13_e_hedgehog1", x: 2960, y: 394, width: 28, height: 26, type: "hedgehog", vx: 0.95, vy: 0, minX: 2925, maxX: 3020, facing: 1 },
+      // 6. Flying pigeon in clocktower chasm airspace
+      { id: "w13_e_pigeon1", x: 3390, y: 260, width: 26, height: 22, type: "pigeon", vx: -1.3, vy: 0, minX: 3260, maxX: 3520, facing: -1 },
+      // 7. Patroller on high clocktower bridge (platform y: 320, height: 26 -> y: 294)
+      { id: "w13_e_patrol2", x: 3800, y: 294, width: 28, height: 26, type: "patroller", vx: 0.95, vy: 0, minX: 3765, maxX: 3850, facing: 1 },
+      // 8. Skunk on outer rampart battlement (platform y: 500, height: 26 -> y: 474)
+      { id: "w13_e_skunk2", x: 4400, y: 474, width: 28, height: 26, type: "skunk", vx: 0.95, vy: 0, minX: 4365, maxX: 4480, facing: 1 },
+      // 9. Flying goose guarding high secret turret
+      { id: "w13_e_goose1", x: 4580, y: 160, width: 28, height: 26, type: "goose", vx: -1.2, vy: 0, minX: 4520, maxX: 4740, facing: -1 },
+      // 10. Patroller on final parapet before throne keep (platform y: 360, height: 26 -> y: 334)
+      { id: "w13_e_patrol3", x: 4810, y: 334, width: 28, height: 26, type: "patroller", vx: 0.95, vy: 0, minX: 4785, maxX: 4870, facing: 1 }
+    ],
+    parTime: 110,
+    threeStarScore: 16500
   },
   {
     id: 14,
