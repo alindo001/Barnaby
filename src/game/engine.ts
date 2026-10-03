@@ -1012,30 +1012,39 @@ export class GameEngine {
           }
           break;
         case 'KeyX':
-          if (this.gameState === 'PLAYING' && this.player.hasJetpack) {
-            // Contextual directional unmount & launch
-            if (this.input.down) {
-              this.launchJetpack('down');
-            } else if (this.input.up && this.input.left) {
-              this.launchJetpack('up-left');
-            } else if (this.input.up && this.input.right) {
-              this.launchJetpack('up-right');
-            } else if (this.input.up) {
-              this.launchJetpack('up');
-            } else if (this.input.left) {
-              this.launchJetpack('left');
-            } else if (this.input.right) {
-              this.launchJetpack('right');
-            } else if (this.player.facing === 1) {
-              this.launchJetpack('right');
-            } else {
-              this.launchJetpack('left');
+          if (this.gameState === 'PLAYING') {
+            if (this.player.hasJetpack) {
+              // Contextual directional unmount & launch
+              if (this.input.down) {
+                this.launchJetpack('down');
+              } else if (this.input.up && this.input.left) {
+                this.launchJetpack('up-left');
+              } else if (this.input.up && this.input.right) {
+                this.launchJetpack('up-right');
+              } else if (this.input.up) {
+                this.launchJetpack('up');
+              } else if (this.input.left) {
+                this.launchJetpack('left');
+              } else if (this.input.right) {
+                this.launchJetpack('right');
+              } else if (this.player.facing === 1) {
+                this.launchJetpack('right');
+              } else {
+                this.launchJetpack('left');
+              }
+              break;
+            }
+            // If player does not have a jetpack, KeyX fires equipped weapon
+            this.input.fire = true;
+            if (this.player.hasSnowCannon) {
+              this.shootSnowCannon();
+            } else if (this.player.hasBlaster) {
+              this.shootBlaster();
             }
           }
           break;
         case 'KeyF':
         case 'KeyJ':
-        case 'KeyX':
           this.input.fire = true;
           if (this.gameState === 'PLAYING') {
             if (this.player.hasSnowCannon) {
