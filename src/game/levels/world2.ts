@@ -797,24 +797,137 @@ export const WORLD_2_LEVELS: LevelData[] = [
   },
   {
     id: 16,
-    title: "16. Crystal Caverns: Rapid Sprint",
+    title: "16. The Clockwork Spire: Aeronaut Boiler Flight",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
-    gameplayType: "runner",
-    category: "classic",
-    description: "Sprint along continuous solid ground, clear hurdles with double jumps, and outpace hazards in the Crystal Caverns!",
-    worldWidth: 4420,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4280,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1547,"y":470,"width":30,"height":40,"activated":false},{"x":3006,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l6_g1","x":0,"y":520,"width":830,"height":80,"type":"solid"},{"id":"w2_l6_h1","x":373,"y":472,"width":48,"height":48,"type":"solid"},{"id":"w2_l6_g2","x":940,"y":520,"width":650,"height":80,"type":"solid"},{"id":"w2_l6_h2","x":1232,"y":472,"width":48,"height":48,"type":"solid"},{"id":"w2_l6_g3","x":1700,"y":520,"width":973,"height":80,"type":"solid"},{"id":"w2_l6_sp3","x":2137,"y":504,"width":44,"height":16,"type":"bouncy"},{"id":"w2_l6_g4","x":2783,"y":520,"width":1005,"height":80,"type":"solid"},{"id":"w2_l6_h4","x":3235,"y":472,"width":48,"height":48,"type":"solid"},{"id":"w2_l6_g5","x":3898,"y":520,"width":937,"height":80,"type":"solid"},{"id":"w2_l6_h5","x":4319,"y":472,"width":48,"height":48,"type":"solid"},{"id":"w2_l6_finish","x":4060,"y":490,"width":360,"height":110,"type":"solid"},{"id":"w2_l6_secret_p1","x":1238,"y":260,"width":100,"height":20,"type":"solid"},{"id":"w2_l6_secret_p3","x":3713,"y":280,"width":110,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l6_hz1","x":533,"y":506,"width":36,"height":14,"type":"spike"},{"id":"w2_l6_hz3","x":2297,"y":506,"width":36,"height":14,"type":"spike"},{"id":"w2_l6_hz5","x":4479,"y":506,"width":36,"height":14,"type":"spike"}],
-    collectibles: [{"id":"w2_l6_acorn_1","x":1275,"y":230,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l6_acorn_2","x":2387,"y":410,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l6_acorn_3","x":3755,"y":250,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l6_c_1","x":587,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_2","x":913,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_4","x":1567,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_5","x":1893,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_6","x":2220,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l6_c_7","x":2547,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_8","x":2873,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_9","x":3200,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l6_c_10","x":3527,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l6_c_11","x":3853,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l6_e_1","x":1251,"y":494,"width":28,"height":26,"type":"hedgehog","vx":0.97,"vy":0,"minX":946,"maxX":1584,"facing":1},{"id":"w2_l6_e_2","x":2173,"y":494,"width":28,"height":26,"type":"frog","vx":-0.97,"vy":0,"minX":1706,"maxX":2667,"facing":-1,"minY":450,"maxY":520},{"id":"w2_l6_e_3","x":3272,"y":380,"width":26,"height":22,"type":"pigeon","vx":1.3599999999999999,"vy":0,"minX":2733,"maxX":3838,"facing":1},{"id":"w2_l6_e_4","x":4353,"y":494,"width":28,"height":26,"type":"skunk","vx":-0.97,"vy":0,"minX":3904,"maxX":4829,"facing":-1},{"id":"w2_l6_e_5","x":4226,"y":464,"width":28,"height":26,"type":"goose","vx":0.97,"vy":0,"minX":4066,"maxX":4414,"facing":1}],
-    parTime: 76,
-    threeStarScore: 7800
+    worldName: "Clockwork Spire",
+    gameplayType: "gadget",
+    category: "jetpack",
+    startWithJetpack: true,
+    description: "Strap on the aeronaut jetpack to navigate soaring boiler chimneys, giant rotating saw gauntlets, and high-altitude turbine flues high above the Clockwork Spire!",
+    worldWidth: 5100,
+    worldHeight: 900,
+    theme: THEMES.clockworkCore,
+    playerStart: { x: 80, y: 720 },
+    goal: { x: 4960, y: 340, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1300, y: 560, width: 30, height: 40, activated: false },
+      { x: 2580, y: 440, width: 30, height: 40, activated: false },
+      { x: 3860, y: 520, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // Sector 1: Launch Gantry & Boiler Chimneys
+      { id: "w16_p_launch", x: 0, y: 760, width: 220, height: 140, type: "solid" },
+      { id: "w16_p_intake", x: 300, y: 180, width: 90, height: 20, type: "solid" },
+      { id: "w16_p1_flue", x: 480, y: 640, width: 100, height: 260, type: "solid" },
+      { id: "w16_p2_flue", x: 880, y: 560, width: 90, height: 340, type: "solid" },
+      { id: "w16_p3_moving", x: 1060, y: 420, width: 100, height: 20, type: "moving", vx: 0, vy: 1.2, minY: 280, maxY: 520 },
+      // Checkpoint 1 Deck
+      { id: "w16_p_cp1", x: 1260, y: 600, width: 140, height: 300, type: "solid" },
+
+      // Sector 2: The Furnace Ducts & Cog Rails
+      { id: "w16_p4_hanging", x: 1500, y: 480, width: 90, height: 20, type: "solid" },
+      { id: "w16_p5_arch_low", x: 1720, y: 540, width: 90, height: 20, type: "solid" },
+      { id: "w16_p6_arch_high", x: 1800, y: 320, width: 90, height: 20, type: "solid" },
+      { id: "w16_p7_refill", x: 1940, y: 440, width: 100, height: 20, type: "solid" },
+      { id: "w16_p8_moving_horiz", x: 2120, y: 360, width: 90, height: 20, type: "moving", vx: 1.2, vy: 0, minX: 2120, maxX: 2360 },
+      { id: "w16_p9_cage_top", x: 2200, y: 260, width: 90, height: 20, type: "solid" },
+      // Checkpoint 2 Station
+      { id: "w16_p_cp2", x: 2540, y: 480, width: 150, height: 420, type: "solid" },
+
+      // Sector 3: High Turbine Flues & Catwalks
+      { id: "w16_p10_chimney", x: 2820, y: 580, width: 90, height: 320, type: "solid" },
+      { id: "w16_p11_moving_diag", x: 3040, y: 460, width: 90, height: 20, type: "moving", vx: 0, vy: -1.3, minY: 280, maxY: 520 },
+      { id: "w16_p12_spindle", x: 3240, y: 360, width: 100, height: 20, type: "solid" },
+      { id: "w16_p13_hanging", x: 3480, y: 460, width: 90, height: 20, type: "solid" },
+      { id: "w16_p14_moving", x: 3640, y: 380, width: 90, height: 20, type: "moving", vx: 1.1, vy: 0, minX: 3640, maxX: 3800 },
+      // Checkpoint 3 Hangar
+      { id: "w16_p_cp3", x: 3820, y: 560, width: 150, height: 340, type: "solid" },
+
+      // Sector 4: Observatory Final Approach & Rafters
+      { id: "w16_p15_rafter_secret", x: 4280, y: 170, width: 90, height: 20, type: "solid" },
+      { id: "w16_p16_anvil", x: 4760, y: 400, width: 100, height: 500, type: "solid" },
+      { id: "w16_p_observatory", x: 4900, y: 400, width: 200, height: 500, type: "solid" }
+    ],
+    hazards: [
+      // Boiling machine oil vats below
+      { id: "w16_hz_pit1", x: 220, y: 880, width: 1040, height: 20, type: "oil" },
+      { id: "w16_hz_pit2", x: 1400, y: 880, width: 1140, height: 20, type: "oil" },
+      { id: "w16_hz_pit3", x: 2690, y: 880, width: 1130, height: 20, type: "oil" },
+      { id: "w16_hz_pit4", x: 3970, y: 880, width: 790, height: 20, type: "oil" },
+
+      // Aerial rotating brass saws
+      { id: "w16_hz_saw1", x: 680, y: 420, width: 40, height: 40, type: "saw" },
+      { id: "w16_hz_saw2", x: 1620, y: 380, width: 44, height: 44, type: "saw" },
+      { id: "w16_hz_saw3", x: 2230, y: 310, width: 40, height: 40, type: "saw" },
+      { id: "w16_hz_saw4", x: 3380, y: 300, width: 44, height: 44, type: "saw" },
+      { id: "w16_hz_saw5", x: 4140, y: 380, width: 44, height: 44, type: "saw" },
+      { id: "w16_hz_saw6", x: 4500, y: 260, width: 44, height: 44, type: "saw" }
+    ],
+    collectibles: [
+      // Jetpack pickup at start gantry
+      { id: "w16_jp_spawn", x: 130, y: 720, width: 24, height: 28, type: "jetpack", value: 0 },
+
+      // 10 Jetpack Fuel Refill Canisters along flight arcs
+      { id: "w16_fuel_1", x: 520, y: 590, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_2", x: 920, y: 510, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_3", x: 1540, y: 430, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_4", x: 1980, y: 390, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_5", x: 2360, y: 310, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_6", x: 2860, y: 530, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_7", x: 3280, y: 310, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_8", x: 3680, y: 330, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_9", x: 4180, y: 460, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w16_fuel_10", x: 4580, y: 360, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+
+      // 3 Golden Acorns
+      { id: "w16_acorn_1", x: 340, y: 140, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w16_acorn_2", x: 2240, y: 220, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w16_acorn_3", x: 4320, y: 130, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Power-ups
+      { id: "w16_shield_1", x: 1840, y: 280, width: 24, height: 24, type: "shield", value: 0 },
+      { id: "w16_heart_1", x: 1380, y: 555, width: 22, height: 22, type: "heart", value: 0 },
+      { id: "w16_heart_2", x: 3940, y: 515, width: 22, height: 22, type: "heart", value: 0 },
+
+      // Flight path guiding coins & gems
+      { id: "w16_c_1", x: 380, y: 660, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_2", x: 420, y: 630, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_3", x: 620, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_4", x: 780, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_5", x: 1080, y: 380, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w16_c_6", x: 1420, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_7", x: 1460, y: 500, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_8", x: 1680, y: 450, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_9", x: 2060, y: 380, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_10", x: 2180, y: 320, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w16_c_11", x: 2720, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_12", x: 2760, y: 500, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_13", x: 3160, y: 380, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_14", x: 3400, y: 400, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w16_c_15", x: 3760, y: 340, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_16", x: 4020, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w16_c_17", x: 4440, y: 320, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w16_c_18", x: 4700, y: 360, width: 20, height: 20, type: "coin", value: 100 }
+    ],
+    enemies: [
+      // Ground patrollers strictly grounded
+      { id: "w16_e_patrol1", x: 100, y: 734, width: 28, height: 26, type: "patroller", vx: 0.8, vy: 0, minX: 40, maxX: 170, facing: 1 },
+      { id: "w16_e_anteater1", x: 1980, y: 414, width: 28, height: 26, type: "anteater", vx: 0.7, vy: 0, minX: 1945, maxX: 2025, facing: 1 },
+      { id: "w16_e_hedgehog1", x: 2620, y: 454, width: 28, height: 26, type: "hedgehog", vx: -0.8, vy: 0, minX: 2560, maxX: 2670, facing: -1 },
+      { id: "w16_e_patrol2", x: 4810, y: 374, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 4770, maxX: 4850, facing: -1 },
+
+      // Aerial flyers guarding air channels
+      { id: "w16_e_fireimp1", x: 740, y: 320, width: 28, height: 26, type: "fire_imp", vx: 1.2, vy: 0, minX: 620, maxX: 840, facing: 1 },
+      { id: "w16_e_pigeon1", x: 1140, y: 240, width: 26, height: 22, type: "pigeon", vx: -1.3, vy: 0, minX: 1020, maxX: 1240, facing: -1 },
+      { id: "w16_e_flyer1", x: 1760, y: 220, width: 28, height: 24, type: "flyer", vx: 1.4, vy: 0, minX: 1680, maxX: 1900, facing: 1 },
+      { id: "w16_e_goose1", x: 2400, y: 360, width: 28, height: 26, type: "goose", vx: -1.2, vy: 0, minX: 2300, maxX: 2520, facing: -1 },
+      { id: "w16_e_fireimp2", x: 3000, y: 240, width: 28, height: 26, type: "fire_imp", vx: 1.3, vy: 0, minX: 2900, maxX: 3180, facing: 1 },
+      { id: "w16_e_flyer2", x: 3560, y: 280, width: 28, height: 24, type: "flyer", vx: -1.4, vy: 0, minX: 3440, maxX: 3700, facing: -1 },
+      { id: "w16_e_pigeon2", x: 4120, y: 220, width: 26, height: 22, type: "pigeon", vx: 1.3, vy: 0, minX: 4020, maxX: 4260, facing: 1 },
+      { id: "w16_e_goose2", x: 4540, y: 240, width: 28, height: 26, type: "goose", vx: -1.2, vy: 0, minX: 4420, maxX: 4680, facing: -1 }
+    ],
+    parTime: 105,
+    threeStarScore: 16500
   },
   {
     id: 17,

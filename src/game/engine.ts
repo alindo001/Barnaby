@@ -177,6 +177,10 @@ export class GameEngine {
           delete parsed[15];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[16] && (parsed[16].worldHeight < 800 || !parsed[16].title?.includes('Aeronaut') || parsed[16].theme?.id !== 'clockwork_core' || !parsed[16].startWithJetpack)) {
+          delete parsed[16];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         this.levels = this.levels.map(lvl => parsed[lvl.id] ? parsed[lvl.id] : lvl);
       }
     } catch {}
@@ -398,6 +402,10 @@ export class GameEngine {
         }
         if (parsed[15] && (parsed[15].worldHeight < 800 || !parsed[15].title?.includes('Clockwork') || parsed[15].theme?.id !== 'clockwork_core')) {
           delete parsed[15];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[16] && (parsed[16].worldHeight < 800 || !parsed[16].title?.includes('Aeronaut') || parsed[16].theme?.id !== 'clockwork_core' || !parsed[16].startWithJetpack)) {
+          delete parsed[16];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         if (parsed[this.currentLevel.id]) {
