@@ -118,6 +118,10 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
           delete parsed[13];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[14] && (parsed[14].worldHeight < 800 || !parsed[14].title?.includes('Belfry') || parsed[14].theme?.id !== 'medieval_castle')) {
+          delete parsed[14];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         const targetId = levels[levelIndex]?.id;
         if (targetId && parsed[targetId]) {
           return JSON.parse(JSON.stringify(parsed[targetId]));
@@ -206,7 +210,7 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
           delete parsed[9];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
-        if (parsed[10] && (parsed[10].worldHeight <= 650 || (!parsed[10].title?.includes('Citadel') && !parsed[10].title?.includes('Glacier')) || !parsed[10].theme?.name?.includes('Glacier') || (parsed[10].platforms && parsed[10].platforms.some((p: any) => p.id === 'l10_deck_start')))) {
+        if (parsed[10] && (parsed[10].worldHeight <= 650 || !parsed[10].title?.includes('Borealis Glacier') || !parsed[10].theme?.name?.includes('Glacier') || (parsed[10].platforms && parsed[10].platforms.some((p: any) => p.id === 'l10_deck_start')))) {
           delete parsed[10];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
@@ -220,6 +224,10 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         }
         if (parsed[13] && (parsed[13].worldHeight < 800 || !parsed[13].title?.includes('Citadel') || parsed[13].theme?.id !== 'medieval_castle')) {
           delete parsed[13];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[14] && (parsed[14].worldHeight < 800 || !parsed[14].title?.includes('Belfry') || parsed[14].theme?.id !== 'medieval_castle')) {
+          delete parsed[14];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         if (parsed[nextLvl.id]) {

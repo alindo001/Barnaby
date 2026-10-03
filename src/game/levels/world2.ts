@@ -476,24 +476,160 @@ export const WORLD_2_LEVELS: LevelData[] = [
   },
   {
     id: 14,
-    title: "14. Crystal Caverns: Chasm Exploration",
+    title: "14. Citadel of Shadows: The Belfry & Foundry",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
-    gameplayType: "terrain",
+    worldName: "Citadel of Shadows",
+    gameplayType: "gadget",
     category: "classic",
-    description: "Explore the vertical elevations, moving platforms, and hidden secrets of Crystal Caverns.",
-    worldWidth: 4100,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":3960,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1435,"y":470,"width":30,"height":40,"activated":false},{"x":2788,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l4_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w2_l4_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w2_l4_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w2_l4_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w2_l4_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w2_l4_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w2_l4_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.5599999999999998,"distanceX":140,"startX":2075,"startY":490,"vx":1.5599999999999998},{"id":"w2_l4_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w2_l4_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w2_l4_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w2_l4_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w2_l4_finish_base","x":3720,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w2_l4_secret_p1","x":1107,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w2_l4_secret_p2","x":2296,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w2_l4_secret_p3","x":3820,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l4_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l4_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w2_l4_acorn_1","x":1139,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l4_acorn_2","x":2318,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l4_acorn_3","x":3857,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l4_c_1","x":560,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_2","x":860,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_4","x":1460,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_5","x":1760,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_6","x":2060,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l4_c_7","x":2360,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_8","x":2660,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_9","x":2960,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l4_c_10","x":3260,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l4_c_11","x":3560,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l4_e_1","x":491,"y":400,"width":28,"height":26,"type":"goose","vx":0.97,"vy":0,"minX":386,"maxX":623,"facing":1},{"id":"w2_l4_e_2","x":1170,"y":389,"width":28,"height":26,"type":"patroller","vx":-0.97,"vy":0,"minX":1114,"maxX":1253,"facing":-1},{"id":"w2_l4_e_3","x":1452,"y":289,"width":28,"height":26,"type":"slime","vx":0.97,"vy":0,"minX":1379,"maxX":1553,"facing":1},{"id":"w2_l4_e_4","x":1800,"y":325,"width":26,"height":22,"type":"flyer","vx":-1.3599999999999999,"vy":0,"minX":1641,"maxX":1987,"facing":-1},{"id":"w2_l4_e_5","x":2171,"y":464,"width":28,"height":26,"type":"anteater","vx":0.97,"vy":0,"minX":2081,"maxX":2289,"facing":1},{"id":"w2_l4_e_6","x":2771,"y":278,"width":28,"height":26,"type":"beaver","vx":-0.97,"vy":0,"minX":2704,"maxX":2865,"facing":-1}],
-    parTime: 70,
-    threeStarScore: 7400
+    description: "Plunge from the dizzying heights of the Gothic Belfry down into the roaring subterranean armory and foundry, mastering rapid descents and icy munitions!",
+    worldWidth: 4900,
+    worldHeight: 920,
+    theme: THEMES.medievalCastle,
+    playerStart: { x: 80, y: 160 },
+    goal: { x: 4760, y: 480, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1220, y: 680, width: 30, height: 40, activated: false },
+      { x: 2520, y: 480, width: 30, height: 40, activated: false },
+      { x: 3880, y: 560, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The High Belfry & Chime Towers (x: 0 - 1250)
+      // High Spire Timber Start Platform
+      { id: "w14_p_start_belfry", x: 0, y: 200, width: 220, height: 40, type: "solid" },
+      // Secret Spire Apex (Golden Acorn #1)
+      { id: "w14_p_spire_apex", x: 180, y: 110, width: 100, height: 18, type: "solid" },
+      // Stepped Rafter Descents
+      { id: "w14_p1_rafter", x: 260, y: 280, width: 140, height: 18, type: "one-way" },
+      { id: "w14_p2_rafter", x: 440, y: 360, width: 120, height: 18, type: "crumbling" },
+      { id: "w14_p3_timber", x: 280, y: 460, width: 130, height: 18, type: "one-way" },
+      { id: "w14_p4_timber", x: 480, y: 540, width: 140, height: 18, type: "solid" },
+      { id: "w14_p5_spring", x: 680, y: 620, width: 70, height: 24, type: "bouncy" },
+      { id: "w14_p6_belfry_arch", x: 820, y: 480, width: 140, height: 20, type: "solid" },
+      { id: "w14_p7_chime_drop", x: 1020, y: 580, width: 110, height: 18, type: "crumbling" },
+      { id: "w14_p8_antechamber_step", x: 1080, y: 660, width: 90, height: 18, type: "one-way" },
+      { id: "w14_p_cp1_base", x: 1180, y: 720, width: 160, height: 200, type: "solid" },
+
+      // SECTOR 2: The Royal Armory & Crossbow Galleries (x: 1250 - 2500)
+      { id: "w14_p_armory_floor", x: 1340, y: 720, width: 320, height: 200, type: "solid" },
+      { id: "w14_p_armory_step1", x: 1720, y: 660, width: 140, height: 20, type: "solid" },
+      { id: "w14_p_armory_grate", x: 1910, y: 600, width: 120, height: 18, type: "one-way" },
+      // Secret Vault Rafters (Golden Acorn #2)
+      { id: "w14_p_vault_strut", x: 1840, y: 380, width: 90, height: 18, type: "one-way" },
+      { id: "w14_p_vault_rafter", x: 2080, y: 270, width: 130, height: 18, type: "solid" },
+      { id: "w14_p_armory_upper", x: 2070, y: 540, width: 150, height: 20, type: "solid" },
+      { id: "w14_p_portcullis_bridge", x: 2280, y: 520, width: 140, height: 18, type: "crumbling" },
+      { id: "w14_p_cp2_base", x: 2480, y: 520, width: 160, height: 400, type: "solid" },
+
+      // SECTOR 3: Chained Trampoline Chasms & The Grand Flail Gorge (x: 2500 - 3800)
+      { id: "w14_p_tramp1", x: 2740, y: 620, width: 76, height: 26, type: "bouncy" },
+      { id: "w14_p_chain_beam1", x: 2880, y: 460, width: 60, height: 18, type: "crumbling" },
+      { id: "w14_p_tramp2", x: 3010, y: 540, width: 80, height: 26, type: "bouncy" },
+      // Secret Flail Arch Ledge (Golden Acorn #3)
+      { id: "w14_p_arch_secret", x: 3260, y: 220, width: 90, height: 18, type: "solid" },
+      { id: "w14_p_tramp3", x: 3270, y: 580, width: 84, height: 26, type: "bouncy" },
+      { id: "w14_p_chain_beam2", x: 3430, y: 460, width: 60, height: 18, type: "crumbling" },
+      { id: "w14_p_tramp4", x: 3560, y: 520, width: 80, height: 26, type: "bouncy" },
+      { id: "w14_p_pier", x: 3710, y: 540, width: 100, height: 22, type: "one-way" },
+      { id: "w14_p_cp3_base", x: 3840, y: 600, width: 160, height: 320, type: "solid" },
+
+      // SECTOR 4: The Great Subterranean Foundry & Molten Vats (x: 3800 - 4900)
+      { id: "w14_p_foundry_walk1", x: 4050, y: 580, width: 130, height: 22, type: "solid" },
+      { id: "w14_p_slag_grate1", x: 4220, y: 520, width: 100, height: 18, type: "crumbling" },
+      { id: "w14_p_crane_beam", x: 4320, y: 360, width: 120, height: 20, type: "one-way" },
+      { id: "w14_p_slag_grate2", x: 4480, y: 500, width: 110, height: 18, type: "crumbling" },
+      { id: "w14_p_iron_anvil", x: 4620, y: 520, width: 90, height: 24, type: "solid" },
+      { id: "w14_p_goal_deck", x: 4700, y: 540, width: 200, height: 380, type: "solid" }
+    ],
+    hazards: [
+      // Sector 1: Belfry Pit Spikes & Pendulum Saws
+      { id: "w14_hz_belfry_spikes", x: 220, y: 880, width: 960, height: 40, type: "spike" },
+      { id: "w14_hz_bell_saw1", x: 480, y: 240, width: 38, height: 38, type: "saw", startX: 480, startY: 240, distanceX: 80, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "w14_hz_bell_saw2", x: 740, y: 420, width: 36, height: 36, type: "saw", startX: 740, startY: 420, distanceX: 0, distanceY: 100, speed: 2.5, vx: 0, vy: 2.5 },
+
+      // Sector 2: Armory Halberd Spikes & Rapid Saw
+      { id: "w14_hz_armory_spikes", x: 1660, y: 880, width: 400, height: 40, type: "spike" },
+      { id: "w14_hz_armory_saw", x: 2180, y: 460, width: 34, height: 34, type: "saw", startX: 2180, startY: 460, distanceX: 80, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+
+      // Sector 3: Boiling Pitch Cauldron Gorge & Swinging Flails
+      { id: "w14_hz_pitch_gorge", x: 2640, y: 860, width: 1200, height: 60, type: "lava" },
+      { id: "w14_hz_flail1", x: 2950, y: 480, width: 38, height: 38, type: "saw", startX: 2950, startY: 480, distanceX: 0, distanceY: 100, speed: 2.6, vx: 0, vy: 2.6 },
+      { id: "w14_hz_flail2", x: 3480, y: 420, width: 38, height: 38, type: "saw", startX: 3480, startY: 420, distanceX: 60, distanceY: 0, speed: 2.4, vx: 2.4, vy: 0 },
+
+      // Sector 4: Molten Slag Vat & Crusher Piston
+      { id: "w14_hz_slag_vat", x: 4180, y: 870, width: 520, height: 50, type: "lava" },
+      { id: "w14_hz_piston", x: 4370, y: 440, width: 36, height: 36, type: "saw", startX: 4370, startY: 440, distanceX: 0, distanceY: 90, speed: 2.5, vx: 0, vy: 2.5 }
+    ],
+    collectibles: [
+      // 3 Golden Acorns
+      { id: "w14_acorn_1", x: 220, y: 80, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w14_acorn_2", x: 2130, y: 235, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w14_acorn_3", x: 3290, y: 185, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Gadgets & Health
+      { id: "w14_snow_cannon", x: 1370, y: 680, width: 28, height: 28, type: "snow_cannon", value: 600 },
+      { id: "w14_power_speed", x: 1770, y: 620, width: 26, height: 26, type: "powerup_speed", value: 400 },
+      { id: "w14_heart1", x: 2090, y: 500, width: 22, height: 22, type: "heart", value: 300 },
+      { id: "w14_heart2", x: 4360, y: 320, width: 22, height: 22, type: "heart", value: 300 },
+
+      // Castle Gold Coins & Gems
+      // Sector 1: Belfry Rafters
+      { id: "w14_c1", x: 320, y: 240, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_c2", x: 500, y: 320, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem1", x: 340, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w14_c3", x: 540, y: 500, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_c4", x: 710, y: 580, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem2", x: 880, y: 440, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w14_c5", x: 1060, y: 540, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 2: Armory
+      { id: "w14_c6", x: 1530, y: 680, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_c7", x: 1610, y: 680, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem3", x: 1880, y: 340, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w14_c8", x: 1960, y: 560, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_c9", x: 2340, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 3: Trampoline Arcs
+      { id: "w14_c10", x: 2810, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem4", x: 2900, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w14_c11", x: 3090, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem5", x: 3280, y: 380, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w14_c12", x: 3450, y: 420, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem6", x: 3620, y: 430, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 4: Foundry & Treasury Deck
+      { id: "w14_c13", x: 4110, y: 540, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_c14", x: 4270, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem7", x: 4380, y: 320, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w14_c15", x: 4530, y: 460, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w14_gem8", x: 4660, y: 480, width: 24, height: 24, type: "gem", value: 500 }
+    ],
+    enemies: [
+      // Sector 1: Belfry
+      { id: "w14_e_pigeon1", x: 350, y: 310, width: 26, height: 22, type: "pigeon", vx: 1.2, vy: 0, minX: 250, maxX: 460, facing: 1 },
+      // Patroller on w14_p4_timber (x: 480, y: 540, w: 140) -> y: 514
+      { id: "w14_e_patrol1", x: 520, y: 514, width: 28, height: 26, type: "patroller", vx: 0.9, vy: 0, minX: 485, maxX: 585, facing: 1 },
+      { id: "w14_e_flyer1", x: 880, y: 410, width: 26, height: 22, type: "flyer", vx: -1.3, vy: 0, minX: 820, maxX: 950, facing: -1 },
+
+      // Sector 2: Armory
+      // Anteater on w14_p_armory_floor (x: 1340, y: 720, w: 320) -> y: 694
+      { id: "w14_e_anteater1", x: 1460, y: 694, width: 28, height: 26, type: "anteater", vx: -0.95, vy: 0, minX: 1360, maxX: 1620, facing: -1 },
+      // Hedgehog on w14_p_armory_upper (x: 2070, y: 540, w: 150) -> y: 514
+      { id: "w14_e_hedgehog1", x: 2120, y: 514, width: 28, height: 26, type: "hedgehog", vx: 0.95, vy: 0, minX: 2075, maxX: 2185, facing: 1 },
+      { id: "w14_e_goose1", x: 2320, y: 420, width: 28, height: 26, type: "goose", vx: -1.1, vy: 0, minX: 2260, maxX: 2420, facing: -1 },
+
+      // Sector 3: Flail Chasm Airspace
+      { id: "w14_e_pigeon2", x: 3120, y: 390, width: 26, height: 22, type: "pigeon", vx: -1.3, vy: 0, minX: 3040, maxX: 3220, facing: -1 },
+      { id: "w14_e_flyer2", x: 3640, y: 380, width: 26, height: 22, type: "flyer", vx: 1.2, vy: 0, minX: 3560, maxX: 3720, facing: 1 },
+
+      // Sector 4: Foundry
+      // Skunk on w14_p_foundry_walk1 (x: 4050, y: 580, w: 130) -> y: 554
+      { id: "w14_e_skunk1", x: 4090, y: 554, width: 28, height: 26, type: "skunk", vx: 0.95, vy: 0, minX: 4055, maxX: 4145, facing: 1 },
+      { id: "w14_e_goose2", x: 4430, y: 280, width: 28, height: 26, type: "goose", vx: -1.2, vy: 0, minX: 4340, maxX: 4520, facing: -1 },
+      // Patroller on w14_p_iron_anvil (x: 4620, y: 520, w: 90) -> y: 494
+      { id: "w14_e_patrol2", x: 4650, y: 494, width: 28, height: 26, type: "patroller", vx: 0.9, vy: 0, minX: 4625, maxX: 4675, facing: 1 }
+    ],
+    parTime: 105,
+    threeStarScore: 16000
   },
   {
     id: 15,
