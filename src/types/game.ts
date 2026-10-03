@@ -305,6 +305,10 @@ export interface LevelTheme {
   bannerGold?: string;
   ironTrim?: string;
   stainedGlass?: string;
+  brassGear?: string;
+  copperPipe?: string;
+  steamGlow?: string;
+  amberDial?: string;
 }
 
 export type LevelGameplayType = 'runner' | 'terrain' | 'rocketeer' | 'gadget';

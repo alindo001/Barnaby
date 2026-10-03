@@ -165,6 +165,18 @@ export class GameEngine {
           delete parsed[12];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[13] && (parsed[13].worldHeight < 800 || !parsed[13].title?.includes('Citadel') || parsed[13].theme?.id !== 'medieval_castle')) {
+          delete parsed[13];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[14] && (parsed[14].worldHeight < 800 || !parsed[14].title?.includes('Belfry') || parsed[14].theme?.id !== 'medieval_castle')) {
+          delete parsed[14];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[15] && (parsed[15].worldHeight < 800 || !parsed[15].title?.includes('Clockwork') || parsed[15].theme?.id !== 'clockwork_core')) {
+          delete parsed[15];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         this.levels = this.levels.map(lvl => parsed[lvl.id] ? parsed[lvl.id] : lvl);
       }
     } catch {}
@@ -374,6 +386,18 @@ export class GameEngine {
         }
         if (parsed[12] && (parsed[12].worldHeight < 950 || parsed[12].worldWidth < 5100 || !parsed[12].description?.includes('continuous swimming') || !parsed[12].theme?.name?.includes('Deep Sea'))) {
           delete parsed[12];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[13] && (parsed[13].worldHeight < 800 || !parsed[13].title?.includes('Citadel') || parsed[13].theme?.id !== 'medieval_castle')) {
+          delete parsed[13];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[14] && (parsed[14].worldHeight < 800 || !parsed[14].title?.includes('Belfry') || parsed[14].theme?.id !== 'medieval_castle')) {
+          delete parsed[14];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[15] && (parsed[15].worldHeight < 800 || !parsed[15].title?.includes('Clockwork') || parsed[15].theme?.id !== 'clockwork_core')) {
+          delete parsed[15];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         if (parsed[this.currentLevel.id]) {

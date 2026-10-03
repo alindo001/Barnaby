@@ -219,5 +219,21 @@ export const THEMES: Record<string, LevelTheme> = {
     bannerGold: '#FBBF24',       // Gilded gold tassels and embroidery
     ironTrim: '#475569',         // Cast iron portcullis bars & brackets
     stainedGlass: '#818CF8'      // Cathedral rosette window glow
+  },
+  clockworkCore: {
+    id: 'clockwork_core',
+    name: 'Clockwork Cogworks',
+    skyColorTop: '#0C0806',      // Soot & boiler-smoke shadowed ceiling
+    skyColorBottom: '#26160C',   // Ambient warm copper and lantern glow
+    cloudColor: 'rgba(217, 119, 6, 0.18)', // Swirling steam vents & copper fumes
+    mountainColor: '#160E08',    // Distant colossal clockwork spires and gear silhouettes
+    platformFill: '#1A120D',     // Heavy cast-iron chassis and boiler plating
+    platformTop: '#B45309',      // Burnished antique brass track with cog teeth
+    platformBorder: '#652B09',   // Riveted dark copper casing
+    accentColor: '#F59E0B',      // Glowing amber dial & pressure indicator
+    brassGear: '#D97706',        // Precision-machined clockwork brass
+    copperPipe: '#EA580C',       // High-pressure steam pipework
+    steamGlow: 'rgba(254, 240, 199, 0.45)', // Pressurized steam plume glow
+    amberDial: '#FBBF24'         // Illuminated manometer meter
   }
 };

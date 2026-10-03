@@ -633,24 +633,167 @@ export const WORLD_2_LEVELS: LevelData[] = [
   },
   {
     id: 15,
-    title: "15. Crystal Caverns: Blaster Siege",
+    title: "15. The Clockwork Spire: Brass Cogworks",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
+    worldName: "Clockwork Spire",
     gameplayType: "gadget",
     category: "classic",
-    description: "An action-oriented challenge wielding the Plasma Blaster to navigate hazardous passages in Crystal Caverns.",
-    worldWidth: 4260,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4120,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1491,"y":470,"width":30,"height":40,"activated":false},{"x":2897,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l5_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w2_l5_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w2_l5_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w2_l5_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w2_l5_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w2_l5_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w2_l5_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.5599999999999998,"distanceX":140,"startX":2075,"startY":490,"vx":1.5599999999999998},{"id":"w2_l5_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w2_l5_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w2_l5_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w2_l5_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w2_l5_p11","x":3730,"y":392,"width":164,"height":26,"type":"solid"},{"id":"w2_l5_finish_base","x":3880,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w2_l5_secret_p1","x":1150,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w2_l5_secret_p2","x":2386,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w2_l5_secret_p3","x":3980,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l5_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l5_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w2_l5_acorn_1","x":1182,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l5_acorn_2","x":2408,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l5_acorn_3","x":4017,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l5_gadget_pickup","x":240,"y":440,"width":28,"height":28,"type":"blaster","value":600},{"id":"w2_l5_gadget_ammo","x":2130,"y":320,"width":24,"height":24,"type":"blaster_ammo","value":200},{"id":"w2_l5_c_1","x":573,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_2","x":887,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_4","x":1513,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_5","x":1827,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_7","x":2453,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_8","x":2767,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_9","x":3080,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l5_c_10","x":3393,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l5_c_11","x":3707,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l5_e_1","x":491,"y":336,"width":26,"height":22,"type":"flyer","vx":1.3599999999999999,"vy":0,"minX":330,"maxX":679,"facing":1},{"id":"w2_l5_e_2","x":1170,"y":389,"width":28,"height":26,"type":"anteater","vx":-0.97,"vy":0,"minX":1114,"maxX":1253,"facing":-1},{"id":"w2_l5_e_3","x":1452,"y":289,"width":28,"height":26,"type":"beaver","vx":0.97,"vy":0,"minX":1379,"maxX":1553,"facing":1},{"id":"w2_l5_e_4","x":1800,"y":389,"width":28,"height":26,"type":"hedgehog","vx":-0.97,"vy":0,"minX":1697,"maxX":1931,"facing":-1},{"id":"w2_l5_e_5","x":2171,"y":464,"width":28,"height":26,"type":"frog","vx":0.97,"vy":0,"minX":2081,"maxX":2289,"facing":1,"minY":420,"maxY":490},{"id":"w2_l5_e_6","x":2771,"y":164,"width":26,"height":22,"type":"pigeon","vx":-1.3599999999999999,"vy":0,"minX":2648,"maxX":2921,"facing":-1}],
-    parTime: 73,
-    threeStarScore: 7600
+    description: "Ascend through the roaring steam shafts, interlocking gear trains, and swinging pendulum escapements of the Great Clockwork Spire!",
+    worldWidth: 5180,
+    worldHeight: 900,
+    theme: THEMES.clockworkCore,
+    playerStart: { x: 80, y: 720 },
+    goal: { x: 5040, y: 320, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1360, y: 560, width: 30, height: 40, activated: false },
+      { x: 2680, y: 460, width: 30, height: 40, activated: false },
+      { x: 3960, y: 500, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The Boiler Intake & Steam Geyser Shafts (x: 0 - 1380)
+      { id: "w15_p_start", x: 0, y: 760, width: 260, height: 140, type: "solid" },
+      // Obstacle 1: High-Pressure Steam Column 1 (Anti-Grav Tractor Beam)
+      { id: "w15_p_steam1", x: 320, y: 360, width: 70, height: 400, type: "anti_grav" },
+      // Secret Valve Beam (Golden Acorn #1)
+      { id: "w15_p_secret1", x: 220, y: 200, width: 100, height: 18, type: "solid" },
+      { id: "w15_p1_catwalk", x: 440, y: 460, width: 140, height: 20, type: "one-way" },
+      // Interlocking Cog Shuttle 1 (Horizontal moving)
+      { id: "w15_p2_cog_shuttle1", x: 640, y: 440, width: 100, height: 22, type: "solid", startX: 640, startY: 440, distanceX: 160, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+      { id: "w15_p3_valve_bridge", x: 930, y: 520, width: 110, height: 18, type: "crumbling" },
+      // Obstacle 2: High-Pressure Steam Column 2 (Anti-Grav Lift)
+      { id: "w15_p_steam2", x: 1090, y: 300, width: 70, height: 360, type: "anti_grav" },
+      { id: "w15_p4_arch", x: 1200, y: 420, width: 100, height: 20, type: "solid" },
+      { id: "w15_p_cp1", x: 1320, y: 600, width: 150, height: 300, type: "solid" },
+
+      // SECTOR 2: The Differential Gearbox & Piston Stamps (x: 1380 - 2700)
+      // Obstacle 3: Sweeping Mobile Steam Lift (Horizontal traveling Anti-Grav beam over boiling oil)
+      { id: "w15_p_steam_sweeper", x: 1560, y: 460, width: 74, height: 360, type: "anti_grav", startX: 1560, startY: 460, distanceX: 180, distanceY: 0, speed: 1.8, vx: 1.8, vy: 0 },
+      { id: "w15_p5_gear_stator", x: 1840, y: 520, width: 130, height: 22, type: "solid" },
+      // Stamping Piston Anvil Blocks
+      { id: "w15_p6_anvil1", x: 2010, y: 540, width: 90, height: 22, type: "solid" },
+      { id: "w15_p7_anvil2", x: 2150, y: 540, width: 90, height: 22, type: "solid" },
+      // Secret Pendulum Chamber (Golden Acorn #2)
+      { id: "w15_p_pend_secret", x: 2260, y: 230, width: 100, height: 18, type: "solid" },
+      { id: "w15_p8_grate1", x: 2320, y: 560, width: 100, height: 18, type: "crumbling" },
+      { id: "w15_p9_grate2", x: 2480, y: 520, width: 110, height: 18, type: "crumbling" },
+      { id: "w15_p_cp2", x: 2640, y: 500, width: 160, height: 400, type: "solid" },
+
+      // SECTOR 3: The Great Escapement & Pendulum Chasm (x: 2700 - 4000)
+      { id: "w15_p10_spring1", x: 2870, y: 580, width: 76, height: 26, type: "bouncy" },
+      // Synchronized Vertical Cog Lift
+      { id: "w15_p11_vert_cog", x: 3040, y: 540, width: 90, height: 22, type: "solid", startX: 3040, startY: 540, distanceX: 0, distanceY: -160, speed: 2.2, vx: 0, vy: -2.2 },
+      // Obstacle 4: Central Steam Column 3
+      { id: "w15_p_steam3", x: 3220, y: 320, width: 70, height: 380, type: "anti_grav" },
+      { id: "w15_p12_spring2", x: 3480, y: 520, width: 76, height: 26, type: "bouncy" },
+      // Central Spindle Apex (Golden Acorn #3)
+      { id: "w15_p_spindle_apex", x: 3600, y: 200, width: 100, height: 18, type: "solid" },
+      // Synchronized Horizontal Cog Shuttle
+      { id: "w15_p13_horiz_cog", x: 3660, y: 440, width: 100, height: 22, type: "solid", startX: 3660, startY: 440, distanceX: 140, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+      { id: "w15_p14_bridge", x: 3840, y: 480, width: 90, height: 18, type: "crumbling" },
+      { id: "w15_p_cp3", x: 3930, y: 540, width: 150, height: 360, type: "solid" },
+
+      // SECTOR 4: The Grand Chronometer & Master Tower Observatory (x: 4000 - 5200)
+      { id: "w15_p15_catwalk", x: 4120, y: 500, width: 120, height: 20, type: "one-way" },
+      // Obstacle 5: Master Clock Steam Lift
+      { id: "w15_p_steam4", x: 4280, y: 240, width: 74, height: 380, type: "anti_grav" },
+      { id: "w15_p16_catwalk", x: 4470, y: 440, width: 110, height: 18, type: "one-way" },
+      { id: "w15_p17_grate", x: 4640, y: 400, width: 100, height: 18, type: "crumbling" },
+      { id: "w15_p18_anvil", x: 4800, y: 380, width: 110, height: 22, type: "solid" },
+      { id: "w15_p19_crumble", x: 4940, y: 380, width: 80, height: 18, type: "crumbling" },
+      { id: "w15_p_goal_deck", x: 5000, y: 380, width: 180, height: 520, type: "solid" }
+    ],
+    hazards: [
+      // Sector 1: Boiler Spikes & Cog Saw
+      { id: "w15_hz_spikes1", x: 260, y: 870, width: 830, height: 30, type: "spike" },
+      { id: "w15_hz_saw1", x: 840, y: 380, width: 38, height: 38, type: "saw", startX: 840, startY: 380, distanceX: 0, distanceY: 90, speed: 2.2, vx: 0, vy: 2.2 },
+
+      // Sector 2: Boiling Machine Oil Pit & Stamping Pistons
+      { id: "w15_hz_oil_pit1", x: 1470, y: 840, width: 1180, height: 60, type: "lava" },
+      { id: "w15_hz_piston1", x: 2040, y: 380, width: 36, height: 36, type: "saw", startX: 2040, startY: 380, distanceX: 0, distanceY: 100, speed: 2.8, vx: 0, vy: 2.8 },
+      { id: "w15_hz_piston2", x: 2180, y: 360, width: 36, height: 36, type: "saw", startX: 2180, startY: 360, distanceX: 0, distanceY: 110, speed: 3.0, vx: 0, vy: 3.0 },
+      { id: "w15_hz_pend_saw", x: 2290, y: 270, width: 36, height: 36, type: "saw", startX: 2290, startY: 270, distanceX: 60, distanceY: 0, speed: 2.4, vx: 2.4, vy: 0 },
+
+      // Sector 3: Grand Chasm Boiling Oil & Escapement Saws
+      { id: "w15_hz_oil_pit2", x: 2800, y: 840, width: 1120, height: 60, type: "lava" },
+      { id: "w15_hz_saw2", x: 3360, y: 390, width: 38, height: 38, type: "saw", startX: 3360, startY: 390, distanceX: 0, distanceY: 100, speed: 2.6, vx: 0, vy: 2.6 },
+
+      // Sector 4: Master Clock Hour & Minute Hand Spindles
+      { id: "w15_hz_hour_saw", x: 4430, y: 320, width: 38, height: 38, type: "saw", startX: 4430, startY: 320, distanceX: 80, distanceY: 0, speed: 2.5, vx: 2.5, vy: 0 },
+      { id: "w15_hz_minute_saw", x: 4610, y: 260, width: 38, height: 38, type: "saw", startX: 4610, startY: 260, distanceX: 0, distanceY: 90, speed: 2.8, vx: 0, vy: 2.8 },
+      { id: "w15_hz_final_spikes", x: 4750, y: 860, width: 250, height: 40, type: "spike" }
+    ],
+    collectibles: [
+      // 3 Golden Acorns
+      { id: "w15_acorn_1", x: 255, y: 165, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w15_acorn_2", x: 2295, y: 195, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w15_acorn_3", x: 3635, y: 165, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Gadgets & Munitions
+      { id: "w15_blaster", x: 1420, y: 560, width: 28, height: 28, type: "blaster", value: 600 },
+      { id: "w15_ammo1", x: 1460, y: 565, width: 20, height: 20, type: "blaster_ammo", value: 200 },
+      { id: "w15_ammo2", x: 2650, y: 465, width: 20, height: 20, type: "blaster_ammo", value: 200 },
+      { id: "w15_heart1", x: 1880, y: 480, width: 22, height: 22, type: "heart", value: 300 },
+      { id: "w15_heart2", x: 4160, y: 460, width: 22, height: 22, type: "heart", value: 300 },
+
+      // Brass Coins & Polished Clockwork Gems
+      // Sector 1: Steam Shaft 1 & Pipe Catwalk
+      { id: "w15_c1", x: 350, y: 680, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_c2", x: 350, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem1", x: 350, y: 380, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c3", x: 500, y: 420, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_c4", x: 720, y: 400, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem2", x: 970, y: 480, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c5", x: 1120, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 2: Sweeping Steam Lift & Piston Anvils
+      { id: "w15_c6", x: 1620, y: 540, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem3", x: 1710, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c7", x: 1900, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_c8", x: 2050, y: 500, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_c9", x: 2190, y: 500, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem4", x: 2360, y: 520, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c10", x: 2520, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 3: Compression Springs & Escapement
+      { id: "w15_c11", x: 2900, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem5", x: 3080, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c12", x: 3250, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem6", x: 3510, y: 420, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c13", x: 3720, y: 400, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 4: Clock Face & Observatory Deck
+      { id: "w15_c14", x: 4310, y: 380, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem7", x: 4310, y: 220, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w15_c15", x: 4520, y: 400, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_c16", x: 4680, y: 360, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w15_gem8", x: 4850, y: 340, width: 24, height: 24, type: "gem", value: 500 }
+    ],
+    enemies: [
+      // Sector 1: Boiler Intake
+      // Patroller on w15_p_start (x: 0, y: 760, w: 260) -> y: 734
+      { id: "w15_e_patrol1", x: 120, y: 734, width: 28, height: 26, type: "patroller", vx: 0.95, vy: 0, minX: 50, maxX: 200, facing: 1 },
+      { id: "w15_e_fireimp1", x: 740, y: 260, width: 26, height: 22, type: "fire_imp", vx: -1.2, vy: 0, minX: 660, maxX: 820, facing: -1 },
+
+      // Sector 2: Differential Gearbox
+      { id: "w15_e_pigeon1", x: 1720, y: 360, width: 26, height: 22, type: "pigeon", vx: 1.3, vy: 0, minX: 1640, maxX: 1800, facing: 1 },
+      // Anteater on w15_p5_gear_stator (x: 1840, y: 520, w: 130) -> y: 494
+      { id: "w15_e_anteater1", x: 1870, y: 494, width: 28, height: 26, type: "anteater", vx: -0.9, vy: 0, minX: 1850, maxX: 1930, facing: -1 },
+      // Hedgehog on w15_p7_anvil2 (x: 2150, y: 540, w: 90) -> y: 514
+      { id: "w15_e_hedgehog1", x: 2170, y: 514, width: 28, height: 26, type: "hedgehog", vx: 0.9, vy: 0, minX: 2155, maxX: 2205, facing: 1 },
+      // Skunk on w15_p_cp2 (x: 2640, y: 500, w: 160) -> y: 474
+      { id: "w15_e_skunk1", x: 2700, y: 474, width: 28, height: 26, type: "skunk", vx: 0.95, vy: 0, minX: 2650, maxX: 2760, facing: 1 },
+
+      // Sector 3: Escapement Chasm
+      { id: "w15_e_goose1", x: 3100, y: 280, width: 28, height: 26, type: "goose", vx: -1.2, vy: 0, minX: 3000, maxX: 3200, facing: -1 },
+      { id: "w15_e_fireimp2", x: 3780, y: 300, width: 26, height: 22, type: "fire_imp", vx: 1.2, vy: 0, minX: 3700, maxX: 3880, facing: 1 },
+
+      // Sector 4: Clock Face Observatory
+      { id: "w15_e_goose2", x: 4540, y: 220, width: 28, height: 26, type: "goose", vx: -1.3, vy: 0, minX: 4450, maxX: 4650, facing: -1 },
+      // Patroller on w15_p18_anvil (x: 4800, y: 380, w: 110) -> y: 354
+      { id: "w15_e_patrol2", x: 4830, y: 354, width: 28, height: 26, type: "patroller", vx: 0.9, vy: 0, minX: 4810, maxX: 4870, facing: 1 }
+    ],
+    parTime: 110,
+    threeStarScore: 17000
   },
   {
     id: 16,

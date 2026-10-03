@@ -288,6 +288,10 @@ export class GameRenderer {
     return theme.id === 'medieval_castle' || (theme.name ? theme.name.toLowerCase().includes('castle') || theme.name.toLowerCase().includes('citadel') || theme.name.toLowerCase().includes('keep') : false);
   }
 
+  private isClockworkTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'clockwork_core' || (theme.name ? theme.name.toLowerCase().includes('clockwork') || theme.name.toLowerCase().includes('cogworks') || theme.name.toLowerCase().includes('steampunk') : false);
+  }
+
   private drawBackground(level: LevelData, camera: Camera, width: number, height: number) {
     const { ctx } = this;
     const { theme } = level;
@@ -325,6 +329,12 @@ export class GameRenderer {
     // Check if Medieval Castle Keep aesthetic
     if (this.isMedievalCastleTheme(theme)) {
       this.drawMedievalCastleBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Clockwork Cogworks aesthetic
+    if (this.isClockworkTheme(theme)) {
+      this.drawClockworkBackground(level, camera, width, height);
       return;
     }
 
@@ -1520,6 +1530,207 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawClockworkBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+    const { theme } = level;
+
+    // 1. Soot & Boiler Smoke Sky Gradient
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, theme.skyColorTop || '#0C0806');
+    skyGrad.addColorStop(0.5, '#1B0F08');
+    skyGrad.addColorStop(1, theme.skyColorBottom || '#26160C');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Colossal Parallax Clockwork Gears in Background (Layer 1 - slow, camera.x * 0.03)
+    ctx.save();
+    const gearList1 = [
+      { xRel: 0.15, yRel: 0.35, r: 140, speed: 0.25, dir: 1, color: 'rgba(217, 119, 6, 0.10)', stroke: 'rgba(245, 158, 11, 0.18)', teeth: 16 },
+      { xRel: 0.45, yRel: 0.20, r: 210, speed: 0.16, dir: -1, color: 'rgba(180, 83, 9, 0.09)', stroke: 'rgba(217, 119, 6, 0.15)', teeth: 24 },
+      { xRel: 0.80, yRel: 0.40, r: 160, speed: 0.22, dir: 1, color: 'rgba(217, 119, 6, 0.10)', stroke: 'rgba(245, 158, 11, 0.18)', teeth: 18 }
+    ];
+
+    for (const g of gearList1) {
+      const gx = ((width * g.xRel - camera.x * 0.03) % (width + 400) + width + 400) % (width + 400) - 200;
+      const gy = height * g.yRel;
+      const rot = this.gameTime * g.speed * g.dir;
+
+      ctx.save();
+      ctx.translate(gx, gy);
+      ctx.rotate(rot);
+
+      // Gear teeth
+      ctx.fillStyle = g.color;
+      ctx.strokeStyle = g.stroke;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let t = 0; t < g.teeth; t++) {
+        const a1 = (t / g.teeth) * Math.PI * 2;
+        const a2 = a1 + (Math.PI / g.teeth) * 0.6;
+        ctx.lineTo(Math.cos(a1) * g.r, Math.sin(a1) * g.r);
+        ctx.lineTo(Math.cos(a2) * (g.r * 0.85), Math.sin(a2) * (g.r * 0.85));
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Gear spokes
+      for (let s = 0; s < 6; s++) {
+        const sa = (s / 6) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(sa) * (g.r * 0.8), Math.sin(sa) * (g.r * 0.8));
+        ctx.stroke();
+      }
+
+      // Center Hub
+      ctx.beginPath();
+      ctx.arc(0, 0, g.r * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // 3. Parallax Layer 2: Midground Copper Pipes & Rotating Brass Cogs (camera.x * 0.07)
+    ctx.save();
+    const pipeOffset = (camera.x * 0.07) % 360;
+    // Horizontal steam pipe truss
+    ctx.fillStyle = '#1A100A';
+    ctx.strokeStyle = '#78350F';
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(0, height * 0.62, width, 12);
+    ctx.strokeRect(0, height * 0.62, width, 12);
+
+    // Pipe joints & flanges
+    for (let px = -pipeOffset; px < width + 60; px += 120) {
+      ctx.fillStyle = '#B45309';
+      ctx.fillRect(px, height * 0.62 - 3, 10, 18);
+      // Small brass rivet
+      ctx.fillStyle = '#FEF08A';
+      ctx.fillRect(px + 3, height * 0.62 + 3, 3, 3);
+    }
+
+    // Midground Interlocking Gears
+    const gearList2 = [
+      { xRel: 0.28, yRel: 0.58, r: 80, speed: 0.45, dir: -1, teeth: 12 },
+      { xRel: 0.65, yRel: 0.55, r: 95, speed: 0.38, dir: 1, teeth: 14 }
+    ];
+
+    for (const g of gearList2) {
+      const gx = ((width * g.xRel - camera.x * 0.07) % (width + 300) + width + 300) % (width + 300) - 150;
+      const gy = height * g.yRel;
+      const rot = this.gameTime * g.speed * g.dir;
+
+      ctx.save();
+      ctx.translate(gx, gy);
+      ctx.rotate(rot);
+
+      ctx.fillStyle = 'rgba(180, 83, 9, 0.18)';
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let t = 0; t < g.teeth; t++) {
+        const a1 = (t / g.teeth) * Math.PI * 2;
+        const a2 = a1 + (Math.PI / g.teeth) * 0.65;
+        ctx.lineTo(Math.cos(a1) * g.r, Math.sin(a1) * g.r);
+        ctx.lineTo(Math.cos(a2) * (g.r * 0.82), Math.sin(a2) * (g.r * 0.82));
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, g.r * 0.3, 0, Math.PI * 2);
+      ctx.fillStyle = '#26160C';
+      ctx.fill();
+      ctx.stroke();
+
+      // Brass Center Rivet
+      ctx.fillStyle = '#F59E0B';
+      ctx.beginPath();
+      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // 4. Parallax Layer 3: Giant Background Clock Faces with illuminated needles (camera.x * 0.05)
+    ctx.save();
+    for (let cf = 0; cf < 3; cf++) {
+      const cx = ((cf * 550 + 200 - camera.x * 0.05) % (width + 500) + width + 500) % (width + 500) - 250;
+      const cy = height * 0.28 + (cf % 2) * 50;
+      const cr = 48;
+
+      // Outer brass clock bezel
+      ctx.strokeStyle = '#B45309';
+      ctx.lineWidth = 3;
+      ctx.fillStyle = 'rgba(26, 18, 13, 0.7)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Amber dial glow
+      const dialGlow = ctx.createRadialGradient(cx, cy, 2, cx, cy, cr);
+      dialGlow.addColorStop(0, 'rgba(245, 158, 11, 0.25)');
+      dialGlow.addColorStop(1, 'rgba(120, 53, 15, 0.05)');
+      ctx.fillStyle = dialGlow;
+      ctx.fill();
+
+      // Roman tick marks
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 1.5;
+      for (let t = 0; t < 12; t++) {
+        const ta = (t / 12) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(ta) * (cr - 3), cy + Math.sin(ta) * (cr - 3));
+        ctx.lineTo(cx + Math.cos(ta) * (cr - 8), cy + Math.sin(ta) * (cr - 8));
+        ctx.stroke();
+      }
+
+      // Ticking Clock Hands
+      const hourA = this.gameTime * 0.15 + cf;
+      const minA = this.gameTime * 1.8 + cf * 2;
+      ctx.strokeStyle = '#FEF3C7';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(hourA) * (cr * 0.5), cy + Math.sin(hourA) * (cr * 0.5));
+      ctx.stroke();
+
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(minA) * (cr * 0.75), cy + Math.sin(minA) * (cr * 0.75));
+      ctx.stroke();
+
+      ctx.fillStyle = '#D97706';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 5. Rising Steam Exhaust Puffs
+    ctx.save();
+    for (let s = 0; s < 6; s++) {
+      const sx = ((s * 280 + 70 - camera.x * 0.08) % (width + 300) + width + 300) % (width + 300) - 150;
+      const cycle = (this.gameTime * 0.8 + s * 0.4) % 1;
+      const sy = height - cycle * (height * 0.7);
+      const sRadius = 16 + cycle * 35;
+      const sAlpha = (1 - cycle) * 0.22;
+
+      ctx.fillStyle = `rgba(254, 215, 170, ${sAlpha})`;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sRadius, 0, Math.PI * 2);
+      ctx.arc(sx + sRadius * 0.5, sy - 8, sRadius * 0.7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   private drawVolcanoPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
     const orange = theme.accentColor || '#F97316';
@@ -2289,6 +2500,244 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawClockworkPlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const brass = theme.brassGear || '#D97706';
+    const copper = theme.copperPipe || '#EA580C';
+    const border = theme.platformBorder || '#652B09';
+
+    // 1. ANTI-GRAVITY PLATFORM: Pneumatic Steam Column Elevator
+    if (p.type === 'anti_grav') {
+      ctx.save();
+      // Steam Column Beam Body
+      const beamGrad = ctx.createLinearGradient(p.x, 0, p.x + p.width, 0);
+      beamGrad.addColorStop(0, 'rgba(217, 119, 6, 0.08)');
+      beamGrad.addColorStop(0.3, 'rgba(245, 158, 11, 0.24)');
+      beamGrad.addColorStop(0.5, 'rgba(254, 240, 199, 0.35)');
+      beamGrad.addColorStop(0.7, 'rgba(245, 158, 11, 0.24)');
+      beamGrad.addColorStop(1, 'rgba(217, 119, 6, 0.08)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Rising steam rings
+      ctx.strokeStyle = 'rgba(254, 240, 199, 0.5)';
+      ctx.lineWidth = 2;
+      const numRings = Math.max(2, Math.floor(p.height / 50));
+      for (let i = 0; i < numRings; i++) {
+        const ringProg = (this.gameTime * 2.2 + (i / numRings)) % 1;
+        const ringY = p.y + p.height - ringProg * p.height;
+        ctx.beginPath();
+        ctx.ellipse(p.x + p.width / 2, ringY, p.width * 0.42, 6, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Copper Base Nozzle Manifold
+      ctx.fillStyle = '#1A120D';
+      ctx.fillRect(p.x - 4, p.y + p.height - 12, p.width + 8, 12);
+      ctx.strokeStyle = copper;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x - 4, p.y + p.height - 12, p.width + 8, 12);
+
+      // Warning hazard stripes on base
+      ctx.fillStyle = '#F59E0B';
+      for (let st = p.x - 2; st < p.x + p.width + 4; st += 14) {
+        ctx.fillRect(st, p.y + p.height - 10, 6, 8);
+      }
+
+      // Top Vent Ring
+      ctx.fillStyle = '#B45309';
+      ctx.fillRect(p.x - 2, p.y, p.width + 4, 8);
+      ctx.fillStyle = '#FEF08A';
+      ctx.fillRect(p.x + p.width / 2 - 4, p.y + 2, 8, 4);
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. BOUNCY PLATFORM: Heavy Clockwork Pneumatic Compression Spring
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Heavy cast-iron base
+      ctx.fillStyle = '#1A120D';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = copper;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Heavy copper coil spring
+      const coilSteps = 3;
+      const stepH = (p.height - 10) / coilSteps;
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      for (let i = 0; i < coilSteps; i++) {
+        const sy = p.y + p.height - 6 - i * stepH;
+        ctx.moveTo(p.x + 8, sy);
+        ctx.lineTo(p.x + p.width - 8, sy - stepH * 0.5);
+      }
+      ctx.stroke();
+
+      // Polished brass piston top plate
+      const pulse = Math.sin(this.gameTime * 8) * 3;
+      ctx.fillStyle = '#D97706';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + pulse, p.width - 4, 9, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#FDE047';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Center pressure manometer badge
+      ctx.fillStyle = '#1A120D';
+      ctx.beginPath();
+      ctx.arc(p.x + p.width / 2, p.y + pulse + 4.5, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FEF08A';
+      ctx.beginPath();
+      ctx.arc(p.x + p.width / 2, p.y + pulse + 4.5, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+      return;
+    }
+
+    // 3. CRUMBLING PLATFORM: Slotted Brass Steam Grate
+    if (p.type === 'crumbling') {
+      ctx.save();
+      const shakeOffset = (p.crumbling && p.crumbleTimer !== undefined)
+        ? Math.sin(p.crumbleTimer * 40) * 2.5
+        : 0;
+
+      const alpha = p.respawnTimer ? 0.3 : 1;
+      ctx.globalAlpha = alpha;
+
+      // Brass steam grate body
+      ctx.fillStyle = '#78350F';
+      ctx.fillRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      // Venting steam slots
+      ctx.fillStyle = '#1A120D';
+      for (let vx = p.x + shakeOffset + 6; vx < p.x + shakeOffset + p.width - 6; vx += 12) {
+        ctx.fillRect(vx, p.y + 3, 5, p.height - 6);
+      }
+
+      // Steam wisps rising when activated
+      if (p.crumbling) {
+        ctx.fillStyle = 'rgba(254, 215, 170, 0.6)';
+        for (let vx = p.x + shakeOffset + 8; vx < p.x + shakeOffset + p.width - 8; vx += 24) {
+          ctx.beginPath();
+          ctx.arc(vx, p.y - 6, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.strokeStyle = '#B45309';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x + shakeOffset, p.y, p.width, p.height);
+      ctx.restore();
+      return;
+    }
+
+    // 4. ONE-WAY PLATFORM: Polished Brass Catwalk Girder
+    if (p.type === 'one-way') {
+      ctx.save();
+      ctx.fillStyle = '#92400E';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Gilded brass rail top
+      ctx.fillStyle = '#F59E0B';
+      ctx.fillRect(p.x, p.y, p.width, 2.5);
+
+      // Copper rivets along girder
+      ctx.fillStyle = '#FEF08A';
+      for (let rx = p.x + 8; rx < p.x + p.width - 6; rx += 16) {
+        ctx.beginPath();
+        ctx.arc(rx, p.y + p.height / 2, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = '#451A03';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+      ctx.restore();
+      return;
+    }
+
+    // 5. SOLID PLATFORM: Heavy Cast-Iron & Riveted Brass Machine Housing
+    ctx.save();
+    // Heavy iron body fill
+    const fillGrad = ctx.createLinearGradient(0, p.y, 0, p.y + p.height);
+    fillGrad.addColorStop(0, '#261A12');
+    fillGrad.addColorStop(0.3, '#1A120D');
+    fillGrad.addColorStop(1, '#0F0A07');
+    ctx.fillStyle = fillGrad;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+
+    // Burnished Brass Top Track
+    const topGrad = ctx.createLinearGradient(0, p.y, 0, p.y + 6);
+    topGrad.addColorStop(0, '#D97706');
+    topGrad.addColorStop(1, '#92400E');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(p.x, p.y, p.width, 6);
+
+    // Brass Gear Teeth serrations along top rim
+    ctx.fillStyle = '#F59E0B';
+    const toothStep = 12;
+    for (let tx = p.x; tx < p.x + p.width; tx += toothStep) {
+      ctx.fillRect(tx, p.y - 1.5, 6, 2.5);
+    }
+
+    // Copper corner brackets
+    ctx.fillStyle = copper;
+    ctx.fillRect(p.x, p.y, 4, 8);
+    ctx.fillRect(p.x, p.y, 8, 4);
+    ctx.fillRect(p.x + p.width - 4, p.y, 4, 8);
+    ctx.fillRect(p.x + p.width - 8, p.y, 8, 4);
+
+    // Copper rivets along sides and bottom
+    ctx.fillStyle = '#FDE047';
+    for (let rx = p.x + 16; rx < p.x + p.width - 16; rx += 20) {
+      ctx.beginPath();
+      ctx.arc(rx, p.y + Math.min(14, p.height - 4), 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Moving Platform: Interlocking Clockwork Gear Assembly & Suspension Chains
+    if (p.speed && p.speed > 0) {
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+
+      // Rotating gear emblem on moving platform face
+      const gRadius = Math.min(10, p.height / 2 - 2);
+      if (gRadius >= 5) {
+        const gx = p.x + p.width / 2;
+        const gy = p.y + p.height / 2;
+        const gRot = this.gameTime * 4;
+        ctx.save();
+        ctx.translate(gx, gy);
+        ctx.rotate(gRot);
+        ctx.fillStyle = brass;
+        ctx.beginPath();
+        for (let t = 0; t < 8; t++) {
+          const a1 = (t / 8) * Math.PI * 2;
+          const a2 = a1 + (Math.PI / 8) * 0.6;
+          ctx.lineTo(Math.cos(a1) * gRadius, Math.sin(a1) * gRadius);
+          ctx.lineTo(Math.cos(a2) * (gRadius * 0.7), Math.sin(a2) * (gRadius * 0.7));
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    } else {
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+    }
+
+    ctx.restore();
+  }
+
   private drawPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
 
@@ -2325,6 +2774,12 @@ export class GameRenderer {
     // Check if Medieval Castle theme platform styles
     if (this.isMedievalCastleTheme(theme)) {
       this.drawMedievalCastlePlatform(p, theme);
+      return;
+    }
+
+    // Check if Clockwork Cogworks theme platform styles
+    if (this.isClockworkTheme(theme)) {
+      this.drawClockworkPlatform(p, theme);
       return;
     }
 
@@ -3059,10 +3514,11 @@ export class GameRenderer {
     const isSpace = theme ? this.isSpaceTheme(theme) : false;
     const isGlacier = theme ? this.isGlacierTheme(theme) : false;
     const isCastle = theme ? this.isMedievalCastleTheme(theme) : false;
+    const isClockwork = theme ? this.isClockworkTheme(theme) : false;
 
     if (h.type === 'spike') {
-      ctx.fillStyle = isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : (isCastle ? '#334155' : '#DC2626')));
-      ctx.strokeStyle = isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : (isCastle ? '#64748B' : '#991B1B')));
+      ctx.fillStyle = isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : (isCastle ? '#334155' : (isClockwork ? '#B45309' : '#DC2626'))));
+      ctx.strokeStyle = isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : (isCastle ? '#64748B' : (isClockwork ? '#F59E0B' : '#991B1B'))));
       ctx.lineWidth = 1.5;
 
       const numSpikes = Math.max(1, Math.floor(h.width / 14));
@@ -3080,13 +3536,13 @@ export class GameRenderer {
       ctx.stroke();
 
       // Gleam on spike tips
-      ctx.fillStyle = (isNeon || isSpace || isGlacier) ? '#FFFFFF' : (isCastle ? '#F59E0B' : '#FCA5A5');
+      ctx.fillStyle = (isNeon || isSpace || isGlacier) ? '#FFFFFF' : ((isCastle || isClockwork) ? '#F59E0B' : '#FCA5A5');
       for (let i = 0; i < numSpikes; i++) {
         const sx = h.x + i * spikeW;
         ctx.fillRect(sx + spikeW * 0.45, h.y + 2, 2, 4);
       }
     } else if (h.type === 'saw') {
-      // Spinning Buzzsaw / Orbital Plasma Orb / Glacial Ice Chakram / Medieval Spiked Flail
+      // Spinning Buzzsaw / Orbital Plasma Orb / Glacial Ice Chakram / Medieval Spiked Flail / Brass Clockwork Cog
       ctx.save();
       const cx = h.x + h.width / 2;
       const cy = h.y + h.height / 2;
@@ -3099,14 +3555,14 @@ export class GameRenderer {
       if (isSpace || isGlacier) {
         ctx.shadowColor = '#38BDF8';
         ctx.shadowBlur = 8;
-      } else if (isCastle) {
+      } else if (isCastle || isClockwork) {
         ctx.shadowColor = '#F59E0B';
         ctx.shadowBlur = 6;
       }
 
       // Outer saw teeth
-      ctx.fillStyle = isGlacier ? '#0F2642' : ((isNeon || isSpace) ? '#0E172A' : (isCastle ? '#1E293B' : '#E2E8F0'));
-      ctx.strokeStyle = (isSpace || isGlacier) ? '#38BDF8' : (isNeon ? '#00F0FF' : (isCastle ? '#94A3B8' : '#64748B'));
+      ctx.fillStyle = isGlacier ? '#0F2642' : ((isNeon || isSpace) ? '#0E172A' : (isCastle ? '#1E293B' : (isClockwork ? '#78350F' : '#E2E8F0')));
+      ctx.strokeStyle = (isSpace || isGlacier) ? '#38BDF8' : (isNeon ? '#00F0FF' : (isCastle ? '#94A3B8' : (isClockwork ? '#F59E0B' : '#64748B')));
       ctx.lineWidth = 2;
       ctx.beginPath();
       const teeth = 8;
@@ -3121,12 +3577,12 @@ export class GameRenderer {
       ctx.stroke();
 
       // Center core
-      ctx.fillStyle = isGlacier ? '#7DD3FC' : (isSpace ? '#818CF8' : (isNeon ? '#FF007F' : (isCastle ? '#B45309' : '#EF4444')));
+      ctx.fillStyle = isGlacier ? '#7DD3FC' : (isSpace ? '#818CF8' : (isNeon ? '#FF007F' : (isCastle ? '#B45309' : (isClockwork ? '#D97706' : '#EF4444'))));
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : (isCastle ? '#FDE047' : '#F87171')));
+      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : ((isCastle || isClockwork) ? '#FDE047' : '#F87171')));
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.2, 0, Math.PI * 2);
       ctx.fill();
@@ -3136,7 +3592,7 @@ export class GameRenderer {
       const isVolcano = theme ? this.isVolcanoTheme(theme) : false;
       const fillHeight = Math.max(h.height, 960 - h.y);
 
-      // Deep Molten Magma / Plasma Void / Sub-Zero Cryo / Boiling Pitch Gradient
+      // Deep Molten Magma / Plasma Void / Sub-Zero Cryo / Boiling Pitch / Molten Brass Machine Oil Gradient
       const lavaGrad = ctx.createLinearGradient(0, h.y, 0, h.y + fillHeight);
       if (isGlacier) {
         lavaGrad.addColorStop(0, '#E0F2FE');
@@ -3158,6 +3614,12 @@ export class GameRenderer {
         lavaGrad.addColorStop(0.12, '#451A03');
         lavaGrad.addColorStop(0.45, '#1C1917');
         lavaGrad.addColorStop(1, '#0A080C');
+      } else if (isClockwork) {
+        // Boiling Engine Oil & Molten Copper Slag
+        lavaGrad.addColorStop(0, '#D97706');
+        lavaGrad.addColorStop(0.12, '#78350F');
+        lavaGrad.addColorStop(0.45, '#26160C');
+        lavaGrad.addColorStop(1, '#0C0806');
       } else {
         // Volcanic Incandescent Molten Magma
         lavaGrad.addColorStop(0, '#F97316');
@@ -3168,8 +3630,8 @@ export class GameRenderer {
       ctx.fillStyle = lavaGrad;
       ctx.fillRect(h.x, h.y, h.width, fillHeight);
 
-      // Bubbling Magma / Freezing Nitrogen / Boiling Pitch Wave Crest
-      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : (isCastle ? '#F59E0B' : '#FEF08A')));
+      // Bubbling Magma / Freezing Nitrogen / Boiling Pitch / Engine Oil Wave Crest
+      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : ((isCastle || isClockwork) ? '#F59E0B' : '#FEF08A')));
       ctx.beginPath();
       ctx.moveTo(h.x, h.y);
       for (let x = h.x; x <= h.x + h.width; x += 16) {
