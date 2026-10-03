@@ -44,6 +44,11 @@ export class PhysicsEngine {
 
     const fpsRatio = Math.min(2.0, dt * 60);
 
+    // Deep Sea / Underwater Physics Detection
+    const isUnderwater = !!level.isUnderwater || 
+                         level.theme?.id === 'deep_sea' || 
+                         (level.theme?.name ? level.theme.name.toLowerCase().includes('deep sea') || level.theme.name.toLowerCase().includes('abyssal') : false);
+
     // 1. Timers & Powerups
     if (player.invulnerableTimer > 0) player.invulnerableTimer -= dt;
     if (player.speedBoostTimer > 0) player.speedBoostTimer -= dt;
@@ -67,10 +72,10 @@ export class PhysicsEngine {
       player.vx += this.MOVE_ACCEL * fpsRatio;
       player.facing = 1;
     } else {
-      // Apply friction (ice platforms have low friction, causing sliding!)
+      // Apply friction (ice platforms have low friction; water has gentle fluid drag)
       const friction = player.isGrounded 
         ? (player.standingOnIce ? 0.96 : this.FRICTION) 
-        : this.AIR_FRICTION;
+        : (isUnderwater ? 0.94 : this.AIR_FRICTION);
       player.vx *= Math.pow(friction, fpsRatio);
       if (Math.abs(player.vx) < 0.05) player.vx = 0;
     }
@@ -102,8 +107,42 @@ export class PhysicsEngine {
     const canJump = player.coyoteTimer > 0;
     const wantsJump = player.jumpBufferTimer > 0 || input.jumpPressed;
 
-    if (wantsJump && canJump) {
-      const jumpVel = player.jumpBoostTimer > 0 ? this.JUMP_FORCE * 1.25 : this.JUMP_FORCE;
+    if (isUnderwater && !player.isGrounded && (wantsJump || input.jumpPressed)) {
+      // CONTINUOUS UNDERWATER SWIMMING STROKE
+      // Tapping jump repeatedly allows swimming upward and navigating submerged 3D space
+      const swimBaseImpulse = -5.4;
+      if (player.vy > 0) {
+        player.vy = swimBaseImpulse;
+      } else {
+        player.vy = Math.max(-6.8, player.vy - 3.4);
+      }
+
+      // Forward/backward aquatic paddle propulsion
+      if (input.left) {
+        player.vx = Math.max(player.vx - 1.5, -this.MOVE_SPEED * 1.15);
+        player.facing = -1;
+      } else if (input.right) {
+        player.vx = Math.min(player.vx + 1.5, this.MOVE_SPEED * 1.15);
+        player.facing = 1;
+      }
+
+      player.isJumping = true;
+      player.ridingPlatformId = null;
+      player.ridingPlatformVy = 0;
+      player.jumpBufferTimer = 0;
+
+      // Aquatic dynamic swim squash & stretch
+      player.scaleX = 0.82;
+      player.scaleY = 1.28;
+
+      sound.playSwimStroke();
+      particles.emitWaterBubbles(player.x + player.width / 2, player.y + player.height - 2, 7);
+      if (Math.random() < 0.22) {
+        particles.addPopup(player.x + player.width / 2, player.y - 12, 'SWIM! 🫧', '#38BDF8');
+      }
+    } else if (wantsJump && canJump) {
+      const baseJumpForce = isUnderwater ? -7.8 : this.JUMP_FORCE;
+      const jumpVel = player.jumpBoostTimer > 0 ? baseJumpForce * 1.25 : baseJumpForce;
       // If jumping while riding an upward-moving platform, inherit vertical momentum for an extra crisp boost
       const platformBoost = (player.ridingPlatformVy && player.ridingPlatformVy < 0) ? player.ridingPlatformVy * 0.85 : 0;
       player.vy = jumpVel + platformBoost;
@@ -119,10 +158,15 @@ export class PhysicsEngine {
       player.scaleY = 1.35;
 
       sound.playJump();
-      particles.emitDust(player.x + player.width / 2, player.y + player.height, 6, level.theme.platformTop);
+      if (isUnderwater) {
+        particles.emitWaterBubbles(player.x + player.width / 2, player.y + player.height, 5);
+      } else {
+        particles.emitDust(player.x + player.width / 2, player.y + player.height, 6, level.theme.platformTop);
+      }
     } else if (wantsJump && !canJump && !player.isGrounded && !player.hasJetpack && player.canDoubleJump !== false) {
       // Mid-air Double Jump!
-      const dJumpVel = player.jumpBoostTimer > 0 ? this.JUMP_FORCE * 1.15 : this.JUMP_FORCE * 0.95;
+      const baseDJump = isUnderwater ? -7.0 : this.JUMP_FORCE;
+      const dJumpVel = player.jumpBoostTimer > 0 ? baseDJump * 1.15 : baseDJump * 0.95;
       player.vy = dJumpVel;
       player.canDoubleJump = false;
       player.hasDoubleJumped = true;
@@ -134,8 +178,13 @@ export class PhysicsEngine {
       player.scaleY = 1.3;
 
       sound.playDoubleJump();
-      particles.emitDoubleJump(player.x + player.width / 2, player.y + player.height);
-      particles.addPopup(player.x + player.width / 2, player.y - 12, 'DOUBLE JUMP! 🪶', '#60A5FA');
+      if (isUnderwater) {
+        particles.emitWaterBubbles(player.x + player.width / 2, player.y + player.height, 6);
+        particles.addPopup(player.x + player.width / 2, player.y - 12, 'AQUA JUMP! 🫧', '#38BDF8');
+      } else {
+        particles.emitDoubleJump(player.x + player.width / 2, player.y + player.height);
+        particles.addPopup(player.x + player.width / 2, player.y - 12, 'DOUBLE JUMP! 🪶', '#60A5FA');
+      }
     }
 
     // Jetpack Flight Logic (holding jump button in the air)
@@ -164,21 +213,34 @@ export class PhysicsEngine {
     }
 
     // Variable jump height cut (only active when not firing jetpack)
-    if (input.jumpReleased && player.vy < -3 && !player.isJetpacking) {
-      player.vy *= 0.45;
+    if (input.jumpReleased && player.vy < -2.2 && !player.isJetpacking) {
+      player.vy *= isUnderwater ? 0.65 : 0.45;
     }
 
-    // 4. Gravity
-    player.vy += this.GRAVITY * fpsRatio;
+    // 4. Gravity (Slower underwater physics for dreamy submerged navigation)
+    const effectiveGravity = isUnderwater ? 0.24 : this.GRAVITY;
+    player.vy += effectiveGravity * fpsRatio;
 
-    // Bubble Shield Float-Glide (Holding jump/up while falling in mid-air)
-    if (player.hasShield && !player.isGrounded && input.up && player.vy > 1.2 && !player.hasJetpack) {
-      player.vy = 1.2; // Gentle buoyancy glide
+    // Bubble Shield Float-Glide (Holding jump/up while falling in mid-air/water)
+    const floatThreshold = isUnderwater ? 0.6 : 1.2;
+    if (player.hasShield && !player.isGrounded && input.up && player.vy > floatThreshold && !player.hasJetpack) {
+      player.vy = isUnderwater ? 0.5 : 1.2; // Extra buoyant float glide in deep sea
       particles.emitBubbleGlider(player.x + player.width / 2, player.y + player.height);
+      if (isUnderwater && Math.random() < 0.4) {
+        particles.emitWaterBubbles(player.x + player.width / 2, player.y + player.height / 2, 1);
+      }
     }
 
-    if (player.vy > this.MAX_FALL_SPEED) {
-      player.vy = this.MAX_FALL_SPEED;
+    const effectiveMaxFall = isUnderwater ? 4.8 : this.MAX_FALL_SPEED;
+    if (player.vy > effectiveMaxFall) {
+      player.vy = effectiveMaxFall;
+    }
+
+    // Underwater swimming bubbles when moving
+    if (isUnderwater && (Math.abs(player.vx) > 1.0 || Math.abs(player.vy) > 1.2)) {
+      if (Math.random() < 0.22) {
+        particles.emitWaterBubbles(player.x + player.width / 2, player.y + player.height / 2, 1);
+      }
     }
 
     // 5. Update Dynamic Level Elements (Moving platforms, crumbling blocks, hazards, enemies, launched jetpacks, enemy projectiles)
@@ -650,6 +712,50 @@ export class PhysicsEngine {
           particles.addPopup(e.x + e.width / 2, e.y - 10, 'BURN! 🔥', '#EA580C');
         }
       }
+
+      // NEW ICE ENEMY: FROST YETI (hurls rolling snowballs)
+      if (e.type === 'frost_yeti') {
+        if (e.shootTimer === undefined) e.shootTimer = 2.0 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0) {
+          e.shootTimer = 3.4;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 22;
+          level.enemyProjectiles.push({
+            id: `snowball_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 6,
+            vx: e.facing * 3.0,
+            vy: -1.6,
+            width: 20,
+            height: 20,
+            type: 'snowball',
+            rotation: 0,
+            life: 0,
+            maxLife: 5.5,
+            bounces: 0
+          });
+          particles.emitSparkles(projX, e.y + 10, '#38BDF8', 10);
+          particles.addPopup(e.x + e.width / 2, e.y - 12, 'SNOWBALL! ❄️', '#38BDF8');
+        }
+      }
+
+      // NEW AQUATIC ENEMY: SEA URCHIN (floating or patrolling spiky hazard with undulating venom spines)
+      if (e.type === 'urchin') {
+        e.isSpiky = true; // Urchins are permanently covered in sharp venomous quills
+        if (e.minY !== undefined && e.maxY !== undefined) {
+          // Floating in the water column
+          e.y += Math.sin(this.gameTime * 2.4 + e.x * 0.05) * 1.2 * fpsRatio;
+          if (e.y < e.minY) e.y = e.minY;
+          if (e.y > e.maxY - e.height) e.y = e.maxY - e.height;
+        } else {
+          // Subtle marine bobbing
+          e.y += Math.sin(this.gameTime * 3.0 + e.x * 0.02) * 0.4 * fpsRatio;
+        }
+        if (Math.random() < 0.03) {
+          particles.emitWaterBubbles(e.x + e.width / 2, e.y + 4, 1);
+        }
+      }
     });
 
     // 3.8 Update Enemy Projectiles (ants, tumbling logs, stink clouds, honk waves, fireballs)
@@ -716,6 +822,32 @@ export class PhysicsEngine {
           ep.x += ep.vx * fpsRatio;
           ep.width = 26 + ep.life * 6;
           ep.height = 26 + ep.life * 6;
+        } else if (ep.type === 'snowball') {
+          // Rolling & bouncing packed snow boulder
+          ep.vy += 0.32 * fpsRatio;
+          ep.x += ep.vx * fpsRatio;
+          ep.y += ep.vy * fpsRatio;
+          ep.rotation = (ep.rotation || 0) + (ep.vx > 0 ? 0.18 : -0.18) * fpsRatio;
+          if (Math.random() < 0.4) {
+            particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#BAE6FD', 2);
+          }
+
+          // Platform bounces
+          for (const p of level.platforms) {
+            if (
+              ep.x + ep.width > p.x &&
+              ep.x < p.x + p.width &&
+              ep.y + ep.height >= p.y &&
+              ep.y + ep.height <= p.y + 16 &&
+              ep.vy > 0
+            ) {
+              ep.y = p.y - ep.height;
+              ep.vy = -Math.abs(ep.vy) * 0.5;
+              ep.bounces = (ep.bounces || 0) + 1;
+              particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height, '#E0F2FE', 5);
+              break;
+            }
+          }
         } else {
           // Ant: crawls forward along ground
           ep.x += ep.vx * fpsRatio;
@@ -768,11 +900,11 @@ export class PhysicsEngine {
             const bbBox = { x: bb.x - bb.radius, y: bb.y - bb.radius, width: bb.radius * 2, height: bb.radius * 2 };
             if (this.isOverlapping(bbBox, ep)) {
               sound.playBlasterHit();
-              const popColor = ep.type === 'log' ? '#78350F' : (ep.type === 'stink_cloud' ? '#84CC16' : (ep.type === 'honk_wave' ? '#F97316' : '#EF4444'));
-              const popLabel = ep.type === 'log' ? 'LOG SMASHED! +150' : (ep.type === 'stink_cloud' ? 'FUMES DISPERSED! +120' : (ep.type === 'honk_wave' ? 'HONK CANCELLED! +150' : 'ANT BLASTED! +100'));
+              const popColor = ep.type === 'snowball' ? '#BAE6FD' : (ep.type === 'fireball' ? '#F97316' : (ep.type === 'log' ? '#78350F' : (ep.type === 'stink_cloud' ? '#84CC16' : (ep.type === 'honk_wave' ? '#F97316' : '#EF4444'))));
+              const popLabel = ep.type === 'snowball' ? 'SNOWBALL SHATTERED! +150' : (ep.type === 'fireball' ? 'FIRE EXTINGUISHED! +150' : (ep.type === 'log' ? 'LOG SMASHED! +150' : (ep.type === 'stink_cloud' ? 'FUMES DISPERSED! +120' : (ep.type === 'honk_wave' ? 'HONK CANCELLED! +150' : 'ANT BLASTED! +100'))));
               particles.emitEnemyPop(ep.x + ep.width / 2, ep.y + ep.height / 2, popColor, 12);
               particles.addPopup(ep.x + ep.width / 2, ep.y, popLabel, '#38BDF8');
-              onScoreAdd(ep.type === 'log' ? 150 : 100);
+              onScoreAdd(ep.type === 'log' || ep.type === 'snowball' || ep.type === 'fireball' ? 150 : 100);
               level.blasterBullets.splice(bi, 1);
               level.enemyProjectiles.splice(i, 1);
               destroyed = true;
@@ -875,8 +1007,10 @@ export class PhysicsEngine {
         b.x += b.vx * fpsRatio;
         b.y += b.vy * fpsRatio;
 
-        // Plasma trail sparkles
-        particles.emitSparkles(b.x, b.y, b.color || '#38BDF8', 2);
+        // Plasma trail sparkles (only for plasma blaster; keep solid snowballs clean)
+        if (!b.isSnowball) {
+          particles.emitSparkles(b.x, b.y, b.color || '#38BDF8', 2);
+        }
 
         let hit = false;
         // Check enemy hit
@@ -891,9 +1025,13 @@ export class PhysicsEngine {
             enemy.isDead = true;
             if (onEnemyDefeated) onEnemyDefeated(enemy);
             sound.playBlasterHit();
-            particles.emitEnemyPop(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#EF4444', 20);
-            particles.emitSparkles(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#38BDF8', 18);
-            particles.addPopup(enemy.x + enemy.width / 2, enemy.y, 'BLASTED! +300', '#38BDF8');
+            const popColor = b.isSnowball ? '#BAE6FD' : '#EF4444';
+            particles.emitEnemyPop(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, popColor, b.isSnowball ? 12 : 20);
+            if (!b.isSnowball) {
+              particles.emitSparkles(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, '#38BDF8', 18);
+            }
+            const popText = b.isSnowball ? 'FROST SMASH! +300' : 'BLASTED! +300';
+            particles.addPopup(enemy.x + enemy.width / 2, enemy.y, popText, '#38BDF8');
             onScoreAdd(300);
             level.blasterBullets.splice(i, 1);
             hit = true;
@@ -912,7 +1050,7 @@ export class PhysicsEngine {
             b.y <= p.y + p.height
           ) {
             sound.playBlasterHit();
-            particles.emitSparkles(b.x, b.y, '#38BDF8', 8);
+            particles.emitSparkles(b.x, b.y, b.isSnowball ? '#FFFFFF' : '#38BDF8', b.isSnowball ? 3 : 8);
             level.blasterBullets.splice(i, 1);
             hit = true;
             break;
@@ -1115,6 +1253,13 @@ export class PhysicsEngine {
           if (onAcornCollected) {
             onAcornCollected();
           }
+        } else if (c.type === 'snow_cannon') {
+          player.hasSnowCannon = true;
+          player.snowCannonCooldown = 0;
+          sound.playPowerup();
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#38BDF8', 30);
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#FFFFFF', 20);
+          particles.addPopup(c.x + c.width / 2, c.y - 14, '❄️ SNOW CANNON! [HOLD FIRE]', '#38BDF8');
         } else if (c.type === 'blaster') {
           player.hasBlaster = true;
           player.blasterAmmo = 30;
@@ -1212,14 +1357,15 @@ export class PhysicsEngine {
         const enemyTop = e.y + e.height * 0.4;
 
         if (player.vy > 0 && playerBottom <= enemyTop + 10) {
-          // If the enemy is currently spiky (like curled hedgehog)
-          if (e.isSpiky) {
+          // If the enemy is currently spiky (like curled hedgehog or sea urchin)
+          if (e.isSpiky || e.type === 'urchin') {
             if (player.hasShield) {
               this.popPlayerShield(player, particles);
               player.vy = -7.5;
             } else if (player.invulnerableTimer <= 0) {
               sound.playHit();
-              particles.addPopup(e.x + e.width / 2, e.y - 12, 'OUCH! SPIKY QUILLS!', '#F43F5E');
+              const spikyMsg = e.type === 'urchin' ? 'OUCH! SEA URCHIN SPINES!' : 'OUCH! SPIKY QUILLS!';
+              particles.addPopup(e.x + e.width / 2, e.y - 12, spikyMsg, '#F43F5E');
               this.killPlayer(player, particles, onPlayerDeath);
             }
             return;
@@ -1233,7 +1379,7 @@ export class PhysicsEngine {
           sound.playStomp();
           if (onEnemyDefeated) onEnemyDefeated(e);
           particles.emitEnemyPop(e.x + e.width / 2, e.y + e.height / 2, '#10B981', 16);
-          const pts = e.type === 'goose' ? 450 : (e.type === 'fire_imp' ? 400 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' ? 350 : 250)));
+          const pts = e.type === 'frost_yeti' ? 500 : (e.type === 'goose' ? 450 : (e.type === 'fire_imp' ? 400 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' ? 350 : 250))));
           particles.addPopup(e.x + e.width / 2, e.y, `+${pts}`, '#34D399');
           onScoreAdd(pts);
         } else {
@@ -1242,6 +1388,9 @@ export class PhysicsEngine {
             if (player.hasShield) {
               this.popPlayerShield(player, particles);
             } else {
+              if (e.type === 'urchin') {
+                particles.addPopup(e.x + e.width / 2, e.y - 12, 'OUCH! SEA URCHIN SPINES!', '#F43F5E');
+              }
               this.killPlayer(player, particles, onPlayerDeath);
             }
           }

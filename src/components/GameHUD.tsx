@@ -230,6 +230,31 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           </div>
         )}
 
+        {/* Rapid-Fire Snowball Cannon Weapon Status & Infinite Ammo Gauge */}
+        {stats.hasSnowCannon && (
+          <div 
+            id="hud-snow-cannon-gauge" 
+            className="flex items-center gap-1.5 sm:gap-2 bg-slate-900/90 backdrop-blur-md px-2 sm:px-2.5 py-1 rounded-lg border border-cyan-400/80 shadow-lg shadow-cyan-500/20 text-xs animate-in fade-in duration-200 max-w-full"
+          >
+            <div className="flex items-center gap-1 text-cyan-300 font-bold shrink-0">
+              <span className="text-xs sm:text-sm animate-spin" style={{ animationDuration: '6s' }}>❄️</span>
+              <span className="tracking-wide text-[10px] sm:text-[11px] font-mono">CANNON:</span>
+            </div>
+
+            {/* Infinite Ammo Indicator */}
+            <div className="flex items-center gap-1 bg-cyan-950/70 border border-cyan-500/40 px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] font-mono font-bold text-cyan-200 shrink-0">
+              <span>AMMO:</span>
+              <span className="text-white text-xs sm:text-sm font-black">∞</span>
+              <span className="text-[8px] text-cyan-400 hidden sm:inline">(UNLIMITED)</span>
+            </div>
+
+            {/* Action Hint */}
+            <div className="text-[9px] text-cyan-200 font-bold bg-cyan-500/25 px-1.5 py-0.5 rounded border border-cyan-400/50 shrink-0 ml-auto font-mono">
+              HOLD [F / X / FIRE]
+            </div>
+          </div>
+        )}
+
         {/* Bubble Shield Status Badge */}
         {stats.hasShield && (
           <div 

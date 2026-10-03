@@ -43,7 +43,7 @@ export interface Hazard {
   rotation?: number;
 }
 
-export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield' | 'acorn';
+export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield' | 'acorn' | 'snow_cannon';
 
 export interface Collectible {
   id: string;
@@ -92,11 +92,12 @@ export interface BlasterBullet {
   color: string;
   life: number;
   maxLife: number;
+  isSnowball?: boolean;
 }
 
-export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose' | 'fire_imp';
+export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose' | 'fire_imp' | 'frost_yeti' | 'urchin';
 
-export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave' | 'fireball';
+export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave' | 'fireball' | 'snowball';
 
 export interface EnemyProjectile {
   id: string;
@@ -174,6 +175,9 @@ export interface Player {
   blasterAmmo?: number;
   maxBlasterAmmo?: number;
   blasterCooldown?: number;
+  // Snowball Cannon powerup state (rapid-fire snowballs, infinite ammo)
+  hasSnowCannon?: boolean;
+  snowCannonCooldown?: number;
   // Shield state
   hasShield?: boolean;
   // Double jump state (when not wearing jetpack)
@@ -285,6 +289,17 @@ export interface LevelTheme {
   spaceNebula1?: string;
   spaceNebula2?: string;
   spaceStarColor?: string;
+  magmaGlow?: string;
+  emberColor?: string;
+  auroraGreen?: string;
+  auroraCyan?: string;
+  auroraPurple?: string;
+  frostGlow?: string;
+  iceShimmer?: string;
+  waterColor?: string;
+  bubbleColor?: string;
+  coralGlow?: string;
+  bioluminescence?: string;
 }
 
 export type LevelGameplayType = 'runner' | 'terrain' | 'rocketeer' | 'gadget';
@@ -311,6 +326,7 @@ export interface LevelData {
   blasterBullets?: BlasterBullet[];
   enemyProjectiles?: EnemyProjectile[];
   startWithJetpack?: boolean;
+  isUnderwater?: boolean;
   requiredAcorns?: number; // Total golden acorns needed across the game to unlock this stage
   parTime?: number; // target time in seconds
   threeStarScore?: number;
@@ -351,6 +367,7 @@ export interface GameStats {
   hasBlaster?: boolean;
   blasterAmmo?: number;
   maxBlasterAmmo?: number;
+  hasSnowCannon?: boolean;
   hasShield?: boolean;
   isTransitioning?: boolean;
   transitionProgress?: number;
@@ -383,4 +400,5 @@ export interface InputState {
   jumpReleased: boolean;
   restartPressed: boolean;
   shootPressed?: boolean;
+  fire?: boolean;
 }

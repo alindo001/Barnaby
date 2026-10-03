@@ -15,6 +15,7 @@ export interface RenderCharacterOptions {
   vx?: number;
   hasBlaster?: boolean;
   blasterAmmo?: number;
+  hasSnowCannon?: boolean;
   hasJetpack?: boolean;
   jetpackFuel?: number;
   maxJetpackFuel?: number;
@@ -37,6 +38,7 @@ export function renderCharacter(opts: RenderCharacterOptions): void {
     vx = p?.vx ?? 0,
     hasBlaster = p?.hasBlaster ?? false,
     blasterAmmo = p?.blasterAmmo ?? 0,
+    hasSnowCannon = p?.hasSnowCannon ?? false,
     hasJetpack = p?.hasJetpack ?? false,
     jetpackFuel = p?.jetpackFuel ?? 100,
     maxJetpackFuel = p?.maxJetpackFuel ?? 100,
@@ -102,8 +104,23 @@ export function renderCharacter(opts: RenderCharacterOptions): void {
   // 5. Hat / Headgear
   drawHat(ctx, char, pw, ph, time, vx);
 
-  // 6. Blaster Gun
-  if (hasBlaster) {
+  // 6. Snow Cannon or Blaster Gun
+  if (hasSnowCannon) {
+    const cx = pw / 2 - 2;
+    const cy = 2;
+    // Heavy frosted cannon barrel
+    ctx.fillStyle = '#0F2642';
+    ctx.fillRect(cx, cy - 4, 13, 7);
+    // Frosted muzzle rim
+    ctx.fillStyle = '#BAE6FD';
+    ctx.fillRect(cx + 11, cy - 5, 4, 9);
+    // Glowing cyan emitter tip
+    ctx.fillStyle = '#00F0FF';
+    ctx.fillRect(cx + 14, cy - 3, 2, 5);
+    // Snowflake emblem
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(cx + 4, cy - 2, 3, 3);
+  } else if (hasBlaster) {
     const bx = pw / 2 - 2;
     const by = 2;
     // Gun barrel

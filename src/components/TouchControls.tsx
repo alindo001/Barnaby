@@ -18,6 +18,7 @@ import { InputState, TouchButtonSize, LaunchDirection } from '../types/game';
 interface TouchControlsProps {
   hasJetpack?: boolean;
   hasBlaster?: boolean;
+  hasSnowCannon?: boolean;
   dpadSize?: TouchButtonSize;
   touchOpacity?: number;
   onToggleDpadSize?: () => void;
@@ -30,6 +31,7 @@ interface TouchControlsProps {
 export const TouchControls: React.FC<TouchControlsProps> = ({ 
   hasJetpack, 
   hasBlaster,
+  hasSnowCannon,
   dpadSize = 'normal',
   touchOpacity = 0.75,
   onToggleDpadSize,
@@ -240,11 +242,33 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
           </button>
         )}
 
-        {hasBlaster && onShootBlaster && (
+        {hasSnowCannon && (
+          <button
+            id="btn-touch-fire-snow-cannon"
+            onTouchStart={(e) => { e.preventDefault(); onInput('fire', true); }}
+            onTouchEnd={(e) => { e.preventDefault(); onInput('fire', false); }}
+            onMouseDown={() => onInput('fire', true)}
+            onMouseUp={() => onInput('fire', false)}
+            onMouseLeave={() => onInput('fire', false)}
+            style={{ opacity: touchOpacity }}
+            className="w-13 h-13 min-[380px]:w-15 min-[380px]:h-15 sm:w-16 sm:h-16 bg-gradient-to-tr from-cyan-600 via-sky-400 to-white active:from-white active:to-cyan-300 border-2 border-cyan-200 shadow-xl shadow-cyan-400/50 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center text-slate-950 active:scale-95 transition-all touch-manipulation ring-2 ring-cyan-300/80 animate-pulse"
+            title="Rapid-Fire Snowball Cannon (Hold to Stream Snowballs!)"
+          >
+            <span className="text-lg min-[380px]:text-xl leading-none">❄️</span>
+            <span className="text-[7px] min-[380px]:text-[8px] font-black uppercase tracking-wider text-slate-950 mt-0.5">
+              HOLD FIRE
+            </span>
+          </button>
+        )}
+
+        {!hasSnowCannon && hasBlaster && onShootBlaster && (
           <button
             id="btn-touch-fire-blaster"
-            onTouchStart={(e) => { e.preventDefault(); onShootBlaster(); }}
-            onMouseDown={() => onShootBlaster()}
+            onTouchStart={(e) => { e.preventDefault(); onInput('fire', true); onShootBlaster(); }}
+            onTouchEnd={(e) => { e.preventDefault(); onInput('fire', false); }}
+            onMouseDown={() => { onInput('fire', true); onShootBlaster(); }}
+            onMouseUp={() => onInput('fire', false)}
+            onMouseLeave={() => onInput('fire', false)}
             style={{ opacity: touchOpacity }}
             className="w-12 h-12 min-[380px]:w-14 min-[380px]:h-14 sm:w-16 sm:h-16 bg-gradient-to-tr from-sky-600 to-cyan-500 active:from-cyan-400 active:to-sky-300 border border-sky-300/70 shadow-lg shadow-sky-500/25 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center text-white active:text-slate-950 active:scale-95 transition-all touch-manipulation"
             title="Shoot Plasma Blaster"

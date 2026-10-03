@@ -824,6 +824,226 @@ export function drawEnemyFigure(
     ctx.fill();
 
     ctx.restore();
+  } else if (e.type === 'frost_yeti') {
+    // ==========================================
+    // BOREAL FROST YETI
+    // Shaggy white fur, ice crystal horns, blue face mask, glowing eyes
+    // ==========================================
+    const walkBob = Math.abs(Math.sin(animTime * 8)) * 2;
+    const armSwing = Math.sin(animTime * 8) * 4;
+    const breathPuff = (animTime * 4) % 1;
+
+    ctx.translate(cx, cy + walkBob);
+    if (facing === -1) ctx.scale(-1, 1);
+
+    // Icy Aura Glow
+    ctx.save();
+    ctx.shadowColor = '#38BDF8';
+    ctx.shadowBlur = 8;
+
+    // Ice Horns (Left & Right)
+    ctx.fillStyle = '#38BDF8';
+    ctx.strokeStyle = '#BAE6FD';
+    ctx.lineWidth = 1;
+    // Left horn
+    ctx.beginPath();
+    ctx.moveTo(-6, -11);
+    ctx.lineTo(-11, -19);
+    ctx.lineTo(-3, -13);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Right horn
+    ctx.beginPath();
+    ctx.moveTo(6, -11);
+    ctx.lineTo(11, -19);
+    ctx.lineTo(3, -13);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Shaggy Ears
+    ctx.fillStyle = '#E2E8F0';
+    ctx.beginPath();
+    ctx.arc(-11, -8, 3.5, 0, Math.PI * 2);
+    ctx.arc(11, -8, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Big Fluffy White Fur Body & Shoulders
+    ctx.fillStyle = '#F8FAFC';
+    ctx.beginPath();
+    ctx.ellipse(0, 3, 13, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Fluffy fur tufts / shaggy rim
+    ctx.fillStyle = '#E2E8F0';
+    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+      const tuftX = Math.cos(angle) * 12;
+      const tuftY = 3 + Math.sin(angle) * 10;
+      ctx.beginPath();
+      ctx.arc(tuftX, tuftY, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Big Shaggy Arms
+    ctx.fillStyle = '#F1F5F9';
+    // Back arm
+    ctx.beginPath();
+    ctx.ellipse(-9 - armSwing * 0.4, 4, 4, 6, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    // Front arm
+    ctx.beginPath();
+    ctx.ellipse(9 + armSwing * 0.4, 4, 4, 6, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Deep Polar Blue Face Mask
+    ctx.fillStyle = '#0369A1';
+    ctx.beginPath();
+    ctx.ellipse(1, -4, 7, 5.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Piercing Glowing Amber Eyes
+    ctx.fillStyle = '#FBBF24';
+    ctx.beginPath();
+    ctx.arc(-2, -5, 1.8, 0, Math.PI * 2);
+    ctx.arc(4, -5, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Black Pupils
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(-1.5, -5, 0.8, 0, Math.PI * 2);
+    ctx.arc(4.5, -5, 0.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Yeti Snout & Mouth
+    ctx.fillStyle = '#0284C7';
+    ctx.beginPath();
+    ctx.ellipse(1, -2, 3.5, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Little white fangs
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(-1, -1); ctx.lineTo(0, 1.5); ctx.lineTo(1, -1);
+    ctx.moveTo(2, -1); ctx.lineTo(3, 1.5); ctx.lineTo(4, -1);
+    ctx.fill();
+
+    // Frost breath puff floating out of mouth
+    ctx.fillStyle = 'rgba(224, 242, 254, ' + (0.6 - breathPuff * 0.6) + ')';
+    ctx.beginPath();
+    ctx.arc(5 + breathPuff * 8, -2 - breathPuff * 4, 2 + breathPuff * 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (e.type === 'urchin') {
+    // ==========================================
+    // ABYSSAL DEEP SEA URCHIN
+    // Radial venom spines, undulating needle quills,
+    // glowing bio-luminescent tips, and piercing cyclopean ocean eye
+    // ==========================================
+    const marineBob = Math.sin(animTime * 4) * 2;
+    const pulseScale = 1.0 + Math.sin(animTime * 6) * 0.08;
+    const r = Math.min(e.width, e.height) * 0.38;
+
+    ctx.translate(cx, cy + marineBob);
+    ctx.scale(pulseScale, pulseScale);
+
+    // Bioluminescent Ambient Halo
+    ctx.save();
+    ctx.shadowColor = '#22D3EE';
+    ctx.shadowBlur = 12;
+
+    // 16 Radiating Venomous Needles / Spines
+    const spineCount = 16;
+    for (let i = 0; i < spineCount; i++) {
+      const baseAngle = (i * Math.PI * 2) / spineCount;
+      const spineTwitch = Math.sin(animTime * 8 + i * 1.4) * 0.12;
+      const angle = baseAngle + spineTwitch;
+      const spineLength = r + 8 + Math.sin(animTime * 6 + i * 1.8) * 3.5;
+
+      const sx = Math.cos(angle);
+      const sy = Math.sin(angle);
+
+      // Spine shaft (dark abyssal purple/indigo)
+      ctx.strokeStyle = '#311042';
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.moveTo(sx * (r * 0.6), sy * (r * 0.6));
+      ctx.lineTo(sx * (spineLength - 2), sy * (spineLength - 2));
+      ctx.stroke();
+
+      // Sharp inner needle
+      ctx.strokeStyle = '#6D28D9';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(sx * (r * 0.8), sy * (r * 0.8));
+      ctx.lineTo(sx * spineLength, sy * spineLength);
+      ctx.stroke();
+
+      // Glowing Bio-Venom Quill Tip
+      ctx.fillStyle = i % 2 === 0 ? '#00F0FF' : '#22D3EE';
+      ctx.beginPath();
+      ctx.arc(sx * (spineLength + 1), sy * (spineLength + 1), 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Main Urchin Core Sphere (Deep oceanic radial gradient)
+    const coreGrad = ctx.createRadialGradient(-r * 0.25, -r * 0.25, 2, 0, 0, r);
+    coreGrad.addColorStop(0, '#7C3AED');
+    coreGrad.addColorStop(0.5, '#4C1D95');
+    coreGrad.addColorStop(0.9, '#1E1035');
+    coreGrad.addColorStop(1, '#090314');
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Secondary bio-ridge dots on shell
+    ctx.fillStyle = '#A78BFA';
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * Math.PI * 2) / 8;
+      const bRad = r * 0.62;
+      ctx.beginPath();
+      ctx.arc(Math.cos(angle) * bRad, Math.sin(angle) * bRad, 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Piercing Cyclopean Ocean Eye
+    const eyeOffsetX = (facing === 1 ? 2.5 : -2.5);
+    // Sclera
+    ctx.fillStyle = '#082F49';
+    ctx.beginPath();
+    ctx.arc(eyeOffsetX, 0, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glowing Cyan Iris
+    ctx.fillStyle = '#06B6D4';
+    ctx.beginPath();
+    ctx.arc(eyeOffsetX + (facing === 1 ? 1 : -1), 0, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pupil
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.arc(eyeOffsetX + (facing === 1 ? 1.5 : -1.5), 0, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glisten
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(eyeOffsetX + (facing === 1 ? 0.8 : -2), -1.2, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Floating Ambient Oxygen Bubbles
+    const bPhase = (animTime * 1.5) % 1;
+    ctx.fillStyle = 'rgba(186, 230, 253, ' + (0.75 - bPhase * 0.75) + ')';
+    ctx.beginPath();
+    ctx.arc(4 + Math.sin(animTime * 5) * 3, -r - 4 - bPhase * 16, 2.0, 0, Math.PI * 2);
+    ctx.arc(-5 + Math.cos(animTime * 4) * 3, -r - 10 - ((bPhase + 0.5) % 1) * 16, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   } else {
     // ==========================================
     // CLASSIC SLIME
@@ -1047,6 +1267,55 @@ export function drawEnemyProjectileFigure(
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.arc(0, 0, r * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (ep.type === 'snowball') {
+    // ==========================================
+    // COMPACTED ROLLING SNOWBALL / ICE BOULDER
+    // Frost crystal core, rotating snowflake etchings, blue icy rim
+    // ==========================================
+    const r = ep.width / 2;
+    const rot = ep.rotation || 0;
+
+    ctx.rotate(rot);
+
+    // Frost aura glow
+    ctx.save();
+    ctx.shadowColor = '#38BDF8';
+    ctx.shadowBlur = 10;
+
+    // Packed snow gradient sphere
+    const snowGrad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, 1, 0, 0, r);
+    snowGrad.addColorStop(0, '#FFFFFF');
+    snowGrad.addColorStop(0.65, '#E0F2FE');
+    snowGrad.addColorStop(1, '#7DD3FC');
+    ctx.fillStyle = snowGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ice border
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    // 6-Point Snowflake Etchings
+    ctx.strokeStyle = '#0284C7';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (let i = 0; i < 3; i++) {
+      const angle = (i * Math.PI) / 3;
+      ctx.moveTo(Math.cos(angle) * (r * 0.75), Math.sin(angle) * (r * 0.75));
+      ctx.lineTo(-Math.cos(angle) * (r * 0.75), -Math.sin(angle) * (r * 0.75));
+    }
+    ctx.stroke();
+
+    // Little snow flecks
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(-r * 0.35, -r * 0.25, 2, 0, Math.PI * 2);
+    ctx.arc(r * 0.3, r * 0.3, 1.6, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();

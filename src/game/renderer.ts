@@ -113,6 +113,25 @@ export class GameRenderer {
     // Restore Camera Transform (returns to Screen Space)
     ctx.restore();
 
+    // 13.5 Deep Sea Atmospheric Submersion Tint & Water Vignette
+    if (this.isDeepSeaTheme(level.theme)) {
+      ctx.save();
+      const waterTint = ctx.createLinearGradient(0, 0, 0, viewHeight);
+      waterTint.addColorStop(0, 'rgba(6, 78, 119, 0.06)');
+      waterTint.addColorStop(0.65, 'rgba(3, 40, 64, 0.12)');
+      waterTint.addColorStop(1, 'rgba(2, 20, 36, 0.25)');
+      ctx.fillStyle = waterTint;
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+      // Deep ocean vignette
+      const vigGrad = ctx.createRadialGradient(viewWidth / 2, viewHeight / 2, viewWidth * 0.35, viewWidth / 2, viewHeight / 2, viewWidth * 0.7);
+      vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      vigGrad.addColorStop(1, 'rgba(2, 11, 20, 0.38)');
+      ctx.fillStyle = vigGrad;
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
+      ctx.restore();
+    }
+
     // 14. Smooth Fade-to-Black Screen Transition & Cinematic Sector Card
     if (transition && transition.active) {
       this.drawScreenTransition(transition, viewWidth, viewHeight);
@@ -257,6 +276,14 @@ export class GameRenderer {
     return theme.id === 'volcano_inferno' || (theme.name ? theme.name.toLowerCase().includes('volcano') || theme.name.toLowerCase().includes('infernal') : false);
   }
 
+  private isGlacierTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'glacial_aurora' || (theme.name ? theme.name.toLowerCase().includes('glacier') || theme.name.toLowerCase().includes('borealis') : false);
+  }
+
+  private isDeepSeaTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'deep_sea' || (theme.name ? theme.name.toLowerCase().includes('deep sea') || theme.name.toLowerCase().includes('abyssal') : false);
+  }
+
   private drawBackground(level: LevelData, camera: Camera, width: number, height: number) {
     const { ctx } = this;
     const { theme } = level;
@@ -276,6 +303,18 @@ export class GameRenderer {
     // Check if Infernal Volcano aesthetic
     if (this.isVolcanoTheme(theme)) {
       this.drawVolcanoBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Borealis Glacier aesthetic
+    if (this.isGlacierTheme(theme)) {
+      this.drawGlacierBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Abyssal Deep Sea aesthetic
+    if (this.isDeepSeaTheme(theme)) {
+      this.drawDeepSeaBackground(level, camera, width, height);
       return;
     }
 
@@ -903,6 +942,323 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawGlacierBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+
+    // 1. Polar Night Sky Gradient (Arctic Void to Twilight Deep Indigo Navy)
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, '#020617');
+    skyGrad.addColorStop(0.35, '#0B192C');
+    skyGrad.addColorStop(0.75, '#0A2540');
+    skyGrad.addColorStop(1, '#083344');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Starfield & Arctic Crystals (Parallax twinkle with cross spikes)
+    ctx.save();
+    for (let i = 0; i < 75; i++) {
+      const sx = ((i * 137.5 + camera.x * 0.03) % (width + 60)) - 30;
+      const sy = (i * 97.3) % (height * 0.65);
+      const twinkle = Math.sin(this.gameTime * 3 + i * 2.1) * 0.5 + 0.5;
+      const size = (i % 5 === 0 ? 2.2 : 1.2) * (0.6 + twinkle * 0.4);
+
+      ctx.fillStyle = i % 3 === 0 ? '#BAE6FD' : (i % 4 === 0 ? '#E0F2FE' : '#FFFFFF');
+      ctx.globalAlpha = 0.35 + twinkle * 0.6;
+      ctx.beginPath();
+      ctx.arc(sx, sy, size, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cross spikes for bright crystal stars
+      if (i % 8 === 0 && twinkle > 0.6) {
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(sx - 4, sy); ctx.lineTo(sx + 4, sy);
+        ctx.moveTo(sx, sy - 4); ctx.lineTo(sx, sy + 4);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // 3. Dynamic Waving Aurora Borealis Ribbons (Northern Lights)
+    ctx.save();
+    // 3 layered undulating aurora curtains: Emerald Green, Electric Cyan, Amethyst Purple
+    const auroraBands = [
+      { color1: 'rgba(16, 185, 129, 0.4)', color2: 'rgba(16, 185, 129, 0)', yBase: height * 0.22, amp: 45, freq: 0.0035, speed: 0.8 },
+      { color1: 'rgba(6, 182, 212, 0.45)', color2: 'rgba(6, 182, 212, 0)', yBase: height * 0.28, amp: 55, freq: 0.0028, speed: 1.1 },
+      { color1: 'rgba(168, 85, 247, 0.35)', color2: 'rgba(168, 85, 247, 0)', yBase: height * 0.35, amp: 40, freq: 0.0042, speed: 0.6 }
+    ];
+
+    auroraBands.forEach((band, bandIdx) => {
+      ctx.beginPath();
+      const waveOffset = this.gameTime * band.speed;
+      const camOffset = camera.x * (0.05 + bandIdx * 0.02);
+
+      // Top edge of aurora wave
+      ctx.moveTo(0, 0);
+      for (let x = 0; x <= width + 40; x += 25) {
+        const worldX = x + camOffset;
+        const waveY = band.yBase + Math.sin(worldX * band.freq + waveOffset) * band.amp + Math.cos(worldX * band.freq * 2.1 - waveOffset * 0.7) * (band.amp * 0.4);
+        ctx.lineTo(x, waveY);
+      }
+      ctx.lineTo(width, 0);
+      ctx.closePath();
+
+      const auroraGrad = ctx.createLinearGradient(0, band.yBase - band.amp, 0, band.yBase + band.amp * 2.2);
+      auroraGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      auroraGrad.addColorStop(0.45, band.color1);
+      auroraGrad.addColorStop(1, band.color2);
+      ctx.fillStyle = auroraGrad;
+      ctx.fill();
+
+      // Vertical shimmer striations / light pillars
+      ctx.save();
+      ctx.globalAlpha = 0.22;
+      for (let x = 0; x <= width; x += 40) {
+        const worldX = x + camOffset;
+        const waveY = band.yBase + Math.sin(worldX * band.freq + waveOffset) * band.amp;
+        const pillarHeight = 70 + Math.sin(worldX * 0.02 + this.gameTime * 2) * 30;
+        const pGrad = ctx.createLinearGradient(x, waveY - pillarHeight, x, waveY);
+        pGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        pGrad.addColorStop(0.6, band.color1);
+        pGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = pGrad;
+        ctx.fillRect(x - 6, waveY - pillarHeight, 12, pillarHeight);
+      }
+      ctx.restore();
+    });
+    ctx.restore();
+
+    // 4. Parallax Layer 1: Distant Jagged Glacial Ice Spires (camera.x * 0.12)
+    ctx.save();
+    ctx.fillStyle = '#081726';
+    ctx.strokeStyle = '#0E3B5A';
+    ctx.lineWidth = 1.5;
+    const offset1 = (camera.x * 0.12) % 600;
+    ctx.beginPath();
+    ctx.moveTo(-600, height);
+    for (let x = -600; x < width + 600; x += 150) {
+      const px = x - offset1;
+      const peakY = height - 240 - Math.abs(Math.sin(x * 0.015)) * 140;
+      ctx.lineTo(px, peakY);
+      ctx.lineTo(px + 75, height - 120);
+    }
+    ctx.lineTo(width + 600, height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Rim gleam on distant ice peaks
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.25)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // 5. Parallax Layer 2: Mid-ground Glacial Ice Floes & Frozen Peaks (camera.x * 0.28)
+    ctx.save();
+    const offset2 = (camera.x * 0.28) % 400;
+    const midGrad = ctx.createLinearGradient(0, height - 220, 0, height);
+    midGrad.addColorStop(0, '#0F2642');
+    midGrad.addColorStop(1, '#051324');
+    ctx.fillStyle = midGrad;
+    ctx.beginPath();
+    ctx.moveTo(-400, height);
+    for (let x = -400; x < width + 400; x += 100) {
+      const px = x - offset2;
+      const py = height - 140 - Math.sin(x * 0.02) * 55;
+      ctx.lineTo(px, py);
+      ctx.lineTo(px + 50, height - 80);
+    }
+    ctx.lineTo(width + 400, height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Glacial Ice Shading & Crystal Edges on mid peaks
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.55;
+    ctx.stroke();
+    ctx.restore();
+
+    // 6. Swirling Drifting Snowflakes & Crystalline Frost Motes
+    ctx.save();
+    for (let p = 0; p < 65; p++) {
+      const seed = p * 131.7;
+      const speed = 25 + (p % 5) * 15;
+      const px = ((seed + camera.x * 0.15 + this.gameTime * speed) % (width + 60)) - 30;
+      const py = ((seed * 1.6 + this.gameTime * 45) % (height + 40)) - 20;
+      const sway = Math.sin(this.gameTime * 2.5 + p) * 12;
+      const pAlpha = 0.35 + (p % 4) * 0.18;
+
+      ctx.globalAlpha = pAlpha;
+      ctx.fillStyle = p % 3 === 0 ? '#E0F2FE' : (p % 2 === 0 ? '#7DD3FC' : '#FFFFFF');
+      ctx.beginPath();
+      ctx.arc(px + sway, py, p % 4 === 0 ? 2.4 : 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 7. Sub-Zero Ground Freeze Fog / Cryo-Mist (Bottom horizon glow)
+    ctx.save();
+    const bottomMist = ctx.createLinearGradient(0, height - 80, 0, height);
+    bottomMist.addColorStop(0, 'rgba(6, 182, 212, 0)');
+    bottomMist.addColorStop(0.5, 'rgba(56, 189, 248, 0.18)');
+    bottomMist.addColorStop(1, 'rgba(224, 242, 254, 0.4)');
+    ctx.fillStyle = bottomMist;
+    ctx.fillRect(0, height - 80, width, 80);
+    ctx.restore();
+  }
+
+  private drawDeepSeaBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+
+    // 1. Deep Submerged Abyssal Ocean Gradient
+    const seaGrad = ctx.createLinearGradient(0, 0, 0, height);
+    seaGrad.addColorStop(0, '#020B14');    // Deep midnight ocean abyss
+    seaGrad.addColorStop(0.35, '#031E30'); // Mid water column
+    seaGrad.addColorStop(0.75, '#042A42'); // Sunken trench floor
+    seaGrad.addColorStop(1, '#021828');    // Deepest abyssal seabed
+    ctx.fillStyle = seaGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Crepuscular Light Shafts / Sunken Water Caustics from above
+    ctx.save();
+    const shaftCount = 6;
+    for (let s = 0; s < shaftCount; s++) {
+      const shaftOffset = (camera.x * 0.05 + s * 140) % (width + 200) - 100;
+      const angleWobble = Math.sin(this.gameTime * 0.8 + s) * 0.08;
+      const shaftWidth = 60 + Math.sin(this.gameTime + s * 2) * 15;
+      
+      const shaftGrad = ctx.createLinearGradient(shaftOffset, 0, shaftOffset + 120, height * 0.85);
+      shaftGrad.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
+      shaftGrad.addColorStop(0.4, 'rgba(34, 211, 238, 0.08)');
+      shaftGrad.addColorStop(0.85, 'rgba(6, 182, 212, 0.02)');
+      shaftGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      ctx.fillStyle = shaftGrad;
+      ctx.beginPath();
+      ctx.moveTo(shaftOffset - shaftWidth * 0.3, 0);
+      ctx.lineTo(shaftOffset + shaftWidth * 0.7, 0);
+      ctx.lineTo(shaftOffset + 180 + angleWobble * 100, height * 0.85);
+      ctx.lineTo(shaftOffset + 80 + angleWobble * 100, height * 0.85);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 3. Parallax Layer 1: Distant Abyssal Trench Walls & Sunken Sea Chimneys (camera.x * 0.08)
+    ctx.save();
+    ctx.fillStyle = '#010E18';
+    ctx.strokeStyle = '#032035';
+    ctx.lineWidth = 1.5;
+    const trenchOffset = (camera.x * 0.08) % 500;
+    ctx.beginPath();
+    ctx.moveTo(-500, height);
+    for (let x = -500; x < width + 500; x += 125) {
+      const px = x - trenchOffset;
+      const py = height - 220 - Math.abs(Math.sin(x * 0.012)) * 120;
+      ctx.lineTo(px, py);
+      ctx.lineTo(px + 60, height - 100);
+    }
+    ctx.lineTo(width + 500, height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    // 4. Parallax Layer 2: Mid-ground Coral Reefs & Swaying Giant Kelp (camera.x * 0.22)
+    ctx.save();
+    const reefOffset = (camera.x * 0.22) % 360;
+    const midGrad = ctx.createLinearGradient(0, height - 180, 0, height);
+    midGrad.addColorStop(0, '#042236');
+    midGrad.addColorStop(1, '#021220');
+    ctx.fillStyle = midGrad;
+    ctx.beginPath();
+    ctx.moveTo(-360, height);
+    for (let x = -360; x < width + 360; x += 90) {
+      const px = x - reefOffset;
+      const py = height - 130 - Math.sin(x * 0.025) * 45;
+      ctx.lineTo(px, py);
+      ctx.lineTo(px + 45, height - 70);
+    }
+    ctx.lineTo(width + 360, height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Swaying Giant Kelp Fronds
+    ctx.strokeStyle = 'rgba(13, 148, 136, 0.45)';
+    ctx.lineWidth = 4;
+    for (let k = 0; k < 12; k++) {
+      const kx = ((k * 120 + 35) - camera.x * 0.22 + width * 2) % (width + 100) - 50;
+      const ky = height;
+      const kelpHeight = 160 + (k % 3) * 40;
+      const sway = Math.sin(this.gameTime * 2.0 + k) * 18;
+
+      ctx.beginPath();
+      ctx.moveTo(kx, ky);
+      ctx.quadraticCurveTo(kx + sway * 0.5, ky - kelpHeight * 0.5, kx + sway, ky - kelpHeight);
+      ctx.stroke();
+
+      // Kelp leaf pods
+      ctx.fillStyle = 'rgba(45, 212, 191, 0.35)';
+      ctx.beginPath();
+      ctx.ellipse(kx + sway, ky - kelpHeight, 8, 4, Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 5. Rising Ambient Sea Bubbles (Multi-sized buoyant bubbles floating up)
+    ctx.save();
+    for (let b = 0; b < 50; b++) {
+      const seed = b * 117.3;
+      const speed = 25 + (b % 5) * 12;
+      const bx = ((seed + camera.x * 0.12 + Math.sin(this.gameTime * 2 + b) * 10) % (width + 40)) - 20;
+      const cycle = (this.gameTime * speed + seed * 2) % (height + 30);
+      const by = height - cycle;
+      const bRadius = 1.5 + (b % 4) * 1.2;
+      const bAlpha = 0.3 + 0.45 * Math.sin((cycle / height) * Math.PI);
+
+      ctx.globalAlpha = bAlpha;
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.6)';
+      ctx.beginPath();
+      ctx.arc(bx, by, bRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Glossy highlight on bubble
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(bx - bRadius * 0.3, by - bRadius * 0.3, bRadius * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 6. Glowing Bioluminescent Marine Snow / Plankton
+    ctx.save();
+    for (let p = 0; p < 35; p++) {
+      const px = ((p * 153 + 47) - camera.x * 0.06 + width * 10) % width;
+      const py = (p * 89 + this.gameTime * 8) % (height * 0.9);
+      const pulse = Math.sin(this.gameTime * 3 + p * 1.5) * 0.5 + 0.5;
+      const pColor = p % 2 === 0 ? '#22D3EE' : '#34D399';
+
+      ctx.globalAlpha = 0.25 + pulse * 0.55;
+      ctx.fillStyle = pColor;
+      ctx.beginPath();
+      ctx.arc(px, py, 1.8 + pulse, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 7. Ambient Bioluminescent Trench Mist (Seabed glow)
+    ctx.save();
+    const bedMist = ctx.createLinearGradient(0, height - 100, 0, height);
+    bedMist.addColorStop(0, 'rgba(6, 182, 212, 0)');
+    bedMist.addColorStop(0.6, 'rgba(6, 182, 212, 0.15)');
+    bedMist.addColorStop(1, 'rgba(13, 148, 136, 0.32)');
+    ctx.fillStyle = bedMist;
+    ctx.fillRect(0, height - 100, width, 100);
+    ctx.restore();
+  }
+
   private drawVolcanoPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
     const orange = theme.accentColor || '#F97316';
@@ -1079,6 +1435,350 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawGlacierPlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const cyan = theme.accentColor || '#38BDF8';
+    const border = theme.platformBorder || '#0284C7';
+
+    // 1. BOUNCY PLATFORM (Cryo Frost Geyser Pad / Pressure Vent)
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Permafrost base
+      ctx.fillStyle = '#0F2038';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Pressure vent grille
+      ctx.fillStyle = '#1E3A5F';
+      ctx.fillRect(p.x + 2, p.y, p.width - 4, p.height - 6);
+
+      // Cryo Frost Jet Upward Ripples
+      const ventPulse = Math.sin(this.gameTime * 12) * 4;
+      const geyserGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y - 30);
+      geyserGrad.addColorStop(0, 'rgba(224, 242, 254, 0.7)');
+      geyserGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.45)');
+      geyserGrad.addColorStop(1, 'rgba(6, 182, 212, 0)');
+      ctx.fillStyle = geyserGrad;
+      ctx.beginPath();
+      ctx.moveTo(p.x + 4, p.y);
+      ctx.lineTo(p.x + p.width - 4, p.y);
+      ctx.lineTo(p.x + p.width / 2 + 10, p.y - 25 - ventPulse);
+      ctx.lineTo(p.x + p.width / 2 - 10, p.y - 25 - ventPulse);
+      ctx.closePath();
+      ctx.fill();
+
+      // Vent rim
+      ctx.strokeStyle = '#7DD3FC';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + p.width, p.y);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. ONE-WAY PLATFORM (Crystalline Ice Bridge / Frosted Runic Rail)
+    if (p.type === 'one-way') {
+      ctx.save();
+      // Translucent crystal ice slab
+      const railGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.height);
+      railGrad.addColorStop(0, 'rgba(224, 242, 254, 0.9)');
+      railGrad.addColorStop(0.4, 'rgba(125, 211, 252, 0.7)');
+      railGrad.addColorStop(1, 'rgba(15, 32, 56, 0.85)');
+      ctx.fillStyle = railGrad;
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Glowing Cyan Top Edge
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(p.x, p.y, p.width, 2.5);
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+      // Hanging crystal ice droplets
+      ctx.fillStyle = 'rgba(224, 242, 254, 0.8)';
+      for (let ix = p.x + 12; ix < p.x + p.width - 8; ix += 20) {
+        ctx.beginPath();
+        ctx.moveTo(ix - 2, p.y + p.height);
+        ctx.lineTo(ix, p.y + p.height + 5);
+        ctx.lineTo(ix + 2, p.y + p.height);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 3. CRUMBLING PLATFORM (Brittle Honeycombed Ice Floe)
+    if (p.type === 'crumbling') {
+      ctx.save();
+      const shake = p.crumbling ? (Math.random() - 0.5) * 4 : 0;
+      const alpha = p.crumbleTimer !== undefined ? Math.max(0.2, p.crumbleTimer / 30) : 1;
+      ctx.globalAlpha = alpha;
+
+      const px = p.x + shake;
+      const py = p.y + shake;
+
+      // Brittle ice gradient
+      const crumbGrad = ctx.createLinearGradient(px, py, px, py + p.height);
+      crumbGrad.addColorStop(0, '#E0F2FE');
+      crumbGrad.addColorStop(0.5, '#7DD3FC');
+      crumbGrad.addColorStop(1, '#0C4A6E');
+      ctx.fillStyle = crumbGrad;
+      ctx.fillRect(px, py, p.width, p.height);
+
+      // Ice fracture veins
+      ctx.strokeStyle = p.crumbling ? '#FFFFFF' : 'rgba(2, 132, 199, 0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(px + 8, py + 2); ctx.lineTo(px + p.width * 0.35, py + p.height - 2); ctx.lineTo(px + p.width * 0.6, py + 4); ctx.lineTo(px + p.width - 6, py + p.height - 3);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#BAE6FD';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px, py, p.width, p.height);
+
+      ctx.restore();
+      return;
+    }
+
+    // 4. SOLID PLATFORM (Permafrost Glacial Bedrock with Frosted Top & Icicles)
+    ctx.save();
+    // Deep Glacial Stone Fill
+    const bodyGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.height);
+    bodyGrad.addColorStop(0, '#0F2038');
+    bodyGrad.addColorStop(0.3, '#0A1828');
+    bodyGrad.addColorStop(1, '#040B14');
+    ctx.fillStyle = bodyGrad;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+
+    // Frosted Snow/Ice Top Crust
+    const capHeight = Math.min(8, p.height * 0.4);
+    const capGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + capHeight);
+    capGrad.addColorStop(0, '#FFFFFF');
+    capGrad.addColorStop(0.6, '#BAE6FD');
+    capGrad.addColorStop(1, '#38BDF8');
+    ctx.fillStyle = capGrad;
+    ctx.fillRect(p.x, p.y, p.width, capHeight);
+
+    // Crystalline Glints (sparkles) on top surface
+    ctx.fillStyle = '#FFFFFF';
+    for (let gx = p.x + 18; gx < p.x + p.width - 10; gx += 45) {
+      const glintPulse = Math.sin(this.gameTime * 4 + gx) * 0.5 + 0.5;
+      if (glintPulse > 0.4) {
+        ctx.fillRect(gx, p.y + 2, 2, 2);
+        ctx.fillRect(gx - 1, p.y + 2.5, 4, 1);
+        ctx.fillRect(gx + 0.5, p.y + 1, 1, 4);
+      }
+    }
+
+    // Hanging Translucent Icicles underneath
+    ctx.fillStyle = 'rgba(224, 242, 254, 0.75)';
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+    ctx.lineWidth = 0.8;
+    for (let ix = p.x + 10; ix < p.x + p.width - 8; ix += 18) {
+      const icicleLen = 4 + Math.sin(ix * 0.1) * 3 + (ix % 3 === 0 ? 5 : 0);
+      ctx.beginPath();
+      ctx.moveTo(ix - 2, p.y + p.height);
+      ctx.lineTo(ix, p.y + p.height + icicleLen);
+      ctx.lineTo(ix + 2, p.y + p.height);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Border
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+    // Moving Platform: Crystalline Auroral Thrusters
+    if (p.speed && p.speed > 0) {
+      ctx.strokeStyle = '#38BDF8';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+    }
+
+    ctx.restore();
+  }
+
+  private drawDeepSeaPlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const cyan = theme.accentColor || '#22D3EE';
+    const border = theme.platformBorder || '#0284C7';
+
+    // 1. BOUNCY PLATFORM: Hydrothermal Bubbling Sea Vent
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Volcanic marine bedrock base
+      ctx.fillStyle = '#061826';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Vent geyser coil
+      const coilSteps = 3;
+      const stepH = (p.height - 10) / coilSteps;
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let i = 0; i < coilSteps; i++) {
+        const sy = p.y + p.height - 6 - i * stepH;
+        ctx.moveTo(p.x + 8, sy);
+        ctx.lineTo(p.x + p.width - 8, sy - stepH * 0.5);
+      }
+      ctx.stroke();
+
+      // Bouncing phosphorescent sea sponge top plate
+      const pulse = Math.sin(this.gameTime * 8) * 3;
+      ctx.fillStyle = '#0D9488';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + pulse, p.width - 4, 8, 4);
+      ctx.fill();
+
+      // Glowing bioluminescent cyan crest
+      ctx.fillStyle = '#67E8F9';
+      ctx.fillRect(p.x + 6, p.y + pulse + 2, p.width - 12, 2.5);
+
+      // Rising bubble geyser puffs from vent
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.7)';
+      for (let b = 0; b < 3; b++) {
+        const bPhase = (this.gameTime * 3 + b * 0.3) % 1;
+        const bx = p.x + p.width * 0.25 + b * (p.width * 0.25);
+        const by = p.y + pulse - bPhase * 16;
+        ctx.beginPath();
+        ctx.arc(bx, by, 2 + bPhase, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. CRUMBLING PLATFORM: Brittle Porous Coral Shelf
+    if (p.type === 'crumbling') {
+      ctx.save();
+      const shakeOffset = (p.crumbling && p.crumbleTimer !== undefined)
+        ? Math.sin(p.crumbleTimer * 40) * 2.5
+        : 0;
+
+      const alpha = p.respawnTimer ? 0.3 : 1;
+      ctx.globalAlpha = alpha;
+
+      // Porous coral body
+      ctx.fillStyle = '#0F2E47';
+      ctx.fillRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      // Coral fissures and pores
+      ctx.fillStyle = '#061826';
+      for (let cx = p.x + 8; cx < p.x + p.width - 6; cx += 16) {
+        ctx.beginPath();
+        ctx.arc(cx + shakeOffset, p.y + p.height * 0.5, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Fragile glowing coral crest
+      ctx.fillStyle = '#2DD4BF';
+      ctx.fillRect(p.x + shakeOffset, p.y, p.width, 3);
+
+      ctx.strokeStyle = '#0284C7';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      ctx.restore();
+      return;
+    }
+
+    // 3. ONE-WAY PLATFORM: Bioluminescent Sea Kelp / Shelf Coral
+    if (p.type === 'one-way') {
+      ctx.save();
+      // Glowing turquoise shelf body
+      const shelfGrad = ctx.createLinearGradient(0, p.y, 0, p.y + p.height);
+      shelfGrad.addColorStop(0, '#06B6D4');
+      shelfGrad.addColorStop(1, '#083344');
+      ctx.fillStyle = shelfGrad;
+      ctx.beginPath();
+      ctx.roundRect(p.x, p.y, p.width, p.height, [4, 4, 8, 8]);
+      ctx.fill();
+
+      // Top phosphorescent crest
+      ctx.fillStyle = '#67E8F9';
+      ctx.fillRect(p.x + 4, p.y, p.width - 8, 2.5);
+
+      // Hanging bioluminescent tendrils underneath
+      ctx.fillStyle = 'rgba(45, 212, 191, 0.6)';
+      for (let tx = p.x + 8; tx < p.x + p.width - 6; tx += 14) {
+        const tendrilLen = 4 + Math.sin(this.gameTime * 3 + tx) * 2;
+        ctx.fillRect(tx, p.y + p.height, 2, tendrilLen);
+        ctx.beginPath();
+        ctx.arc(tx + 1, p.y + p.height + tendrilLen, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 4. SOLID PLATFORM: Ancient Sunken Abyssal Coral Bedrock
+    ctx.save();
+    // Bedrock Fill (Deep sunken trench rock)
+    const fillGrad = ctx.createLinearGradient(0, p.y, 0, p.y + p.height);
+    fillGrad.addColorStop(0, '#062033');
+    fillGrad.addColorStop(1, '#020F1A');
+    ctx.fillStyle = fillGrad;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+
+    // Coral Bedrock Texture: Barnacles and coral pores
+    ctx.fillStyle = '#082F49';
+    for (let bx = p.x + 12; bx < p.x + p.width - 8; bx += 22) {
+      ctx.beginPath();
+      ctx.arc(bx, p.y + 10, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Bioluminescent Cyan Coral Crest
+    const topGrad = ctx.createLinearGradient(0, p.y, 0, p.y + 6);
+    topGrad.addColorStop(0, '#22D3EE');
+    topGrad.addColorStop(1, '#0891B2');
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(p.x, p.y, p.width, 6);
+
+    // Glistening sea minerals on surface
+    ctx.fillStyle = '#FFFFFF';
+    for (let gx = p.x + 14; gx < p.x + p.width - 10; gx += 38) {
+      const glintPulse = Math.sin(this.gameTime * 4 + gx) * 0.5 + 0.5;
+      if (glintPulse > 0.4) {
+        ctx.fillRect(gx, p.y + 2, 2, 2);
+      }
+    }
+
+    // Little sea anemones waving on top
+    ctx.fillStyle = '#F472B6';
+    for (let ax = p.x + 20; ax < p.x + p.width - 15; ax += 50) {
+      const anemoneSway = Math.sin(this.gameTime * 3 + ax) * 2;
+      ctx.fillRect(ax + anemoneSway, p.y - 3, 3, 4);
+    }
+
+    // Border
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+    // Moving Platform: Oceanic Hydro-Current Thrusters
+    if (p.speed && p.speed > 0) {
+      ctx.strokeStyle = '#22D3EE';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+    }
+
+    ctx.restore();
+  }
+
   private drawPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
 
@@ -1097,6 +1797,18 @@ export class GameRenderer {
     // Check if Infernal Volcano theme platform styles
     if (this.isVolcanoTheme(theme)) {
       this.drawVolcanoPlatform(p, theme);
+      return;
+    }
+
+    // Check if Borealis Glacier theme platform styles
+    if (this.isGlacierTheme(theme)) {
+      this.drawGlacierPlatform(p, theme);
+      return;
+    }
+
+    // Check if Abyssal Deep Sea theme platform styles
+    if (this.isDeepSeaTheme(theme)) {
+      this.drawDeepSeaPlatform(p, theme);
       return;
     }
 
@@ -1829,10 +2541,11 @@ export class GameRenderer {
     const { ctx } = this;
     const isNeon = theme ? this.isNeonTheme(theme) : false;
     const isSpace = theme ? this.isSpaceTheme(theme) : false;
+    const isGlacier = theme ? this.isGlacierTheme(theme) : false;
 
     if (h.type === 'spike') {
-      ctx.fillStyle = isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : '#DC2626');
-      ctx.strokeStyle = isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : '#991B1B');
+      ctx.fillStyle = isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : '#DC2626'));
+      ctx.strokeStyle = isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : '#991B1B'));
       ctx.lineWidth = 1.5;
 
       const numSpikes = Math.max(1, Math.floor(h.width / 14));
@@ -1850,13 +2563,13 @@ export class GameRenderer {
       ctx.stroke();
 
       // Gleam on spike tips
-      ctx.fillStyle = (isNeon || isSpace) ? '#FFFFFF' : '#FCA5A5';
+      ctx.fillStyle = (isNeon || isSpace || isGlacier) ? '#FFFFFF' : '#FCA5A5';
       for (let i = 0; i < numSpikes; i++) {
         const sx = h.x + i * spikeW;
         ctx.fillRect(sx + spikeW * 0.45, h.y + 2, 2, 4);
       }
     } else if (h.type === 'saw') {
-      // Spinning Buzzsaw / Orbital Plasma Orb
+      // Spinning Buzzsaw / Orbital Plasma Orb / Glacial Ice Chakram
       ctx.save();
       const cx = h.x + h.width / 2;
       const cy = h.y + h.height / 2;
@@ -1866,14 +2579,14 @@ export class GameRenderer {
       ctx.translate(cx, cy);
       ctx.rotate(rot);
 
-      if (isSpace) {
+      if (isSpace || isGlacier) {
         ctx.shadowColor = '#38BDF8';
         ctx.shadowBlur = 8;
       }
 
       // Outer saw teeth
-      ctx.fillStyle = (isNeon || isSpace) ? '#0E172A' : '#E2E8F0';
-      ctx.strokeStyle = isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : '#64748B');
+      ctx.fillStyle = isGlacier ? '#0F2642' : ((isNeon || isSpace) ? '#0E172A' : '#E2E8F0');
+      ctx.strokeStyle = (isSpace || isGlacier) ? '#38BDF8' : (isNeon ? '#00F0FF' : '#64748B');
       ctx.lineWidth = 2;
       ctx.beginPath();
       const teeth = 8;
@@ -1888,12 +2601,12 @@ export class GameRenderer {
       ctx.stroke();
 
       // Center core
-      ctx.fillStyle = isSpace ? '#818CF8' : (isNeon ? '#FF007F' : '#EF4444');
+      ctx.fillStyle = isGlacier ? '#7DD3FC' : (isSpace ? '#818CF8' : (isNeon ? '#FF007F' : '#EF4444'));
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : '#F87171');
+      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : '#F87171'));
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.2, 0, Math.PI * 2);
       ctx.fill();
@@ -1903,9 +2616,15 @@ export class GameRenderer {
       const isVolcano = theme ? this.isVolcanoTheme(theme) : false;
       const fillHeight = Math.max(h.height, 960 - h.y);
 
-      // Deep Molten Magma / Plasma Void Gradient
+      // Deep Molten Magma / Plasma Void / Sub-Zero Cryo Gradient
       const lavaGrad = ctx.createLinearGradient(0, h.y, 0, h.y + fillHeight);
-      if (isSpace) {
+      if (isGlacier) {
+        lavaGrad.addColorStop(0, '#E0F2FE');
+        lavaGrad.addColorStop(0.15, '#38BDF8');
+        lavaGrad.addColorStop(0.45, '#0284C7');
+        lavaGrad.addColorStop(0.8, '#0A2540');
+        lavaGrad.addColorStop(1, '#020617');
+      } else if (isSpace) {
         lavaGrad.addColorStop(0, '#6366F1');
         lavaGrad.addColorStop(0.3, '#312E81');
         lavaGrad.addColorStop(1, '#04020C');
@@ -1923,8 +2642,8 @@ export class GameRenderer {
       ctx.fillStyle = lavaGrad;
       ctx.fillRect(h.x, h.y, h.width, fillHeight);
 
-      // Bubbling Magma Wave Crest
-      ctx.fillStyle = isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : '#FEF08A');
+      // Bubbling Magma / Freezing Nitrogen Wave Crest
+      ctx.fillStyle = isGlacier ? '#FFFFFF' : (isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : '#FEF08A'));
       ctx.beginPath();
       ctx.moveTo(h.x, h.y);
       for (let x = h.x; x <= h.x + h.width; x += 16) {
@@ -1936,8 +2655,36 @@ export class GameRenderer {
       ctx.closePath();
       ctx.fill();
 
-      // Bubbling Magma & Floating Charred Crust Rocks
-      if (isVolcano || (!isSpace && !isNeon)) {
+      // Bubbling Magma & Floating Charred Crust Rocks / Floating Icebergs
+      if (isGlacier) {
+        // Floating ice floe chunks in the cryo pool
+        ctx.fillStyle = 'rgba(224, 242, 254, 0.85)';
+        const chunkSpacing = 52;
+        const numChunks = Math.floor(h.width / chunkSpacing);
+        for (let i = 0; i < numChunks; i++) {
+          const cx = h.x + 14 + i * chunkSpacing + Math.sin(this.gameTime * 2 + i) * 6;
+          const waveY = h.y + Math.sin(cx * 0.05 + this.gameTime * 6) * 4.5;
+          ctx.beginPath();
+          ctx.moveTo(cx - 8, waveY);
+          ctx.lineTo(cx, waveY - 5);
+          ctx.lineTo(cx + 8, waveY);
+          ctx.lineTo(cx + 4, waveY + 5);
+          ctx.lineTo(cx - 4, waveY + 5);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Sub-zero nitrogen vapor bubbles
+        ctx.fillStyle = '#FFFFFF';
+        for (let i = 0; i < 4; i++) {
+          const bx = h.x + ((i * 113 + this.gameTime * 35) % Math.max(10, h.width - 20)) + 10;
+          const bWave = h.y + Math.sin(bx * 0.05 + this.gameTime * 6) * 4.5;
+          const bRadius = 2 + Math.abs(Math.sin(this.gameTime * 8 + i * 2)) * 3;
+          ctx.beginPath();
+          ctx.arc(bx, bWave, bRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (isVolcano || (!isSpace && !isNeon)) {
         // Floating basalt crust chunks bobbing on magma surface
         ctx.fillStyle = '#292524';
         const chunkSpacing = 48;
@@ -1960,9 +2707,9 @@ export class GameRenderer {
         }
       }
 
-      // Rising steam & heat shimmer warning indicators along moving lava pits
+      // Rising steam / cryo-vapor warning indicators along moving pits
       if (h.speed && h.distanceY) {
-        ctx.fillStyle = 'rgba(254, 240, 138, 0.45)';
+        ctx.fillStyle = isGlacier ? 'rgba(224, 242, 254, 0.45)' : 'rgba(254, 240, 138, 0.45)';
         ctx.fillRect(h.x + 2, h.y - 4, h.width - 4, 2);
       }
     }
@@ -2248,6 +2995,54 @@ export class GameRenderer {
       ctx.textAlign = 'center';
       ctx.fillText('SHIELD', cx, cy - radius - 5);
       ctx.restore();
+    } else if (c.type === 'snow_cannon') {
+      // Rapid-Fire Snowball Cannon Weapon Pickup
+      const cx = c.x + c.width / 2;
+      const cy = c.y + c.height / 2 + bob;
+
+      // Pulsing Arctic Cyan Aura
+      const aura = Math.sin(this.gameTime * 4) * 0.15 + 0.4;
+      ctx.fillStyle = `rgba(6, 182, 212, ${aura})`;
+      ctx.beginPath();
+      ctx.arc(cx, cy, c.width * 0.95, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Outer rotating frost sparkles
+      ctx.fillStyle = '#FFFFFF';
+      for (let i = 0; i < 4; i++) {
+        const ang = this.gameTime * 2 + (i * Math.PI) / 2;
+        const sx = cx + Math.cos(ang) * (c.width * 0.85);
+        const sy = cy + Math.sin(ang) * (c.width * 0.85);
+        ctx.fillRect(sx - 1, sy - 1, 2, 2);
+      }
+
+      // Heavy Cannon Chassis (Deep navy/glacial alloy)
+      ctx.fillStyle = '#0F2642';
+      ctx.beginPath();
+      ctx.roundRect(cx - 10, cy - 6, 20, 10, 2);
+      ctx.fill();
+
+      // Frosted Cannon Barrel
+      ctx.fillStyle = '#BAE6FD';
+      ctx.fillRect(cx + 8, cy - 7, 5, 12);
+      ctx.fillStyle = '#00F0FF';
+      ctx.fillRect(cx + 12, cy - 5, 2, 8);
+
+      // Cryo Battery Core
+      ctx.fillStyle = '#38BDF8';
+      ctx.fillRect(cx - 5, cy - 4, 10, 6);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(cx - 2, cy - 2.5, 4, 3);
+
+      // Handle
+      ctx.fillStyle = '#081726';
+      ctx.fillRect(cx - 7, cy + 3, 6, 8);
+
+      // Floating label
+      ctx.fillStyle = '#7DD3FC';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('❄️ CANNON', cx, cy - 16);
     } else if (c.type === 'acorn') {
       // Golden Bird Acorn (with optional feather plumage style)
       const cx = c.x + c.width / 2;
@@ -2495,6 +3290,7 @@ export class GameRenderer {
       vx: p.vx,
       hasBlaster: p.hasBlaster,
       blasterAmmo: p.blasterAmmo,
+      hasSnowCannon: p.hasSnowCannon,
       hasJetpack: p.hasJetpack,
       jetpackFuel: p.jetpackFuel,
       maxJetpackFuel: p.maxJetpackFuel,
@@ -2705,6 +3501,41 @@ export class GameRenderer {
   private drawBlasterBullet(b: BlasterBullet) {
     const { ctx } = this;
     ctx.save();
+
+    if (b.isSnowball) {
+      // Solid clean snowball projectile
+      const r = b.radius;
+      ctx.translate(b.x, b.y);
+
+      // Base solid white compacted snow sphere
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Soft solid spherical lower shadow (crescent)
+      ctx.fillStyle = '#E0F2FE';
+      ctx.beginPath();
+      ctx.arc(0, r * 0.25, r * 0.75, 0, Math.PI);
+      ctx.closePath();
+      ctx.fill();
+
+      // Crisp solid perimeter rim
+      ctx.strokeStyle = '#BAE6FD';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Top specular highlight gleam
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(-r * 0.32, -r * 0.32, r * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+      return;
+    }
 
     // Outer cyan plasma glow
     ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';

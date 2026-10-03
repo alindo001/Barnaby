@@ -13,32 +13,74 @@ class SoundEngine {
   private noteStep: number = 0;
   private lastJetpackAudioTime: number = 0;
   private lastSputterTime: number = 0;
+  private currentVolume: number = 0.85;
 
   constructor() {
-    // Lazy AudioContext initialization on first user interaction
+    // Automatically register user gesture listeners on window and document to unlock Web Audio context
+    if (typeof window !== 'undefined') {
+      const unlockEvents = ['pointerdown', 'mousedown', 'keydown', 'touchstart', 'touchend', 'click'];
+      const handleUserGesture = () => {
+        this.unlockAudio();
+      };
+      unlockEvents.forEach(evt => {
+        window.addEventListener(evt, handleUserGesture, { capture: true, passive: true });
+        document.addEventListener(evt, handleUserGesture, { capture: true, passive: true });
+      });
+    }
   }
 
-  private initCtx() {
+  public initCtx(): AudioContext | null {
     if (!this.ctx) {
-      const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (AudioCtxClass) {
-        this.ctx = new AudioCtxClass();
-        this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        this.masterGain.connect(this.ctx.destination);
+      try {
+        const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AudioCtxClass) {
+          this.ctx = new AudioCtxClass();
+          this.masterGain = this.ctx.createGain();
+          const targetVol = this.soundEnabled ? Math.max(0, Math.min(1, this.currentVolume * 0.85)) : 0;
+          this.masterGain.gain.setValueAtTime(targetVol, this.ctx.currentTime);
+          this.masterGain.connect(this.ctx.destination);
 
-        this.musicGain = this.ctx.createGain();
-        this.musicGain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-        this.musicGain.connect(this.masterGain);
+          this.musicGain = this.ctx.createGain();
+          this.musicGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          this.musicGain.connect(this.masterGain);
+        }
+      } catch (e) {
+        console.warn('Failed to initialize AudioContext:', e);
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
+    }
+    return this.ctx;
+  }
+
+  public unlockAudio() {
+    const ctx = this.initCtx();
+    if (ctx) {
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      try {
+        // Play an inaudible 1-sample silent buffer to activate the browser audio hardware graph
+        const buffer = ctx.createBuffer(1, 1, 22050);
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
+      } catch {}
     }
   }
 
   public setSoundEnabled(enabled: boolean) {
     this.soundEnabled = enabled;
+    if (this.masterGain && this.ctx) {
+      const targetVol = enabled ? Math.max(0, Math.min(1, this.currentVolume * 0.85)) : 0;
+      this.masterGain.gain.setValueAtTime(targetVol, this.ctx.currentTime);
+    }
+  }
+
+  public isSoundEnabled(): boolean {
+    return this.soundEnabled;
   }
 
   public setMusicEnabled(enabled: boolean) {
@@ -50,11 +92,30 @@ class SoundEngine {
     }
   }
 
+  public isMusicEnabled(): boolean {
+    return this.musicEnabled;
+  }
+
   public setVolume(volume: number) {
+    this.currentVolume = Math.max(0, Math.min(1, volume));
     this.initCtx();
     if (this.masterGain && this.ctx) {
-      this.masterGain.gain.setValueAtTime(Math.max(0, Math.min(1, volume * 0.4)), this.ctx.currentTime);
+      const targetVol = this.soundEnabled ? Math.max(0, Math.min(1, this.currentVolume * 0.85)) : 0;
+      this.masterGain.gain.setValueAtTime(targetVol, this.ctx.currentTime);
     }
+  }
+
+  public getVolume(): number {
+    return this.currentVolume;
+  }
+
+  public getAudioState(): AudioContextState | 'uninitialized' {
+    return this.ctx ? this.ctx.state : 'uninitialized';
+  }
+
+  public playTestChime() {
+    this.unlockAudio();
+    this.playCoin();
   }
 
   // JUMP SOUND
@@ -110,6 +171,48 @@ class SoundEngine {
 
       osc.start(now);
       osc.stop(now + 0.17);
+    } catch {}
+  }
+
+  // UNDERWATER SWIM STROKE (Buoyant aquatic paddle swish with bubbly flutter)
+  public playSwimStroke() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      
+      // Warm buoyant water push (submerged sine wave with resonant curve)
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(460, now + 0.07);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.15);
+
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.16);
+
+      // Micro bubble pop / flutter
+      const osc2 = this.ctx.createOscillator();
+      const gain2 = this.ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(650, now);
+      osc2.frequency.exponentialRampToValueAtTime(1100, now + 0.05);
+
+      gain2.gain.setValueAtTime(0.12, now);
+      gain2.gain.exponentialRampToValueAtTime(0.005, now + 0.06);
+
+      osc2.connect(gain2);
+      gain2.connect(this.masterGain);
+      osc2.start(now);
+      osc2.stop(now + 0.07);
     } catch {}
   }
 
@@ -766,6 +869,34 @@ class SoundEngine {
 
       osc.start(now);
       osc.stop(now + 0.19);
+    } catch {}
+  }
+
+  // POWERUP / CANNON PICKUP SOUND (Sparkling icy crystalline chime)
+  public playPowerup() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      [440, 554, 659, 880, 1108].forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+
+        gain.gain.setValueAtTime(0, now + idx * 0.04);
+        gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.04 + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+
+        osc.start(now + idx * 0.04);
+        osc.stop(now + idx * 0.04 + 0.26);
+      });
     } catch {}
   }
 

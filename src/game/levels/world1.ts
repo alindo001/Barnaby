@@ -1391,44 +1391,412 @@ export const WORLD_1_LEVELS: LevelData[] = [
   },
   {
     id: 9,
-    title: "9. Emerald Woodlands: Heights Exploration",
+    title: "9. Borealis Glacier: The Frostbite Citadel",
     worldNumber: 1,
-    worldName: "Emerald Woodlands",
-    gameplayType: "terrain",
+    worldName: "Borealis Glacier",
+    gameplayType: "gadget",
     category: "classic",
-    description: "Explore the vertical elevations, moving platforms, and hidden secrets of Emerald Woodlands.",
-    worldWidth: 4820,
-    worldHeight: 600,
-    theme: THEMES.meadow,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4680,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1687,"y":470,"width":30,"height":40,"activated":false},{"x":3278,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w1_l9_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w1_l9_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w1_l9_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w1_l9_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w1_l9_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w1_l9_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w1_l9_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.48,"distanceX":140,"startX":2075,"startY":490,"vx":1.48},{"id":"w1_l9_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w1_l9_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w1_l9_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w1_l9_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w1_l9_p11","x":3730,"y":392,"width":164,"height":26,"type":"solid"},{"id":"w1_l9_p12","x":4033,"y":292,"width":162,"height":26,"type":"bouncy"},{"id":"w1_l9_p13","x":4321,"y":392,"width":230,"height":14,"type":"one-way"},{"id":"w1_l9_finish_base","x":4440,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w1_l9_secret_p1","x":1301,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w1_l9_secret_p2","x":2699,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w1_l9_secret_p3","x":4540,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w1_l9_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w1_l9_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w1_l9_hz12","x":4073,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w1_l9_acorn_1","x":1333,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w1_l9_acorn_2","x":2721,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w1_l9_acorn_3","x":4577,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w1_l9_c_1","x":653,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l9_c_2","x":1045,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l9_c_3","x":1438,"y":192,"width":24,"height":24,"type":"gem","value":500},{"id":"w1_l9_c_4","x":1831,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l9_c_5","x":2224,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l9_c_6","x":2616,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w1_l9_c_7","x":3009,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l9_c_8","x":3402,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l9_c_9","x":3795,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w1_l9_c_10","x":4187,"y":379,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w1_l9_e_1","x":491,"y":336,"width":26,"height":22,"type":"pigeon","vx":1.28,"vy":0,"minX":330,"maxX":679,"facing":1},{"id":"w1_l9_e_2","x":1452,"y":289,"width":28,"height":26,"type":"skunk","vx":-0.9099999999999999,"vy":0,"minX":1379,"maxX":1553,"facing":-1},{"id":"w1_l9_e_3","x":2171,"y":464,"width":28,"height":26,"type":"goose","vx":0.9099999999999999,"vy":0,"minX":2081,"maxX":2289,"facing":1},{"id":"w1_l9_e_4","x":3116,"y":378,"width":28,"height":26,"type":"patroller","vx":-0.9099999999999999,"vy":0,"minX":3016,"maxX":3244,"facing":-1},{"id":"w1_l9_e_5","x":3798,"y":366,"width":28,"height":26,"type":"slime","vx":0.9099999999999999,"vy":0,"minX":3736,"maxX":3888,"facing":1}],
-    parTime: 81,
-    threeStarScore: 7600
+    description: "Scale the freezing heights of the Borealis Glacier! Brave dancing aurora skies, surging sub-zero cryo-pools that rise and fall with the glacial tides, dodge rolling snowballs hurled by the Frost Yeti, and leap across honeycombed ice floes and frost-geysers to breach the Citadel Apex.",
+    worldWidth: 4600,
+    worldHeight: 960,
+    theme: THEMES.glacier,
+    playerStart: { x: 80, y: 780 },
+    goal: { x: 4400, y: 200, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1540, y: 380, width: 30, height: 40, activated: false },
+      { x: 2680, y: 400, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // ==========================================
+      // LAYER 1: Glacier Ingress & Sub-Zero Cryo Surge (x: 0 to 860)
+      // ==========================================
+      { id: "l9_deck_start", x: 0, y: 820, width: 320, height: 140, type: "solid" },
+      { id: "l9_step1", x: 320, y: 760, width: 80, height: 24, type: "solid" },
+      // Cryo Steam Launch Geyser (Bouncy pad)
+      { id: "l9_geyser_spring1", x: 360, y: 744, width: 48, height: 16, type: "bouncy" },
+      // High Icicle Arch Route
+      { id: "l9_arch1", x: 460, y: 480, width: 140, height: 24, type: "solid" },
+      { id: "l9_gantry1", x: 640, y: 440, width: 110, height: 18, type: "one-way" },
+      // Low Permafrost Trench stones across the surging cryo pit (accessible only when cryo tide is low!)
+      { id: "l9_trench_stone1", x: 480, y: 820, width: 80, height: 24, type: "solid" },
+      { id: "l9_trench_stone2", x: 620, y: 820, width: 80, height: 24, type: "solid" },
+      { id: "l9_trench_spring", x: 740, y: 804, width: 48, height: 16, type: "bouncy" },
+
+      // ==========================================
+      // LAYER 2: Frostbite Caverns & The Crystal Ledges (x: 840 to 1740)
+      // ==========================================
+      // High Crystal Ice Ledges Route (holding Blaster)
+      { id: "l9_ledge1", x: 840, y: 360, width: 120, height: 16, type: "one-way" },
+      { id: "l9_ledge2", x: 1000, y: 300, width: 120, height: 16, type: "one-way" },
+      // Mid moving ice ferry across the second surging cryo pit
+      { id: "l9_shuttle1", x: 960, y: 520, width: 85, height: 18, type: "solid", startX: 960, startY: 520, distanceX: 180, distanceY: 0, speed: 1.8, vx: 1.8, vy: 0 },
+      // Low permafrost catwalk (submerged when cryo surges high!)
+      { id: "l9_catwalk1", x: 1000, y: 800, width: 160, height: 24, type: "solid" },
+      // Drifting brittle honeycombed ice floes (crumbling glacial rock)
+      { id: "l9_crumb_ice1", x: 1160, y: 520, width: 65, height: 18, type: "crumbling" },
+      { id: "l9_crumb_ice2", x: 1260, y: 450, width: 65, height: 18, type: "crumbling" },
+      { id: "l9_crumb_ice3", x: 1170, y: 370, width: 65, height: 18, type: "crumbling" },
+      // Secret Crystal Glacial Altar (Holding Golden Acorn #1)
+      { id: "l9_secret_altar", x: 1220, y: 170, width: 90, height: 18, type: "solid" },
+      // Cryo Geyser Launch 2 (Vertical Recovery)
+      { id: "l9_geyser2", x: 1380, y: 504, width: 48, height: 16, type: "bouncy" },
+      // Checkpoint 1 Hub: Glacial Spire Bastion
+      { id: "l9_cp1_bastion", x: 1540, y: 380, width: 260, height: 30, type: "solid" },
+      { id: "l9_cp1_gantry", x: 1620, y: 270, width: 110, height: 16, type: "one-way" },
+
+      // ==========================================
+      // LAYER 3: The Blizzard Core & Great Cryo Chasm (x: 1740 to 2680)
+      // ==========================================
+      // Upper Core Expressway
+      { id: "l9_core_grate1", x: 1820, y: 320, width: 110, height: 18, type: "one-way" },
+      { id: "l9_shuttle2", x: 1980, y: 270, width: 85, height: 18, type: "solid", startX: 1980, startY: 270, distanceX: 180, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+      { id: "l9_crumb4", x: 2210, y: 280, width: 65, height: 18, type: "crumbling" },
+      { id: "l9_crumb5", x: 2320, y: 310, width: 65, height: 18, type: "crumbling" },
+      { id: "l9_core_deck", x: 2430, y: 340, width: 140, height: 24, type: "solid" },
+      // Lower Ice Vault Route (submerged by Surging Cryo Pit 3 when high!)
+      { id: "l9_vault_entry", x: 1820, y: 520, width: 70, height: 16, type: "one-way" },
+      { id: "l9_reactor_catwalk", x: 1940, y: 680, width: 110, height: 20, type: "solid" },
+      { id: "l9_island1", x: 2080, y: 840, width: 80, height: 24, type: "solid" },
+      { id: "l9_island2", x: 2210, y: 820, width: 85, height: 24, type: "solid" },
+      // Cryo Geyser Spring 3 (Catapults player out of ice vault to Core Deck)
+      { id: "l9_vault_spring", x: 2340, y: 804, width: 48, height: 16, type: "bouncy" },
+
+      // ==========================================
+      // LAYER 4: The Auroral Spire & High Flight Deck (x: 2640 to 3500)
+      // ==========================================
+      // Checkpoint 2: Promenade Hub
+      { id: "l9_cp2_promenade", x: 2680, y: 400, width: 280, height: 26, type: "solid" },
+      // High Auroral Flight Deck (Jetpack Station)
+      { id: "l9_flight_deck", x: 2760, y: 160, width: 260, height: 24, type: "solid" },
+      { id: "l9_crane_beam", x: 3040, y: 110, width: 80, height: 16, type: "one-way" },
+      // Spire Geyser Launch to Flight Deck
+      { id: "l9_spire_spring", x: 2980, y: 384, width: 48, height: 16, type: "bouncy" },
+      // Crystalline Spire Monolith & Climbing Ice Rungs
+      { id: "l9_monolith", x: 3100, y: 460, width: 90, height: 340, type: "solid" },
+      { id: "l9_rung1", x: 3110, y: 390, width: 70, height: 14, type: "one-way" },
+      { id: "l9_rung2", x: 3110, y: 320, width: 70, height: 14, type: "one-way" },
+      { id: "l9_rung3", x: 3110, y: 250, width: 70, height: 14, type: "one-way" },
+      // Moving Glacial Ferry 3
+      { id: "l9_shuttle3", x: 3230, y: 440, width: 90, height: 18, type: "solid", startX: 3230, startY: 440, distanceX: 160, distanceY: 0, speed: 1.8, vx: 1.8, vy: 0 },
+
+      // ==========================================
+      // LAYER 5: The Frozen Apex & Auroral Warp Portal (x: 3450 to 4600)
+      // ==========================================
+      { id: "l9_summit_step1", x: 3460, y: 400, width: 110, height: 440, type: "solid" },
+      { id: "l9_summit_step2", x: 3620, y: 320, width: 110, height: 520, type: "solid" },
+      { id: "l9_summit_step3", x: 3780, y: 240, width: 120, height: 600, type: "solid" },
+      // Stratosphere Auroral Spire (Holding Golden Acorn #3)
+      { id: "l9_spire1", x: 3920, y: 130, width: 70, height: 20, type: "one-way" },
+      { id: "l9_mast", x: 4000, y: 90, width: 60, height: 18, type: "one-way" },
+      // Final crumbling fragile ice floes
+      { id: "l9_final_crumb1", x: 4030, y: 190, width: 60, height: 16, type: "crumbling" },
+      { id: "l9_final_crumb2", x: 4120, y: 230, width: 60, height: 16, type: "crumbling" },
+      // Goal Portal Monolith & Safety Recovery Deck
+      { id: "l9_goal_monolith", x: 4260, y: 280, width: 200, height: 560, type: "solid" },
+      { id: "l9_safety_deck", x: 3460, y: 780, width: 700, height: 100, type: "solid" },
+      { id: "l9_safety_spring", x: 3960, y: 764, width: 48, height: 16, type: "bouncy" }
+    ],
+    hazards: [
+      // SURGING RISING & FALLING SUb-ZERO CRYO PIT 1 (Surges up and down across Layer 1)
+      { id: "l9_hz_rising_cryo1", x: 400, y: 860, width: 440, height: 160, type: "lava", startX: 400, startY: 860, distanceX: 0, distanceY: -220, speed: 1.6, vx: 0, vy: -1.6 },
+      // Moving icicle saw blade in Layer 1
+      { id: "l9_hz_saw1", x: 670, y: 390, width: 38, height: 38, type: "saw", startX: 670, startY: 390, distanceX: 80, distanceY: 0, speed: 1.8, vx: 1.8, vy: 0 },
+      // SURGING RISING & FALLING CRYO PIT 2 (Surges up and down across Layer 2)
+      { id: "l9_hz_rising_cryo2", x: 940, y: 880, width: 420, height: 180, type: "lava", startX: 940, startY: 880, distanceX: 0, distanceY: -260, speed: 1.8, vx: 0, vy: -1.8 },
+      // SURGING RISING & FALLING CRYO PIT 3 (Surges up and down across Layer 3)
+      { id: "l9_hz_rising_cryo3", x: 1820, y: 920, width: 680, height: 200, type: "lava", startX: 1820, startY: 920, distanceX: 0, distanceY: -280, speed: 2.0, vx: 0, vy: -2.0 },
+      { id: "l9_hz_saw2", x: 2140, y: 200, width: 40, height: 40, type: "saw", startX: 2140, startY: 200, distanceX: 0, distanceY: 130, speed: 2.2, vx: 0, vy: 2.2 },
+      // SURGING RISING & FALLING CRYO PIT 4 (Surges up and down at Glacier Base)
+      { id: "l9_hz_rising_cryo4", x: 3440, y: 920, width: 760, height: 200, type: "lava", startX: 3440, startY: 920, distanceX: 0, distanceY: -220, speed: 1.8, vx: 0, vy: -1.8 },
+      { id: "l9_hz_saw3", x: 4060, y: 290, width: 40, height: 40, type: "saw", startX: 4060, startY: 290, distanceX: 100, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "l9_hz_spikes_goal", x: 4180, y: 880, width: 100, height: 20, type: "spike" }
+    ],
+    collectibles: [
+      // 3 Golden Acorns
+      { id: "l9_acorn1", x: 1250, y: 120, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "l9_acorn2", x: 2240, y: 770, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "l9_acorn3", x: 4020, y: 50, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Weapons & Gadgets
+      { id: "l9_shield", x: 180, y: 770, width: 28, height: 28, type: "bubble_shield", value: 600 },
+      { id: "l9_power_speed", x: 500, y: 430, width: 24, height: 24, type: "powerup_speed", value: 300 },
+      { id: "l9_power_jump", x: 1020, y: 750, width: 24, height: 24, type: "powerup_jump", value: 300 },
+      { id: "l9_blaster", x: 1040, y: 240, width: 28, height: 28, type: "blaster", value: 1000 },
+      { id: "l9_jetpack", x: 2820, y: 110, width: 28, height: 28, type: "jetpack", value: 1000 },
+      { id: "l9_fuel1", x: 3080, y: 70, width: 22, height: 22, type: "jetpack_fuel", value: 200 },
+
+      // Layer 1
+      { id: "l9_c1", x: 140, y: 770, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c_trench1", x: 510, y: 770, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_g1", x: 570, y: 390, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "l9_c2", x: 680, y: 390, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Layer 2
+      { id: "l9_c3", x: 880, y: 310, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c4", x: 1030, y: 250, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c5", x: 1190, y: 470, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_g2", x: 1660, y: 220, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Layer 3
+      { id: "l9_c6", x: 1860, y: 270, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c7", x: 2080, y: 220, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c8", x: 2250, y: 230, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c9", x: 1980, y: 630, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_g_vault", x: 2130, y: 790, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Layer 4
+      { id: "l9_c10", x: 2740, y: 350, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c11", x: 2880, y: 350, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_g3", x: 3020, y: 250, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "l9_c12", x: 2900, y: 110, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Layer 5
+      { id: "l9_c13", x: 3500, y: 350, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c14", x: 3660, y: 270, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c15", x: 3560, y: 730, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_c16", x: 4200, y: 230, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l9_g4", x: 4320, y: 140, width: 24, height: 24, type: "gem", value: 500 }
+    ],
+    enemies: [
+      // Boreal Frost Yetis that hurl rolling snowballs
+      { id: "l9_e_yeti1", x: 520, y: 436, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 470, maxX: 590, facing: 1 },
+      { id: "l9_e_patrol1", x: 600, y: 474, width: 28, height: 26, type: "patroller", vx: 0.8, vy: 0, minX: 520, maxX: 680, facing: -1 },
+      { id: "l9_e_yeti2", x: 1640, y: 336, width: 30, height: 30, type: "frost_yeti", vx: -0.9, vy: 0, minX: 1560, maxX: 1760, facing: -1 },
+      { id: "l9_e_slime1", x: 1040, y: 776, width: 28, height: 24, type: "slime", vx: 0.7, vy: 0, minX: 1010, maxX: 1140, facing: 1 },
+      { id: "l9_e_drone1", x: 1740, y: 270, width: 26, height: 22, type: "flyer", vx: 1.2, vy: 0, minX: 1680, maxX: 1860, facing: 1 },
+      { id: "l9_e_yeti3", x: 2090, y: 806, width: 30, height: 30, type: "frost_yeti", vx: 0.7, vy: 0, minX: 2060, maxX: 2160, facing: 1 },
+      { id: "l9_e_patrol2", x: 2470, y: 314, width: 28, height: 26, type: "patroller", vx: 0.8, vy: 0, minX: 2440, maxX: 2550, facing: -1 },
+      { id: "l9_e_yeti4", x: 2780, y: 356, width: 30, height: 30, type: "frost_yeti", vx: 0.85, vy: 0, minX: 2700, maxX: 2920, facing: 1 },
+      { id: "l9_e_drone2", x: 2880, y: 100, width: 26, height: 22, type: "flyer", vx: -1.2, vy: 0, minX: 2780, maxX: 2980, facing: -1 },
+      { id: "l9_e_yeti5", x: 3540, y: 356, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 3480, maxX: 3590, facing: 1 },
+      { id: "l9_e_patrol3", x: 4300, y: 254, width: 28, height: 26, type: "patroller", vx: 0.7, vy: 0, minX: 4260, maxX: 4380, facing: 1 }
+    ],
+    parTime: 85,
+    threeStarScore: 8800
   },
   {
     id: 10,
-    title: "10. Emerald Woodlands: Fortress Climax",
+    title: "10. Borealis Glacier: Frostbite Citadel Climax",
     worldNumber: 1,
-    worldName: "Emerald Woodlands",
-    gameplayType: "terrain",
+    worldName: "Borealis Glacier",
+    gameplayType: "gadget",
     category: "classic",
-    description: "The grand climax of Emerald Woodlands! A high-stakes gauntlet testing all your platforming prowess.",
-    worldWidth: 4520,
-    worldHeight: 600,
-    theme: THEMES.meadow,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4380,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1582,"y":470,"width":30,"height":40,"activated":false},{"x":3074,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w1_l10_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w1_l10_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w1_l10_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w1_l10_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w1_l10_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w1_l10_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w1_l10_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.48,"distanceX":140,"startX":2075,"startY":490,"vx":1.48},{"id":"w1_l10_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w1_l10_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w1_l10_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w1_l10_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w1_l10_p11","x":3730,"y":392,"width":164,"height":26,"type":"solid"},{"id":"w1_l10_p12","x":4033,"y":292,"width":162,"height":26,"type":"bouncy"},{"id":"w1_l10_finish_base","x":4140,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w1_l10_secret_p1","x":1220,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w1_l10_secret_p2","x":2531,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w1_l10_secret_p3","x":4240,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w1_l10_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w1_l10_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w1_l10_hz12","x":4073,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w1_l10_acorn_1","x":1252,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w1_l10_acorn_2","x":2553,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w1_l10_acorn_3","x":4277,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w1_l10_c_1","x":625,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l10_c_2","x":991,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l10_c_3","x":1356,"y":192,"width":24,"height":24,"type":"gem","value":500},{"id":"w1_l10_c_4","x":1722,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l10_c_5","x":2087,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l10_c_6","x":2453,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w1_l10_c_7","x":2818,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l10_c_8","x":3184,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w1_l10_c_9","x":3549,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w1_l10_c_10","x":3915,"y":379,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w1_l10_e_1","x":491,"y":400,"width":28,"height":26,"type":"patroller","vx":0.9099999999999999,"vy":0,"minX":386,"maxX":623,"facing":1},{"id":"w1_l10_e_2","x":1452,"y":289,"width":28,"height":26,"type":"slime","vx":-0.9099999999999999,"vy":0,"minX":1379,"maxX":1553,"facing":-1},{"id":"w1_l10_e_3","x":2171,"y":350,"width":26,"height":22,"type":"flyer","vx":1.28,"vy":0,"minX":2025,"maxX":2345,"facing":1},{"id":"w1_l10_e_4","x":3116,"y":378,"width":28,"height":26,"type":"anteater","vx":-0.9099999999999999,"vy":0,"minX":3016,"maxX":3244,"facing":-1},{"id":"w1_l10_e_5","x":3798,"y":366,"width":28,"height":26,"type":"beaver","vx":0.9099999999999999,"vy":0,"minX":3736,"maxX":3888,"facing":1}],
-    parTime: 84,
-    threeStarScore: 7800
+    description: "The epic climax of Borealis Glacier! Armed with the legendary rapid-fire Snowball Cannon with infinite ammo, hold down fire to unleash a torrent of snowballs and carve through swarms of Frost Yetis, airborne Cryo Drones, Canadian Geese, and invading Fire Imps to conquer the Glacial Citadel Throne!",
+    worldWidth: 4800,
+    worldHeight: 960,
+    theme: THEMES.glacier,
+    playerStart: { x: 80, y: 660 },
+    goal: { x: 4620, y: 180, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1600, y: 380, width: 30, height: 40, activated: false },
+      { x: 3100, y: 380, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // ==========================================
+      // LAYER 1: Glacial Approach Plains & Fortified Terraces (x: 0 to 1080)
+      // Flat plains stretch followed by elevated battle decks and fortress lookout
+      // ==========================================
+      // Flat Stretch 1: The Glacial Plains (Continuous flat runway for rapid-fire cannon mowing!)
+      { id: "l10_plains_flat1", x: 0, y: 700, width: 500, height: 260, type: "solid" },
+      // Architectural Elevation Step 1
+      { id: "l10_step_terrace1", x: 500, y: 640, width: 80, height: 320, type: "solid" },
+      // Flat Stretch 2: Elevated Fortified Parade Deck (Solid elevated flat battle runway at y: 580)
+      { id: "l10_promenade_deck", x: 580, y: 580, width: 360, height: 380, type: "solid" },
+      // Dual-Route Flat Stretch 3: Lower Subterranean Causeway (Alternative flat route under parade deck)
+      { id: "l10_under_causeway", x: 620, y: 840, width: 280, height: 120, type: "solid" },
+      // High Fortress Elevation: Watchtower Gantry & Sniper Battlement
+      { id: "l10_watchtower_rung", x: 660, y: 460, width: 110, height: 18, type: "one-way" },
+      { id: "l10_watchtower_apex", x: 790, y: 380, width: 140, height: 24, type: "solid" },
+      // Moving Ice Ferry crossing the Citadel Moat into Layer 2
+      { id: "l10_shuttle0", x: 920, y: 500, width: 95, height: 18, type: "solid", startX: 920, startY: 500, distanceX: 160, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+
+      // ==========================================
+      // LAYER 2: Frostbite Caverns & Crystal Spires (x: 920 to 1800)
+      // ==========================================
+      { id: "l10_ledge1", x: 920, y: 360, width: 120, height: 16, type: "one-way" },
+      { id: "l10_ledge2", x: 1080, y: 300, width: 120, height: 16, type: "one-way" },
+      // Moving Ferry 2
+      { id: "l10_shuttle1", x: 1040, y: 560, width: 85, height: 18, type: "solid", startX: 1040, startY: 560, distanceX: 180, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+      { id: "l10_catwalk1", x: 1040, y: 800, width: 160, height: 24, type: "solid" },
+      // Crumbling fragile ice floes
+      { id: "l10_crumb_ice1", x: 1140, y: 480, width: 65, height: 18, type: "crumbling" },
+      { id: "l10_crumb_ice2", x: 1240, y: 420, width: 65, height: 18, type: "crumbling" },
+      { id: "l10_crumb_ice3", x: 1340, y: 360, width: 65, height: 18, type: "crumbling" },
+      // Secret High Altar (Golden Acorn #1)
+      { id: "l10_secret_altar1", x: 1260, y: 150, width: 90, height: 18, type: "solid" },
+      // Cryo Geyser Launch 2
+      { id: "l10_geyser2", x: 1440, y: 504, width: 48, height: 16, type: "bouncy" },
+      // Checkpoint 1 Hub: Citadel Bastion Courtyard
+      { id: "l10_cp1_bastion", x: 1600, y: 380, width: 260, height: 30, type: "solid" },
+      { id: "l10_cp1_gantry", x: 1680, y: 270, width: 110, height: 16, type: "one-way" },
+
+      // ==========================================
+      // LAYER 3: Blizzard Core & Glacial Engine (x: 1800 to 2800)
+      // ==========================================
+      { id: "l10_core_grate1", x: 1880, y: 320, width: 110, height: 18, type: "one-way" },
+      { id: "l10_core_grate2", x: 2060, y: 260, width: 110, height: 18, type: "one-way" },
+      { id: "l10_shuttle2", x: 2180, y: 280, width: 85, height: 18, type: "solid", startX: 2180, startY: 280, distanceX: 180, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "l10_crumb4", x: 2420, y: 300, width: 65, height: 18, type: "crumbling" },
+      { id: "l10_crumb5", x: 2530, y: 320, width: 65, height: 18, type: "crumbling" },
+      { id: "l10_core_deck", x: 2620, y: 340, width: 150, height: 24, type: "solid" },
+      // Lower Ice Sump & Secret Grotto (Golden Acorn #2)
+      { id: "l10_vault_entry", x: 1860, y: 520, width: 80, height: 16, type: "one-way" },
+      { id: "l10_reactor_catwalk", x: 1980, y: 680, width: 120, height: 20, type: "solid" },
+      { id: "l10_island1", x: 2160, y: 820, width: 85, height: 24, type: "solid" },
+      { id: "l10_island2", x: 2320, y: 800, width: 90, height: 24, type: "solid" },
+      { id: "l10_secret_altar2", x: 2360, y: 720, width: 80, height: 18, type: "solid" },
+      // Cryo Geyser Launch 3
+      { id: "l10_vault_spring", x: 2460, y: 784, width: 48, height: 16, type: "bouncy" },
+
+      // ==========================================
+      // LAYER 4: The Auroral Skybridge & Flight Promenade (x: 2750 to 3700)
+      // ==========================================
+      // Checkpoint 2: The Aurora Skybridge
+      { id: "l10_cp2_skybridge", x: 3100, y: 380, width: 280, height: 26, type: "solid" },
+      // High Flight Promenade & Jetpack Station
+      { id: "l10_flight_deck", x: 3180, y: 160, width: 280, height: 24, type: "solid" },
+      { id: "l10_crane_beam", x: 3460, y: 110, width: 90, height: 16, type: "one-way" },
+      // Spire Geyser Launch to Skybridge
+      { id: "l10_spire_spring", x: 2980, y: 364, width: 48, height: 16, type: "bouncy" },
+      // Crystalline Spire Monolith & Climbing Ice Rungs
+      { id: "l10_monolith", x: 3500, y: 460, width: 90, height: 340, type: "solid" },
+      { id: "l10_rung1", x: 3510, y: 390, width: 70, height: 14, type: "one-way" },
+      { id: "l10_rung2", x: 3510, y: 320, width: 70, height: 14, type: "one-way" },
+      { id: "l10_rung3", x: 3510, y: 250, width: 70, height: 14, type: "one-way" },
+      // Moving Ferry 3
+      { id: "l10_shuttle3", x: 3320, y: 440, width: 90, height: 18, type: "solid", startX: 3320, startY: 440, distanceX: 180, distanceY: 0, speed: 2.0, vx: 2.0, vy: 0 },
+
+      // ==========================================
+      // LAYER 5: The Frozen Apex & Citadel Throne (x: 3700 to 4800)
+      // ==========================================
+      { id: "l10_summit_step1", x: 3740, y: 420, width: 130, height: 460, type: "solid" },
+      { id: "l10_summit_step2", x: 3940, y: 340, width: 130, height: 540, type: "solid" },
+      { id: "l10_summit_step3", x: 4140, y: 260, width: 140, height: 620, type: "solid" },
+      // Stratosphere Auroral Spire (Golden Acorn #3)
+      { id: "l10_spire1", x: 4260, y: 130, width: 70, height: 20, type: "one-way" },
+      { id: "l10_mast", x: 4340, y: 90, width: 60, height: 18, type: "one-way" },
+      // Final Crumbling Floes
+      { id: "l10_final_crumb1", x: 4380, y: 190, width: 60, height: 16, type: "crumbling" },
+      { id: "l10_final_crumb2", x: 4460, y: 220, width: 60, height: 16, type: "crumbling" },
+      // Citadel Throne Monolith & Warp Portal
+      { id: "l10_goal_monolith", x: 4560, y: 240, width: 240, height: 660, type: "solid" },
+      { id: "l10_safety_deck", x: 3800, y: 780, width: 650, height: 100, type: "solid" },
+      { id: "l10_safety_spring", x: 4320, y: 764, width: 48, height: 16, type: "bouncy" }
+    ],
+    hazards: [
+      // Surging Sub-Zero Cryo Pits (Rise and fall dynamically!)
+      // Chasm Moat 1: Located at the transition between Layer 1 Plains and Layer 2 Caverns
+      { id: "l10_hz_cryo1", x: 940, y: 880, width: 260, height: 160, type: "lava", startX: 940, startY: 880, distanceX: 0, distanceY: -220, speed: 1.8, vx: 0, vy: -1.8 },
+      { id: "l10_hz_saw1", x: 750, y: 510, width: 38, height: 38, type: "saw", startX: 750, startY: 510, distanceX: 80, distanceY: 0, speed: 1.8, vx: 1.8, vy: 0 },
+      { id: "l10_hz_cryo2", x: 960, y: 880, width: 600, height: 180, type: "lava", startX: 960, startY: 880, distanceX: 0, distanceY: -260, speed: 2.0, vx: 0, vy: -2.0 },
+      { id: "l10_hz_saw2", x: 1160, y: 360, width: 40, height: 40, type: "saw", startX: 1160, startY: 360, distanceX: 0, distanceY: 100, speed: 2.0, vx: 0, vy: 2.0 },
+      { id: "l10_hz_cryo3", x: 1880, y: 920, width: 780, height: 200, type: "lava", startX: 1880, startY: 920, distanceX: 0, distanceY: -280, speed: 2.2, vx: 0, vy: -2.2 },
+      { id: "l10_hz_saw3", x: 2260, y: 220, width: 40, height: 40, type: "saw", startX: 2260, startY: 220, distanceX: 120, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "l10_hz_cryo4", x: 3700, y: 920, width: 860, height: 200, type: "lava", startX: 3700, startY: 920, distanceX: 0, distanceY: -240, speed: 2.0, vx: 0, vy: -2.0 },
+      { id: "l10_hz_saw4", x: 4200, y: 290, width: 40, height: 40, type: "saw", startX: 4200, startY: 290, distanceX: 100, distanceY: 0, speed: 2.2, vx: 2.2, vy: 0 },
+      { id: "l10_hz_spikes_apex", x: 4480, y: 880, width: 100, height: 20, type: "spike" }
+    ],
+    collectibles: [
+      // 3 Golden Acorns
+      { id: "l10_acorn1", x: 1290, y: 100, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "l10_acorn2", x: 2390, y: 670, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "l10_acorn3", x: 4360, y: 50, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // NEW POWER-UP: RAPID-FIRE SNOWBALL CANNON!
+      { id: "l10_snow_cannon_start", x: 160, y: 650, width: 28, height: 28, type: "snow_cannon", value: 1000 },
+      // Backup Cannons after checkpoints in case player respawns
+      { id: "l10_snow_cannon_cp1", x: 1640, y: 340, width: 28, height: 28, type: "snow_cannon", value: 500 },
+      { id: "l10_snow_cannon_cp2", x: 3140, y: 340, width: 28, height: 28, type: "snow_cannon", value: 500 },
+
+      // Supporting Powerups & Gadgets
+      { id: "l10_shield", x: 260, y: 650, width: 28, height: 28, type: "bubble_shield", value: 600 },
+      { id: "l10_power_speed", x: 840, y: 330, width: 24, height: 24, type: "powerup_speed", value: 300 },
+      { id: "l10_power_jump", x: 1060, y: 750, width: 24, height: 24, type: "powerup_jump", value: 300 },
+      { id: "l10_jetpack", x: 3200, y: 120, width: 28, height: 28, type: "jetpack", value: 1000 },
+      { id: "l10_fuel1", x: 3440, y: 70, width: 22, height: 22, type: "jetpack_fuel", value: 200 },
+
+      // Coins & Gems throughout Fortress
+      { id: "l10_c1", x: 210, y: 650, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c2", x: 360, y: 650, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c3", x: 480, y: 650, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_g1", x: 890, y: 330, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "l10_c_sump", x: 720, y: 790, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c4", x: 960, y: 310, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c5", x: 1110, y: 250, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c6", x: 1180, y: 430, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_g2", x: 1720, y: 220, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "l10_c7", x: 1920, y: 270, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c8", x: 2100, y: 210, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c9", x: 2280, y: 230, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_g_vault", x: 2220, y: 770, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "l10_c10", x: 2820, y: 340, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c11", x: 2980, y: 320, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_g3", x: 3260, y: 110, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "l10_c12", x: 3380, y: 110, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c13", x: 3820, y: 370, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c14", x: 4020, y: 290, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_c15", x: 4220, y: 210, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "l10_g4", x: 4420, y: 140, width: 24, height: 24, type: "gem", value: 500 }
+    ],
+    enemies: [
+      // ==========================================
+      // CITADEL ENEMY GAUNTLET: 32+ ENEMIES FOR RAPID CANNON TARGETING!
+      // ==========================================
+      // Wave 1: Glacial Plains & Fortified Terraces
+      { id: "l10_e_patrol1", x: 320, y: 654, width: 28, height: 26, type: "patroller", vx: 0.8, vy: 0, minX: 240, maxX: 460, facing: -1 },
+      { id: "l10_e_slime1", x: 430, y: 656, width: 28, height: 24, type: "slime", vx: -0.7, vy: 0, minX: 350, maxX: 490, facing: -1 },
+      { id: "l10_e_drone1", x: 380, y: 550, width: 26, height: 22, type: "flyer", vx: 1.3, vy: 0, minX: 300, maxX: 460, facing: 1 },
+      { id: "l10_e_yeti1", x: 700, y: 536, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 600, maxX: 840, facing: 1 },
+      { id: "l10_e_patrol2", x: 840, y: 534, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 740, maxX: 920, facing: -1 },
+      { id: "l10_e_imp1", x: 840, y: 334, width: 26, height: 26, type: "fire_imp", vx: 0.7, vy: 0, minX: 800, maxX: 910, facing: 1 },
+      { id: "l10_e_drone2", x: 740, y: 320, width: 26, height: 22, type: "flyer", vx: -1.3, vy: 0, minX: 660, maxX: 820, facing: -1 },
+      { id: "l10_e_yeti2", x: 880, y: 536, width: 30, height: 30, type: "frost_yeti", vx: -0.85, vy: 0, minX: 800, maxX: 940, facing: -1 },
+
+      // Wave 2: Frostbite Caverns & Spires
+      { id: "l10_e_yeti3", x: 1020, y: 516, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 960, maxX: 1100, facing: 1 },
+      { id: "l10_e_slime1", x: 1080, y: 776, width: 28, height: 24, type: "slime", vx: 0.7, vy: 0, minX: 1040, maxX: 1180, facing: 1 },
+      { id: "l10_e_drone3", x: 1180, y: 220, width: 26, height: 22, type: "flyer", vx: 1.3, vy: 0, minX: 1100, maxX: 1280, facing: 1 },
+      { id: "l10_e_goose1", x: 1240, y: 270, width: 30, height: 30, type: "goose", vx: 0.9, vy: 0, minX: 1180, maxX: 1320, facing: -1 },
+      { id: "l10_e_drone4", x: 1380, y: 180, width: 26, height: 22, type: "flyer", vx: -1.3, vy: 0, minX: 1300, maxX: 1460, facing: -1 },
+      { id: "l10_e_slime2", x: 1380, y: 776, width: 28, height: 24, type: "slime", vx: -0.7, vy: 0, minX: 1320, maxX: 1480, facing: -1 },
+      { id: "l10_e_yeti4", x: 1560, y: 336, width: 30, height: 30, type: "frost_yeti", vx: -0.9, vy: 0, minX: 1500, maxX: 1640, facing: -1 },
+      { id: "l10_e_patrol2", x: 1680, y: 354, width: 28, height: 26, type: "patroller", vx: 0.8, vy: 0, minX: 1620, maxX: 1760, facing: 1 },
+
+      // Wave 3: Blizzard Core & Glacial Engine
+      { id: "l10_e_yeti5", x: 1920, y: 276, width: 30, height: 30, type: "frost_yeti", vx: 0.85, vy: 0, minX: 1860, maxX: 2000, facing: 1 },
+      { id: "l10_e_drone5", x: 1960, y: 180, width: 26, height: 22, type: "flyer", vx: 1.2, vy: 0, minX: 1880, maxX: 2060, facing: 1 },
+      { id: "l10_e_patrol3", x: 2020, y: 654, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 1980, maxX: 2100, facing: -1 },
+      { id: "l10_e_imp2", x: 2100, y: 216, width: 26, height: 26, type: "fire_imp", vx: 0.7, vy: 0, minX: 2060, maxX: 2180, facing: 1 },
+      { id: "l10_e_drone6", x: 2140, y: 140, width: 26, height: 22, type: "flyer", vx: -1.3, vy: 0, minX: 2080, maxX: 2260, facing: -1 },
+      { id: "l10_e_yeti6", x: 2260, y: 756, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 2180, maxX: 2340, facing: 1 },
+      { id: "l10_e_goose2", x: 2380, y: 250, width: 30, height: 30, type: "goose", vx: 0.85, vy: 0, minX: 2300, maxX: 2460, facing: -1 },
+      { id: "l10_e_imp3", x: 2480, y: 294, width: 26, height: 26, type: "fire_imp", vx: 0.75, vy: 0, minX: 2420, maxX: 2540, facing: 1 },
+      { id: "l10_e_yeti7", x: 2600, y: 316, width: 30, height: 30, type: "frost_yeti", vx: -0.8, vy: 0, minX: 2540, maxX: 2700, facing: -1 },
+
+      // Wave 4: Auroral Skybridge & Flight Promenade
+      { id: "l10_e_yeti8", x: 2840, y: 356, width: 30, height: 30, type: "frost_yeti", vx: 0.85, vy: 0, minX: 2760, maxX: 2940, facing: 1 },
+      { id: "l10_e_drone7", x: 2900, y: 160, width: 26, height: 22, type: "flyer", vx: 1.4, vy: 0, minX: 2820, maxX: 3020, facing: 1 },
+      { id: "l10_e_patrol4", x: 2940, y: 374, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 2880, maxX: 3040, facing: -1 },
+      { id: "l10_e_drone8", x: 3080, y: 110, width: 26, height: 22, type: "flyer", vx: -1.4, vy: 0, minX: 3000, maxX: 3200, facing: -1 },
+      { id: "l10_e_goose3", x: 3240, y: 110, width: 30, height: 30, type: "goose", vx: 0.9, vy: 0, minX: 3180, maxX: 3340, facing: 1 },
+      { id: "l10_e_drone9", x: 3340, y: 80, width: 26, height: 22, type: "flyer", vx: 1.3, vy: 0, minX: 3260, maxX: 3440, facing: 1 },
+      { id: "l10_e_imp4", x: 3440, y: 110, width: 26, height: 26, type: "fire_imp", vx: 0.8, vy: 0, minX: 3380, maxX: 3500, facing: -1 },
+      { id: "l10_e_yeti9", x: 3580, y: 356, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 3500, maxX: 3660, facing: 1 },
+
+      // Wave 5: The Frozen Apex & Citadel Throne Grand Climax
+      { id: "l10_e_yeti10", x: 3780, y: 376, width: 30, height: 30, type: "frost_yeti", vx: 0.85, vy: 0, minX: 3720, maxX: 3880, facing: 1 },
+      { id: "l10_e_patrol5", x: 3820, y: 394, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 3760, maxX: 3900, facing: -1 },
+      { id: "l10_e_drone10", x: 3860, y: 200, width: 26, height: 22, type: "flyer", vx: 1.4, vy: 0, minX: 3800, maxX: 3980, facing: 1 },
+      { id: "l10_e_yeti11", x: 3980, y: 296, width: 30, height: 30, type: "frost_yeti", vx: -0.85, vy: 0, minX: 3920, maxX: 4080, facing: -1 },
+      { id: "l10_e_drone11", x: 4060, y: 150, width: 26, height: 22, type: "flyer", vx: -1.4, vy: 0, minX: 3980, maxX: 4160, facing: -1 },
+      { id: "l10_e_yeti12", x: 4180, y: 216, width: 30, height: 30, type: "frost_yeti", vx: 0.9, vy: 0, minX: 4120, maxX: 4280, facing: 1 },
+      { id: "l10_e_imp5", x: 4220, y: 216, width: 26, height: 26, type: "fire_imp", vx: 0.8, vy: 0, minX: 4160, maxX: 4300, facing: -1 },
+      { id: "l10_e_drone12", x: 4260, y: 130, width: 26, height: 22, type: "flyer", vx: 1.3, vy: 0, minX: 4180, maxX: 4380, facing: 1 },
+      { id: "l10_e_goose4", x: 4360, y: 160, width: 30, height: 30, type: "goose", vx: 0.9, vy: 0, minX: 4280, maxX: 4440, facing: -1 },
+      { id: "l10_e_drone13", x: 4460, y: 140, width: 26, height: 22, type: "flyer", vx: -1.3, vy: 0, minX: 4380, maxX: 4540, facing: -1 },
+      { id: "l10_e_yeti13", x: 4580, y: 196, width: 30, height: 30, type: "frost_yeti", vx: 0.8, vy: 0, minX: 4540, maxX: 4680, facing: -1 }
+    ],
+    parTime: 95,
+    threeStarScore: 14500
   }
 ];

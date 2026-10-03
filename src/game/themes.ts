@@ -169,5 +169,38 @@ export const THEMES: Record<string, LevelTheme> = {
     accentColor: '#F97316',    // Blazing orange
     magmaGlow: 'rgba(239, 68, 68, 0.45)',
     emberColor: '#FDE047'
+  },
+  glacier: {
+    id: 'glacial_aurora',
+    name: 'Borealis Glacier',
+    skyColorTop: '#020617',
+    skyColorBottom: '#0A2540',
+    cloudColor: '#38BDF8',
+    mountainColor: '#0F172A',
+    platformFill: '#0F2038',   // Deep permafrost bedrock
+    platformTop: '#7DD3FC',    // Frosted crystalline ice cap
+    platformBorder: '#0284C7', // Vivid cryo-blue border
+    accentColor: '#38BDF8',    // Electric aurora cyan
+    auroraGreen: 'rgba(16, 185, 129, 0.4)',
+    auroraCyan: 'rgba(6, 182, 212, 0.45)',
+    auroraPurple: 'rgba(168, 85, 247, 0.35)',
+    frostGlow: 'rgba(56, 189, 248, 0.45)',
+    iceShimmer: '#E0F2FE'
+  },
+  deepSea: {
+    id: 'deep_sea',
+    name: 'Abyssal Deep Sea',
+    skyColorTop: '#020B14',      // Deep midnight abyss
+    skyColorBottom: '#042A42',   // Sunken ocean trench
+    cloudColor: 'rgba(34, 211, 238, 0.25)', // Ambient bioluminescent mist
+    mountainColor: '#031E30',   // Sunken trench silhouettes / coral ridges
+    platformFill: '#062033',    // Sunken coral bedrock
+    platformTop: '#06B6D4',     // Phosphorescent turquoise sea bed
+    platformBorder: '#0284C7',  // Oceanic cerulean border
+    accentColor: '#22D3EE',     // Bioluminescent cyan
+    waterColor: 'rgba(6, 78, 119, 0.35)', // Ambient water overlay
+    bioluminescence: '#38BDF8',
+    bubbleColor: 'rgba(186, 230, 253, 0.7)',
+    coralGlow: 'rgba(45, 212, 191, 0.45)'
   }
 };

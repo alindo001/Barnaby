@@ -350,6 +350,10 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                     <span className="font-mono font-bold text-amber-300">Space / W / ↑</span>
                   </div>
                   <div className="flex items-center justify-between p-1.5 bg-slate-900/60 rounded-lg">
+                    <span className="text-slate-400">Rapid Snow Cannon</span>
+                    <span className="font-mono font-bold text-cyan-300">Hold F / X / Fire</span>
+                  </div>
+                  <div className="flex items-center justify-between p-1.5 bg-slate-900/60 rounded-lg">
                     <span className="text-slate-400">Shoot Blaster</span>
                     <span className="font-mono font-bold text-sky-300">F / J or 'FIRE'</span>
                   </div>
@@ -391,11 +395,38 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                       <Shield size={14} />
                     </div>
                     <div>
-                      <div className="font-bold text-cyan-300">Bubble Shield & Float-Glide</div>
+                      <div className="font-bold text-cyan-300">Bubble Shield & Underwater Float-Glide</div>
                       <div className="text-slate-300 leading-relaxed text-xs">
-                        Introduced in Level 7! Envelopes Barnaby in a protective aquatic sphere.<br/>
-                        • <strong className="text-cyan-300">Fatal Hit Absorption:</strong> Intercepts one lethal hit from enemies, saws, or spikes, popping with an upward recoil hop and granting temporary invulnerability.<br/>
-                        • <strong className="text-cyan-300">Float-Glide:</strong> Hold <span className="text-cyan-300 font-semibold font-mono">Jump / ↑</span> while in mid-air to gently float and glide across wide oceanic chasms.
+                        Envelopes Barnaby in a protective aquatic sphere! Essential in Level 12's <strong>Abyssal Deep Sea</strong>.<br/>
+                        • <strong className="text-cyan-300">Sea Urchin & Hazard Protection:</strong> Absorbs lethal hits from venomous Sea Urchins, spikes, or enemies, popping with a safe upward recoil bounce and granting temporary invulnerability.<br/>
+                        • <strong className="text-cyan-300">Buoyant Float-Glide:</strong> Hold <span className="text-cyan-300 font-semibold font-mono">Jump / ↑</span> while in mid-air/water to gently hover and glide through narrow underwater corridors and coral chasms.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 bg-blue-950/50 rounded-xl border border-teal-400/60 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-teal-500/20 text-teal-300 rounded-lg mt-0.5 text-base">
+                      🌊
+                    </div>
+                    <div>
+                      <div className="font-bold text-teal-200">Deep Sea Theme & Continuous Swimming</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Introduced in Level 12! Experience submerged oceanic physics with <strong>continuous swimming</strong>:<br/>
+                        • <strong className="text-cyan-300">Continuous Swim Paddle:</strong> Tap <span className="text-cyan-300 font-semibold font-mono">Jump / Space / W / ↑</span> repeatedly while in the water to execute continuous upward swimming paddle strokes, navigating vertical coral canyons and deep ocean trenches!<br/>
+                        • <strong className="text-cyan-300">Buoyant Physics:</strong> Enjoy reduced gravity, slower sink rate, and directional swimming momentum.<br/>
+                        • <strong className="text-cyan-300">Abyssal Sea Urchins:</strong> Beware of spiky sea urchins bobbing at varied depths—use the Bubble Shield to safely bounce through them!
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 bg-cyan-950/50 rounded-xl border border-cyan-400/60 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-cyan-500/20 text-cyan-300 rounded-lg mt-0.5 text-base">
+                      ❄️
+                    </div>
+                    <div>
+                      <div className="font-bold text-cyan-200">Rapid Snowball Cannon (Infinite Ammo)</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Introduced in Level 10! Hold down <span className="text-cyan-300 font-semibold font-mono">F / X / Fire</span> (or the touch <strong className="text-cyan-300">HOLD FIRE</strong> button) to unleash an uninterrupted continuous barrage of rapid snowballs (~10 shots/second) with <strong>unlimited ammo</strong>. Shatters enemy projectiles in mid-air and obliterates swarms of Yetis, Drones, and Critters with frost explosions (+300 pts)!
                       </div>
                     </div>
                   </div>

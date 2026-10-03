@@ -39,7 +39,13 @@ export default function App() {
   });
 
   const [currentLevel, setCurrentLevel] = useState<LevelData | null>(null);
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('platformer_sound_enabled');
+      if (saved !== null) return saved === 'true';
+    } catch {}
+    return true;
+  });
   const [musicEnabled, setMusicEnabled] = useState<boolean>(false);
   const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
   const [dpadSize, setDpadSize] = useState<TouchButtonSize>(() => {
@@ -100,6 +106,16 @@ export default function App() {
 
     const engine = new GameEngine(canvasRef.current);
     engineRef.current = engine;
+    engine.settings.soundEnabled = soundEnabled;
+    sound.setSoundEnabled(soundEnabled);
+
+    // Global user gesture listener to unlock Web Audio on preview click/tap
+    const unlockUserAudio = () => {
+      sound.unlockAudio();
+    };
+    window.addEventListener('click', unlockUserAudio, { capture: true, passive: true });
+    window.addEventListener('keydown', unlockUserAudio, { capture: true, passive: true });
+    window.addEventListener('touchstart', unlockUserAudio, { capture: true, passive: true });
 
     setCurrentLevel(engine.currentLevel);
 
@@ -132,36 +148,42 @@ export default function App() {
 
   // Action Handlers
   const handleStartGame = useCallback(() => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.transitionToLevel(0, true);
     }
   }, []);
 
   const handleResume = useCallback(() => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.resumeGame();
     }
   }, []);
 
   const handleRestart = useCallback(() => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.restartCurrentLevel();
     }
   }, []);
 
   const handleRestartFromBeginning = useCallback(() => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.restartFromBeginning();
     }
   }, []);
 
   const handleNextLevel = useCallback(() => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.nextLevel();
     }
   }, []);
 
   const handleSelectLevel = useCallback((index: number) => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.transitionToLevel(index, true);
     }
@@ -169,9 +191,16 @@ export default function App() {
   }, []);
 
   const handleToggleSound = useCallback(() => {
+    sound.unlockAudio();
     setSoundEnabled(prev => {
       const next = !prev;
+      try {
+        localStorage.setItem('platformer_sound_enabled', String(next));
+      } catch {}
       sound.setSoundEnabled(next);
+      if (next) {
+        sound.playTestChime();
+      }
       if (engineRef.current) {
         engineRef.current.settings.soundEnabled = next;
       }
@@ -209,12 +238,14 @@ export default function App() {
   }, []);
 
   const handleTouchInput = useCallback((action: keyof InputState, value: boolean) => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.setTouchInput(action, value);
     }
   }, []);
 
   const handlePlayCustomLevel = useCallback((customLevel: LevelData) => {
+    sound.unlockAudio();
     if (engineRef.current) {
       const idx = engineRef.current.levels.findIndex(l => l.id === customLevel.id);
       const targetIdx = idx >= 0 ? idx : 0;
@@ -226,12 +257,14 @@ export default function App() {
   }, []);
 
   const handleLaunchJetpack = useCallback((direction: LaunchDirection) => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.launchJetpack(direction);
     }
   }, []);
 
   const handleShootBlaster = useCallback(() => {
+    sound.unlockAudio();
     if (engineRef.current) {
       engineRef.current.shootBlaster();
     }
@@ -329,6 +362,7 @@ export default function App() {
         <TouchControls 
           hasJetpack={stats.hasJetpack} 
           hasBlaster={stats.hasBlaster}
+          hasSnowCannon={stats.hasSnowCannon}
           dpadSize={dpadSize}
           touchOpacity={touchOpacity}
           onToggleDpadSize={handleToggleDpadSize}

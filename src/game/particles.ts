@@ -325,4 +325,23 @@ export class ParticleSystem {
       gravity: -0.02
     });
   }
+
+  // Rising buoyant oxygen bubbles when swimming or moving in Deep Sea
+  public emitWaterBubbles(x: number, y: number, count: number = 2) {
+    for (let i = 0; i < count; i++) {
+      this.particles.push({
+        x: x + (Math.random() - 0.5) * 14,
+        y: y + (Math.random() - 0.5) * 8,
+        vx: (Math.random() - 0.5) * 0.9,
+        vy: -1.2 - Math.random() * 1.6, // Ascend buoyantly
+        size: 2.2 + Math.random() * 3.8,
+        color: Math.random() > 0.4 ? '#BAE6FD' : '#E0F2FE',
+        alpha: 0.8,
+        life: 0,
+        maxLife: 0.55 + Math.random() * 0.4,
+        shape: 'circle',
+        gravity: -0.04
+      });
+    }
+  }
 }

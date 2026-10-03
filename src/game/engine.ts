@@ -85,6 +85,7 @@ export class GameEngine {
     hasShield?: boolean;
     hasBlaster?: boolean;
     blasterAmmo?: number;
+    hasSnowCannon?: boolean;
     score?: number;
     coins?: number;
     gems?: number;
@@ -100,8 +101,9 @@ export class GameEngine {
     this.physics = new PhysicsEngine();
     this.particles = new ParticleSystem();
 
-    // Tap or click to skip transition hold phase
+    // Tap or click to skip transition hold phase & unlock audio
     this.canvas.addEventListener('pointerdown', () => {
+      sound.unlockAudio();
       if (this.transitionState && this.transitionState.phase === 'hold') {
         this.transitionState.holdTime = this.transitionState.holdDuration || 1.8;
       }
@@ -141,6 +143,26 @@ export class GameEngine {
         }
         if (parsed[7] && (parsed[7].worldHeight <= 650 || !parsed[7].title?.includes('Nebula Fortress') || !parsed[7].theme?.name?.includes('Cosmic'))) {
           delete parsed[7];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[8] && (parsed[8].worldHeight <= 650 || !parsed[8].title?.includes('Infernal Caldera') || !parsed[8].theme?.name?.includes('Infernal'))) {
+          delete parsed[8];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[9] && (parsed[9].worldHeight <= 650 || !parsed[9].title?.includes('Borealis Glacier') || !parsed[9].theme?.name?.includes('Glacier'))) {
+          delete parsed[9];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[10] && (parsed[10].worldHeight <= 650 || (!parsed[10].title?.includes('Citadel') && !parsed[10].title?.includes('Glacier')) || !parsed[10].theme?.name?.includes('Glacier') || (parsed[10].platforms && parsed[10].platforms.some((p: any) => p.id === 'l10_deck_start')))) {
+          delete parsed[10];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[11] && (parsed[11].worldHeight <= 650 || !parsed[11].title?.includes('Rocketeer') || !parsed[11].theme?.name?.includes('Glacier'))) {
+          delete parsed[11];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[12] && (parsed[12].worldHeight < 950 || parsed[12].worldWidth < 5100 || !parsed[12].description?.includes('continuous swimming') || !parsed[12].theme?.name?.includes('Deep Sea'))) {
+          delete parsed[12];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         this.levels = this.levels.map(lvl => parsed[lvl.id] ? parsed[lvl.id] : lvl);
@@ -290,6 +312,7 @@ export class GameEngine {
         hasBlaster: this.player ? !!this.player.hasBlaster : false,
         blasterAmmo: this.player ? (this.player.blasterAmmo ?? 0) : 0,
         maxBlasterAmmo: this.player ? (this.player.maxBlasterAmmo ?? 30) : 30,
+        hasSnowCannon: this.player ? !!this.player.hasSnowCannon : false,
         isTransitioning: !!(this.transitionState && this.transitionState.active),
         transitionProgress: this.transitionState ? this.transitionState.progress : 0
       });
@@ -331,6 +354,26 @@ export class GameEngine {
         }
         if (parsed[7] && (parsed[7].worldHeight <= 650 || !parsed[7].title?.includes('Nebula Fortress') || !parsed[7].theme?.name?.includes('Cosmic'))) {
           delete parsed[7];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[8] && (parsed[8].worldHeight <= 650 || !parsed[8].title?.includes('Infernal Caldera') || !parsed[8].theme?.name?.includes('Infernal'))) {
+          delete parsed[8];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[9] && (parsed[9].worldHeight <= 650 || !parsed[9].title?.includes('Borealis Glacier') || !parsed[9].theme?.name?.includes('Glacier'))) {
+          delete parsed[9];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[10] && (parsed[10].worldHeight <= 650 || (!parsed[10].title?.includes('Citadel') && !parsed[10].title?.includes('Glacier')) || !parsed[10].theme?.name?.includes('Glacier') || (parsed[10].platforms && parsed[10].platforms.some((p: any) => p.id === 'l10_deck_start')))) {
+          delete parsed[10];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[11] && (parsed[11].worldHeight <= 650 || !parsed[11].title?.includes('Rocketeer') || !parsed[11].theme?.name?.includes('Glacier'))) {
+          delete parsed[11];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[12] && (parsed[12].worldHeight < 950 || parsed[12].worldWidth < 5100 || !parsed[12].description?.includes('continuous swimming') || !parsed[12].theme?.name?.includes('Deep Sea'))) {
+          delete parsed[12];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         if (parsed[this.currentLevel.id]) {
@@ -423,6 +466,7 @@ export class GameEngine {
         this.player.hasBlaster = false;
         this.player.blasterAmmo = 0;
       }
+      this.player.hasSnowCannon = !!this.lastCheckpoint.hasSnowCannon;
 
       // Revert run stats to the checkpoint snapshot!
       this.stats.score = this.lastCheckpoint.score ?? 0;
@@ -814,6 +858,7 @@ export class GameEngine {
             hasShield: this.player ? !!this.player.hasShield : false,
             hasBlaster: this.player ? this.player.hasBlaster : false,
             blasterAmmo: this.player ? this.player.blasterAmmo : 0,
+            hasSnowCannon: this.player ? !!this.player.hasSnowCannon : false,
             score: this.stats.score,
             coins: this.stats.coins,
             gems: this.stats.gems,
@@ -830,6 +875,19 @@ export class GameEngine {
       // Decrement blaster cooldown
       if (this.player.blasterCooldown && this.player.blasterCooldown > 0) {
         this.player.blasterCooldown -= dt;
+      }
+      // Decrement snow cannon cooldown
+      if (this.player.snowCannonCooldown && this.player.snowCannonCooldown > 0) {
+        this.player.snowCannonCooldown -= dt;
+      }
+
+      // Continuous rapid fire while button held
+      if (this.input.fire && this.gameState === 'PLAYING') {
+        if (this.player.hasSnowCannon) {
+          this.shootSnowCannon();
+        } else if (this.player.hasBlaster) {
+          this.shootBlaster();
+        }
       }
 
       // Reset single-frame jump pressed trigger
@@ -878,6 +936,8 @@ export class GameEngine {
 
   private setupKeyboardListeners() {
     const onKeyDown = (e: KeyboardEvent) => {
+      sound.unlockAudio();
+
       // Skip transition hold phase on any key press
       if (this.transitionState && this.transitionState.phase === 'hold') {
         this.transitionState.holdTime = this.transitionState.holdDuration || 1.8;
@@ -889,6 +949,18 @@ export class GameEngine {
       }
 
       switch (e.code) {
+        case 'KeyM':
+          const nextSound = !this.settings.soundEnabled;
+          this.settings.soundEnabled = nextSound;
+          sound.setSoundEnabled(nextSound);
+          if (nextSound) {
+            sound.playTestChime();
+            this.particles.addPopup(this.player.x + this.player.width / 2, this.player.y - 14, 'SOUND ON 🔊', '#34D399');
+          } else {
+            this.particles.addPopup(this.player.x + this.player.width / 2, this.player.y - 14, 'SOUND MUTED 🔇', '#F87171');
+          }
+          this.notifyState();
+          break;
         case 'ArrowLeft':
         case 'KeyA':
           this.input.left = true;
@@ -963,8 +1035,14 @@ export class GameEngine {
           break;
         case 'KeyF':
         case 'KeyJ':
+        case 'KeyX':
+          this.input.fire = true;
           if (this.gameState === 'PLAYING') {
-            this.shootBlaster();
+            if (this.player.hasSnowCannon) {
+              this.shootSnowCannon();
+            } else if (this.player.hasBlaster) {
+              this.shootBlaster();
+            }
           }
           break;
         case 'Escape':
@@ -997,6 +1075,11 @@ export class GameEngine {
         case 'ArrowDown':
         case 'KeyS':
           this.input.down = false;
+          break;
+        case 'KeyF':
+        case 'KeyJ':
+        case 'KeyX':
+          this.input.fire = false;
           break;
       }
     };
@@ -1100,6 +1183,48 @@ export class GameEngine {
       fuel: this.player.jetpackFuel,
       life: 0,
       maxLife: 2.5
+    });
+
+    this.notifyState();
+  }
+
+  // Shoot Rapid-Fire Snowball Cannon (unlimited ammo, high rate of fire)
+  public shootSnowCannon() {
+    if (this.gameState !== 'PLAYING' || !this.player || !this.player.hasSnowCannon) return;
+    if ((this.player.snowCannonCooldown ?? 0) > 0) return;
+
+    this.player.snowCannonCooldown = 0.10; // Rapid ~10 shots/sec stream of snowballs!
+
+    sound.playBlasterShoot();
+
+    if (!this.currentLevel.blasterBullets) {
+      this.currentLevel.blasterBullets = [];
+    }
+
+    const muzzleX = this.player.x + (this.player.facing === 1 ? this.player.width + 8 : -8);
+    const muzzleY = this.player.y + this.player.height * 0.45;
+
+    let vx = this.player.facing * 18;
+    let vy = (Math.random() - 0.5) * 1.5;
+    if (this.input.up && (this.input.left || this.input.right)) {
+      vx = this.player.facing * 13;
+      vy = -13;
+    } else if (this.input.up && !this.input.left && !this.input.right) {
+      vx = (Math.random() - 0.5) * 2;
+      vy = -18;
+    }
+
+    this.currentLevel.blasterBullets.push({
+      id: 'snowball_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(7),
+      x: muzzleX,
+      y: muzzleY,
+      vx,
+      vy,
+      radius: 6.5,
+      color: '#FFFFFF',
+      life: 0,
+      maxLife: 1.4,
+      isSnowball: true
     });
 
     this.notifyState();

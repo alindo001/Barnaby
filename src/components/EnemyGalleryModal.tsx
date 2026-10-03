@@ -47,7 +47,7 @@ export const EnemyGalleryModal: React.FC<EnemyGalleryModalProps> = ({
       return ['anteater', 'beaver', 'hedgehog', 'frog', 'skunk', 'goose', 'pigeon'].includes(e.type);
     }
     if (selectedFilter === 'other') {
-      return ['slime', 'flyer', 'patroller'].includes(e.type);
+      return ['slime', 'flyer', 'patroller', 'fire_imp', 'frost_yeti', 'urchin'].includes(e.type);
     }
     return true;
   });

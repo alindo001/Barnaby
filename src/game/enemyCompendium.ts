@@ -217,6 +217,42 @@ export const ENEMY_COMPENDIUM: EnemyCompendiumEntry[] = [
     color: '#EF4444',
     bgColor: 'bg-red-950/40',
     borderColor: 'border-orange-500/50'
+  },
+  {
+    type: 'frost_yeti',
+    name: 'Boreal the Frost Yeti',
+    species: 'Abominabilis Cryonicus',
+    tagline: 'Towering shaggy snow guardian hurling rolling ice boulders',
+    description: 'Ancient dweller of the Borealis Glacier and Auroral Citadel. Cloaked in thick, frosted white fur with crystalline ice horns, this formidable yeti stomps the permafrost and hurls packed, rolling snowballs that crash across platforms!',
+    threatLevel: 'Extreme',
+    threatStars: 5,
+    attackName: '❄️ Rolling Snowball Avalanche',
+    attackDescription: 'Compacts dense glacial snow into rolling boulders and hurls them across platforms. Jump over the rolling snowballs or shatter them with plasma blaster fire!',
+    weakness: 'Vulnerable to head stomps from above, plasma blaster bolts, or high-speed jetpack missile impacts.',
+    habitat: 'Glacial Spires, Auroral Peaks, Sub-Zero Ice Caverns',
+    points: 500,
+    emoji: '❄️',
+    color: '#38BDF8',
+    bgColor: 'bg-sky-950/40',
+    borderColor: 'border-cyan-500/50'
+  },
+  {
+    type: 'urchin',
+    name: 'Spike the Abyssal Sea Urchin',
+    species: 'Echinus Abyssalis',
+    tagline: 'Floating needle-spined hazard guarding the deep ocean trenches',
+    description: 'Suspended in the calm ocean currents of the Abyssal Deep Sea, this echinoderm brims with sixteen twitching, venom-infused needle spines. Its sharp quills cannot be stomped directly—Barnaby must equip the Bubble Shield to safely pop and bounce off its spines!',
+    threatLevel: 'Menacing',
+    threatStars: 4,
+    attackName: '🪡 Venomous Needle Spines',
+    attackDescription: 'Radiates sharp venomous spines that inflict immediate damage on contact. Collect a Bubble Shield to safely absorb contact and bounce away unharmed!',
+    weakness: 'Protected against standard stomps! Deflected harmlessly by Bubble Shield, or destroyed by Plasma Blaster bolts and Snowball cannons.',
+    habitat: 'Sunken Coral Trenches, Deep Sea Grottos, Hydrothermal Vents',
+    points: 350,
+    emoji: '🦔',
+    color: '#A855F7',
+    bgColor: 'bg-purple-950/40',
+    borderColor: 'border-cyan-500/50'
   }
 ];
 
