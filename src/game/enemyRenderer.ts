@@ -693,6 +693,137 @@ export function drawEnemyFigure(
     // Visor
     ctx.fillStyle = '#EF4444';
     ctx.fillRect(-4, -2, 8, 4);
+  } else if (e.type === 'fire_imp') {
+    // ==========================================
+    // VOLCANIC FIRE IMP (Ignis)
+    // Dancing flame crest, obsidian horns, glowing molten eyes, fiery tail
+    // ==========================================
+    const floatBob = Math.sin(animTime * 10) * 3;
+    const flameFlicker = Math.sin(animTime * 16) * 2;
+    const tailWiggle = Math.sin(animTime * 12) * 0.4;
+    const wingFlap = Math.sin(animTime * 18) * 6;
+
+    ctx.translate(cx, cy + floatBob);
+    if (facing === -1) ctx.scale(-1, 1);
+
+    // Fiery Ambient Glow
+    ctx.save();
+    ctx.shadowColor = '#EA580C';
+    ctx.shadowBlur = 10;
+
+    // Little Devil Magma Wings
+    ctx.fillStyle = '#991B1B';
+    ctx.beginPath();
+    ctx.moveTo(-4, -2);
+    ctx.lineTo(-14, -8 + wingFlap);
+    ctx.lineTo(-11, 2);
+    ctx.lineTo(-4, 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(4, -2);
+    ctx.lineTo(14, -8 + wingFlap);
+    ctx.lineTo(11, 2);
+    ctx.lineTo(4, 2);
+    ctx.fill();
+
+    // Swishing Imp Tail with Arrowhead Flame Tip
+    ctx.strokeStyle = '#DC2626';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(-6, 8);
+    ctx.quadraticCurveTo(-14 + tailWiggle * 8, 12, -18 + tailWiggle * 10, 4);
+    ctx.stroke();
+
+    // Flame Arrowhead tip
+    ctx.fillStyle = '#F59E0B';
+    ctx.beginPath();
+    ctx.moveTo(-18 + tailWiggle * 10, 4);
+    ctx.lineTo(-24 + tailWiggle * 10, 1);
+    ctx.lineTo(-21 + tailWiggle * 10, 7);
+    ctx.closePath();
+    ctx.fill();
+
+    // Body (Molten Charcoal Core)
+    ctx.fillStyle = '#1C1917';
+    ctx.beginPath();
+    ctx.ellipse(0, 4, 11, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#EA580C';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // Glowing Magma Fissure on chest
+    ctx.strokeStyle = '#FDE047';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-4, 2);
+    ctx.lineTo(0, 6);
+    ctx.lineTo(3, 4);
+    ctx.stroke();
+
+    // Head
+    ctx.fillStyle = '#292524';
+    ctx.beginPath();
+    ctx.arc(0, -5, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#DC2626';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Obsidian Horns
+    ctx.fillStyle = '#0C0A09';
+    ctx.beginPath();
+    ctx.moveTo(-5, -9);
+    ctx.quadraticCurveTo(-10, -15, -7, -18);
+    ctx.lineTo(-3, -11);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(5, -9);
+    ctx.quadraticCurveTo(10, -15, 7, -18);
+    ctx.lineTo(3, -11);
+    ctx.fill();
+
+    // Dancing Head Flame Crest (3 flickering fire tongues)
+    // Red back tongue
+    ctx.fillStyle = '#EF4444';
+    ctx.beginPath();
+    ctx.moveTo(-6, -11);
+    ctx.quadraticCurveTo(0, -22 + flameFlicker, 2, -26 + flameFlicker);
+    ctx.quadraticCurveTo(4, -18, 6, -11);
+    ctx.fill();
+
+    // Orange mid tongue
+    ctx.fillStyle = '#F97316';
+    ctx.beginPath();
+    ctx.moveTo(-4, -11);
+    ctx.quadraticCurveTo(-1, -19 - flameFlicker, 1, -22 - flameFlicker);
+    ctx.quadraticCurveTo(2, -16, 4, -11);
+    ctx.fill();
+
+    // Yellow core tongue
+    ctx.fillStyle = '#FDE047';
+    ctx.beginPath();
+    ctx.moveTo(-2, -11);
+    ctx.quadraticCurveTo(0, -16, 1, -18);
+    ctx.lineTo(2, -11);
+    ctx.fill();
+
+    // Molten Glowing Eyes
+    ctx.fillStyle = '#FEF08A';
+    ctx.beginPath();
+    ctx.arc(-3, -5, 2.2, 0, Math.PI * 2);
+    ctx.arc(3, -5, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#B91C1C';
+    ctx.beginPath();
+    ctx.arc(-2.5, -5, 1, 0, Math.PI * 2);
+    ctx.arc(3.5, -5, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   } else {
     // ==========================================
     // CLASSIC SLIME
@@ -874,6 +1005,51 @@ export function drawEnemyProjectileFigure(
     ctx.font = 'bold 9px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('HONK', 0, -r - 2);
+  } else if (ep.type === 'fireball') {
+    // ==========================================
+    // INCANDESCENT SPINNING FIREBALL
+    // White-hot plasma core, blazing orange flame mantle, trailing tongues
+    // ==========================================
+    const r = ep.width / 2;
+    const rot = ep.rotation || 0;
+
+    ctx.rotate(rot);
+
+    // Glowing flame halo
+    ctx.save();
+    ctx.shadowColor = '#EA580C';
+    ctx.shadowBlur = 12;
+
+    // Outer flame tongues (3 curved trailing petals)
+    ctx.fillStyle = '#EF4444';
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.rotate((Math.PI * 2) / 3);
+      ctx.moveTo(r * 0.5, 0);
+      ctx.quadraticCurveTo(r * 1.4, r * 0.6, r * 1.6, 0);
+      ctx.quadraticCurveTo(r * 1.1, -r * 0.4, r * 0.4, -r * 0.2);
+      ctx.fill();
+    }
+
+    // Mid blazing orange sphere
+    ctx.fillStyle = '#F97316';
+    ctx.beginPath();
+    ctx.arc(0, 0, r * 0.85, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hot golden layer
+    ctx.fillStyle = '#FDE047';
+    ctx.beginPath();
+    ctx.arc(0, 0, r * 0.55, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Incandescent white core
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(0, 0, r * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   }
 
   ctx.restore();

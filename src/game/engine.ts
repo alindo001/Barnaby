@@ -8,7 +8,8 @@ import {
   GameSettings,
   LaunchDirection,
   CharacterConfig,
-  Enemy
+  Enemy,
+  LevelTransitionState
 } from '../types/game';
 import { INITIAL_LEVELS } from './levels';
 import { PhysicsEngine } from './physics';
@@ -30,6 +31,7 @@ export class GameEngine {
   public player: Player;
   public camera: Camera;
   public gameState: GameState = 'MENU';
+  public transitionState: LevelTransitionState | null = null;
 
   public input: InputState = {
     left: false,
@@ -98,6 +100,13 @@ export class GameEngine {
     this.physics = new PhysicsEngine();
     this.particles = new ParticleSystem();
 
+    // Tap or click to skip transition hold phase
+    this.canvas.addEventListener('pointerdown', () => {
+      if (this.transitionState && this.transitionState.phase === 'hold') {
+        this.transitionState.holdTime = this.transitionState.holdDuration || 1.8;
+      }
+    });
+
     // Enrich all levels with 3 Golden Acorns and calculated unlock requirements
     this.levels = INITIAL_LEVELS.map(lvl => enrichLevelWithAcorns(this.cloneLevel(lvl)));
 
@@ -106,6 +115,34 @@ export class GameEngine {
       const devOverrides = localStorage.getItem('barnaby_dev_level_overrides');
       if (devOverrides) {
         const parsed = JSON.parse(devOverrides);
+        if (parsed[1] && (parsed[1].worldHeight <= 600 || parsed[1].title?.includes('Runner'))) {
+          delete parsed[1];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[2] && (parsed[2].worldHeight <= 650 || parsed[2].title?.includes('Labyrinth'))) {
+          delete parsed[2];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[3] && (parsed[3].worldHeight <= 650 || !parsed[3].title?.includes('Blaster'))) {
+          delete parsed[3];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[4] && (parsed[4].worldHeight <= 650 || !parsed[4].title?.includes('Neon'))) {
+          delete parsed[4];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[5] && (parsed[5].worldHeight <= 650 || !parsed[5].title?.includes('Matrix Hub') || (parsed[5].platforms && parsed[5].platforms.some((p: any) => p.id === 'l5_term_step1' && p.height > 50)))) {
+          delete parsed[5];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[6] && (parsed[6].worldHeight <= 650 || !parsed[6].title?.includes('Space Station') || !parsed[6].theme?.name?.includes('Cosmic'))) {
+          delete parsed[6];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[7] && (parsed[7].worldHeight <= 650 || !parsed[7].title?.includes('Nebula Fortress') || !parsed[7].theme?.name?.includes('Cosmic'))) {
+          delete parsed[7];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         this.levels = this.levels.map(lvl => parsed[lvl.id] ? parsed[lvl.id] : lvl);
       }
     } catch {}
@@ -252,7 +289,9 @@ export class GameEngine {
         hasActiveCheckpoint: !!this.lastCheckpoint,
         hasBlaster: this.player ? !!this.player.hasBlaster : false,
         blasterAmmo: this.player ? (this.player.blasterAmmo ?? 0) : 0,
-        maxBlasterAmmo: this.player ? (this.player.maxBlasterAmmo ?? 30) : 30
+        maxBlasterAmmo: this.player ? (this.player.maxBlasterAmmo ?? 30) : 30,
+        isTransitioning: !!(this.transitionState && this.transitionState.active),
+        transitionProgress: this.transitionState ? this.transitionState.progress : 0
       });
     }
   }
@@ -266,6 +305,34 @@ export class GameEngine {
       const devOverrides = localStorage.getItem('barnaby_dev_level_overrides');
       if (devOverrides) {
         const parsed = JSON.parse(devOverrides);
+        if (parsed[1] && (parsed[1].worldHeight <= 600 || parsed[1].title?.includes('Runner'))) {
+          delete parsed[1];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[2] && (parsed[2].worldHeight <= 650 || parsed[2].title?.includes('Labyrinth'))) {
+          delete parsed[2];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[3] && (parsed[3].worldHeight <= 650 || !parsed[3].title?.includes('Blaster'))) {
+          delete parsed[3];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[4] && (parsed[4].worldHeight <= 650 || !parsed[4].title?.includes('Neon'))) {
+          delete parsed[4];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[5] && (parsed[5].worldHeight <= 650 || !parsed[5].title?.includes('Matrix Hub') || (parsed[5].platforms && parsed[5].platforms.some((p: any) => p.id === 'l5_term_step1' && p.height > 50)))) {
+          delete parsed[5];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[6] && (parsed[6].worldHeight <= 650 || !parsed[6].title?.includes('Space Station') || !parsed[6].theme?.name?.includes('Cosmic'))) {
+          delete parsed[6];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[7] && (parsed[7].worldHeight <= 650 || !parsed[7].title?.includes('Nebula Fortress') || !parsed[7].theme?.name?.includes('Cosmic'))) {
+          delete parsed[7];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         if (parsed[this.currentLevel.id]) {
           this.currentLevel = this.cloneLevel(parsed[this.currentLevel.id]);
         }
@@ -492,7 +559,33 @@ export class GameEngine {
 
   public restartFromBeginning() {
     this.lastCheckpoint = null;
-    this.startLevel(this.currentLevelIndex, true);
+    this.transitionToLevel(this.currentLevelIndex, true);
+  }
+
+  public transitionToLevel(targetIndex: number, resetCheckpoints: boolean = true, onComplete?: () => void) {
+    const clampedIndex = Math.max(0, Math.min(this.levels.length - 1, targetIndex));
+    const targetLvl = this.levels[clampedIndex];
+
+    this.transitionState = {
+      active: true,
+      phase: 'fade_out',
+      progress: 0,
+      duration: 0.38,
+      holdTime: 0,
+      holdDuration: 1.1,
+      targetLevelIndex: clampedIndex,
+      resetCheckpoints,
+      levelTitle: targetLvl ? targetLvl.title : `Level ${clampedIndex + 1}`,
+      worldName: targetLvl?.worldName || 'Emerald Woodlands',
+      category: targetLvl?.category,
+      description: targetLvl?.description,
+      parTime: targetLvl?.parTime,
+      threeStarScore: targetLvl?.threeStarScore,
+      onComplete
+    };
+
+    sound.playLevelTransition();
+    this.notifyState();
   }
 
   public nextLevel() {
@@ -506,7 +599,7 @@ export class GameEngine {
         this.settings.unlockAllLevels
       );
       if (unlockStatus.unlocked) {
-        this.startLevel(this.currentLevelIndex + 1, true);
+        this.transitionToLevel(this.currentLevelIndex + 1, true);
       } else {
         this.notifyState();
       }
@@ -649,6 +742,47 @@ export class GameEngine {
   }
 
   private update(dt: number) {
+    // 0. Update Screen Transition Animation
+    if (this.transitionState && this.transitionState.active) {
+      if (this.transitionState.phase === 'fade_out') {
+        this.transitionState.progress += dt / this.transitionState.duration;
+        if (this.transitionState.progress >= 1) {
+          this.transitionState.progress = 1;
+          // Switch to target level at maximum fade-to-black
+          this.startLevel(this.transitionState.targetLevelIndex, this.transitionState.resetCheckpoints);
+          this.transitionState.phase = 'hold';
+          this.transitionState.holdTime = 0;
+          this.notifyState();
+        }
+      } else if (this.transitionState.phase === 'hold') {
+        this.transitionState.holdTime = (this.transitionState.holdTime || 0) + dt;
+        const maxHold = this.transitionState.holdDuration || 1.8;
+        this.transitionState.progress = Math.min(1, this.transitionState.holdTime / maxHold);
+
+        // Allow skipping hold with jump / tap / up / space / shoot
+        if (this.input.jumpPressed || this.input.up || this.input.shootPressed) {
+          this.transitionState.holdTime = maxHold;
+          this.input.jumpPressed = false;
+        }
+
+        if (this.transitionState.holdTime >= maxHold) {
+          this.transitionState.phase = 'fade_in';
+          this.transitionState.progress = 1;
+          this.notifyState();
+        }
+      } else if (this.transitionState.phase === 'fade_in') {
+        this.transitionState.progress -= dt / (this.transitionState.duration * 1.15);
+        if (this.transitionState.progress <= 0) {
+          this.transitionState.progress = 0;
+          this.transitionState.active = false;
+          const cb = this.transitionState.onComplete;
+          this.transitionState = null;
+          this.notifyState();
+          if (cb) cb();
+        }
+      }
+    }
+
     if (this.gameState === 'PLAYING') {
       this.stats.time += dt;
 
@@ -737,12 +871,18 @@ export class GameEngine {
       this.particles.particles,
       this.particles.popups,
       dt,
-      this.settings.pixelArtMode
+      this.settings.pixelArtMode,
+      this.transitionState
     );
   }
 
   private setupKeyboardListeners() {
     const onKeyDown = (e: KeyboardEvent) => {
+      // Skip transition hold phase on any key press
+      if (this.transitionState && this.transitionState.phase === 'hold') {
+        this.transitionState.holdTime = this.transitionState.holdDuration || 1.8;
+      }
+
       // Prevent default scrolling for arrows/space
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
         e.preventDefault();
@@ -1015,6 +1155,11 @@ export class GameEngine {
 
   // Touch controls input setters
   public setTouchInput(action: keyof InputState, value: boolean) {
+    if (this.transitionState && this.transitionState.phase === 'hold' && value) {
+      this.transitionState.holdTime = this.transitionState.holdDuration || 1.8;
+      return;
+    }
+
     if (action === 'jumpPressed' && value) {
       this.input.up = true;
       this.input.jumpPressed = true;

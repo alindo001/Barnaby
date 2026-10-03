@@ -10,7 +10,8 @@ import {
   ScorePopup,
   LaunchedJetpack,
   BlasterBullet,
-  EnemyProjectile
+  EnemyProjectile,
+  LevelTransitionState
 } from '../types/game';
 import { renderCharacter } from './characterRenderer';
 import { DEFAULT_CHARACTER_CONFIGS } from './characters';
@@ -36,7 +37,8 @@ export class GameRenderer {
     particles: Particle[],
     popups: ScorePopup[],
     dt: number,
-    isPixelArt: boolean = false
+    isPixelArt: boolean = false,
+    transition?: LevelTransitionState | null
   ) {
     this.gameTime += dt;
     const { ctx, canvas } = this;
@@ -70,7 +72,7 @@ export class GameRenderer {
     level.platforms.forEach(p => this.drawPlatform(p, level.theme));
 
     // 6. Draw Hazards
-    level.hazards.forEach(h => this.drawHazard(h));
+    level.hazards.forEach(h => this.drawHazard(h, level.theme));
 
     // 7. Draw Collectibles
     level.collectibles.forEach(c => {
@@ -108,13 +110,174 @@ export class GameRenderer {
     // 13. Draw Floating Score Popups
     this.drawPopups(popups);
 
-    // Restore Camera Transform
+    // Restore Camera Transform (returns to Screen Space)
     ctx.restore();
+
+    // 14. Smooth Fade-to-Black Screen Transition & Cinematic Sector Card
+    if (transition && transition.active) {
+      this.drawScreenTransition(transition, viewWidth, viewHeight);
+    }
+  }
+
+  private wrapText(text: string, maxWidth: number): string[] {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const width = this.ctx.measureText(testLine).width;
+      if (width > maxWidth && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines.slice(0, 3); // Max 3 lines
+  }
+
+  private drawScreenTransition(transition: LevelTransitionState, width: number, height: number) {
+    const { ctx } = this;
+    const isHold = transition.phase === 'hold';
+    const t = Math.max(0, Math.min(1, transition.progress));
+    // Smooth cubic ease for fade phases; full 1.0 during hold phase
+    const alpha = isHold ? 1.0 : t * t * (3 - 2 * t);
+
+    ctx.save();
+
+    // 1. Deep Obsidian Fade Backdrop
+    ctx.fillStyle = `rgba(2, 3, 7, ${alpha})`;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Subtle Radial Vignette
+    if (alpha > 0.15) {
+      const grad = ctx.createRadialGradient(
+        width / 2, height / 2, 20,
+        width / 2, height / 2, Math.max(width, height) * 0.7
+      );
+      grad.addColorStop(0, `rgba(15, 23, 42, ${alpha * 0.25})`);
+      grad.addColorStop(1, `rgba(0, 0, 0, ${alpha * 0.7})`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    // 3. Cinematic Letterbox Borders
+    const barHeight = Math.max(28, Math.floor(height * 0.085));
+    ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(1, alpha * 1.2)})`;
+    ctx.fillRect(0, 0, width, barHeight);
+    ctx.fillRect(0, height - barHeight, width, barHeight);
+
+    // Sleek glowing letterbox divider lines
+    const lineGrad = ctx.createLinearGradient(0, 0, width, 0);
+    lineGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
+    lineGrad.addColorStop(0.3, `rgba(56, 189, 248, ${alpha * 0.4})`);
+    lineGrad.addColorStop(0.5, `rgba(245, 158, 11, ${alpha * 0.6})`);
+    lineGrad.addColorStop(0.7, `rgba(56, 189, 248, ${alpha * 0.4})`);
+    lineGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = lineGrad;
+    ctx.fillRect(0, barHeight, width, 1.5);
+    ctx.fillRect(0, height - barHeight - 1.5, width, 1.5);
+
+    // 4. Centered Cinematic Title Card
+    if (alpha > 0.25 || isHold) {
+      const textAlpha = isHold ? 1.0 : Math.min(1, Math.max(0, (alpha - 0.25) / 0.45));
+      const centerY = height / 2;
+
+      // World Badge
+      const worldName = (transition.worldName || 'WORLD 1').toUpperCase();
+      ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(56, 189, 248, ${textAlpha * 0.95})`;
+      ctx.fillText(worldName, width / 2, centerY - 28);
+
+      // Level Main Title with soft atmospheric glow
+      const title = transition.levelTitle || 'NEXT SECTOR';
+      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
+      ctx.shadowColor = `rgba(56, 189, 248, ${textAlpha * 0.8})`;
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = `rgba(255, 255, 255, ${textAlpha})`;
+      ctx.fillText(title, width / 2, centerY + 8);
+      ctx.shadowBlur = 0;
+
+      // Animated Glowing Conduit Line / Charge Bar
+      const maxLineWidth = Math.min(320, width * 0.6);
+      let lineWidth: number;
+      if (transition.phase === 'fade_out') {
+        lineWidth = maxLineWidth * t;
+      } else if (isHold) {
+        const holdRatio = Math.min(1, (transition.holdTime || 0) / (transition.holdDuration || 1.1));
+        lineWidth = maxLineWidth * holdRatio;
+      } else {
+        lineWidth = maxLineWidth * (1 - (1 - t) * 0.5);
+      }
+
+      // Background conduit groove
+      const grooveY = centerY + 32;
+      ctx.fillStyle = `rgba(255, 255, 255, ${textAlpha * 0.12})`;
+      ctx.fillRect(width / 2 - maxLineWidth / 2, grooveY, maxLineWidth, 2);
+
+      // Active glowing beam
+      const beamGrad = ctx.createLinearGradient(
+        width / 2 - lineWidth / 2, 0,
+        width / 2 + lineWidth / 2, 0
+      );
+      beamGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
+      beamGrad.addColorStop(0.5, `rgba(56, 189, 248, ${textAlpha})`);
+      beamGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(width / 2 - lineWidth / 2, grooveY, lineWidth, 2);
+
+      // Status Prompt / Skip Hint
+      const statusY = centerY + 58;
+      const skipPrompt = isHold 
+        ? '[ TAP OR PRESS JUMP TO LAUNCH ]' 
+        : (transition.phase === 'fade_out' ? 'ENTERING SECTOR...' : 'STAGE READY');
+      ctx.font = '600 10.5px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = isHold 
+        ? `rgba(56, 189, 248, ${textAlpha * (0.65 + 0.35 * Math.sin(this.gameTime * 7))})`
+        : `rgba(100, 116, 139, ${textAlpha * 0.8})`;
+      ctx.fillText(skipPrompt, width / 2, statusY);
+    }
+
+    ctx.restore();
+  }
+
+  private isNeonTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'neon_night' || (theme.name ? theme.name.toLowerCase().includes('neon') : false);
+  }
+
+  private isSpaceTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'space_station' || (theme.name ? theme.name.toLowerCase().includes('space') : false);
+  }
+
+  private isVolcanoTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'volcano_inferno' || (theme.name ? theme.name.toLowerCase().includes('volcano') || theme.name.toLowerCase().includes('infernal') : false);
   }
 
   private drawBackground(level: LevelData, camera: Camera, width: number, height: number) {
     const { ctx } = this;
     const { theme } = level;
+
+    // Check if Neon Night aesthetic
+    if (this.isNeonTheme(theme)) {
+      this.drawNeonNightBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Cosmic Space aesthetic
+    if (this.isSpaceTheme(theme)) {
+      this.drawSpaceBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Infernal Volcano aesthetic
+    if (this.isVolcanoTheme(theme)) {
+      this.drawVolcanoBackground(level, camera, width, height);
+      return;
+    }
 
     // Sky Gradient
     const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
@@ -179,8 +342,769 @@ export class GameRenderer {
     ctx.fill();
   }
 
+  private drawNeonNightBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+    const { theme } = level;
+
+    // 1. Deep Midnight Cosmic Sky Gradient
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, theme.skyColorTop || '#060312');
+    skyGrad.addColorStop(0.5, '#16052F');
+    skyGrad.addColorStop(1, theme.skyColorBottom || '#2D0B5A');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Twinkling Digital Cross-Stars & Cyber Constellations
+    ctx.save();
+    for (let i = 0; i < 48; i++) {
+      const sx = ((i * 127 + 43) - camera.x * 0.03 + width * 10) % width;
+      const sy = (i * 73 + 29) % (height * 0.58);
+      const twinkle = 0.25 + 0.75 * Math.abs(Math.sin(this.gameTime * 2.5 + i * 1.7));
+      const starColor = i % 3 === 0 ? '#00F0FF' : (i % 3 === 1 ? '#FF007F' : '#FFFFFF');
+      
+      ctx.globalAlpha = twinkle;
+      ctx.fillStyle = starColor;
+      // Core star
+      ctx.fillRect(sx - 1, sy - 1, 2, 2);
+      // Cross flares for brighter stars
+      if (i % 2 === 0) {
+        ctx.fillRect(sx - 3, sy, 7, 0.8);
+        ctx.fillRect(sx, sy - 3, 0.8, 7);
+      }
+    }
+    ctx.restore();
+
+    // 3. Giant Retro Synthwave Sun with Horizontal Scanline Slices
+    ctx.save();
+    const sunX = ((width * 0.75 - camera.x * 0.04) % (width + 300) + width + 300) % (width + 300) - 150;
+    const sunY = height * 0.38;
+    const sunR = Math.min(100, Math.max(65, height * 0.17));
+
+    // Outer Neon Glow Aura
+    const sunGlow = ctx.createRadialGradient(sunX, sunY, sunR * 0.5, sunX, sunY, sunR * 1.6);
+    sunGlow.addColorStop(0, 'rgba(255, 0, 127, 0.35)');
+    sunGlow.addColorStop(0.5, 'rgba(168, 85, 247, 0.15)');
+    sunGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = sunGlow;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR * 1.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Sun Body Gradient (Hot Yellow -> Neon Pink -> Deep Purple)
+    const sunGrad = ctx.createLinearGradient(sunX, sunY - sunR, sunX, sunY + sunR);
+    sunGrad.addColorStop(0, '#FFE600');
+    sunGrad.addColorStop(0.35, '#FF007F');
+    sunGrad.addColorStop(0.75, '#A855F7');
+    sunGrad.addColorStop(1, '#2D0B5A');
+
+    ctx.fillStyle = sunGrad;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Retro Horizontal Scanline Slices through the lower half of the sun
+    const numSlices = 7;
+    for (let s = 1; s <= numSlices; s++) {
+      const sliceY = sunY + (s / (numSlices + 1)) * sunR;
+      const sliceH = 2 + s * 1.2;
+      const dy = sliceY - sunY;
+      const chordHalfW = Math.sqrt(Math.max(0, sunR * sunR - dy * dy));
+      if (chordHalfW > 0) {
+        ctx.fillStyle = '#0F0422';
+        ctx.fillRect(sunX - chordHalfW - 1, sliceY, chordHalfW * 2 + 2, sliceH);
+      }
+    }
+    ctx.restore();
+
+    // 4. Parallax Cyber City Skyline (Far Layer 1 - Silhouettes with Lit Window Grids)
+    ctx.save();
+    const farOffset = (camera.x * 0.08) % 360;
+    const farBldCount = 14;
+    for (let i = -1; i < farBldCount + 2; i++) {
+      const bx = i * 110 - farOffset;
+      const bw = 85 + (Math.abs(i * 29) % 35);
+      const bh = 140 + (Math.abs(i * 47) % 110);
+      const by = height - 120 - bh;
+
+      // Building silhouette
+      ctx.fillStyle = '#10072B';
+      ctx.fillRect(bx, by, bw, bh + 120);
+
+      // Lit neon window grid
+      const cols = Math.floor((bw - 16) / 10);
+      const rows = Math.floor((bh - 20) / 14);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const seed = Math.abs(i * 31 + r * 13 + c * 7) % 10;
+          if (seed > 4) {
+            const winColor = seed === 5 ? 'rgba(0, 240, 255, 0.45)' : (seed === 6 ? 'rgba(255, 0, 127, 0.45)' : 'rgba(253, 224, 71, 0.35)');
+            ctx.fillStyle = winColor;
+            ctx.fillRect(bx + 8 + c * 10, by + 12 + r * 14, 5, 6);
+          }
+        }
+      }
+
+      // Spire antenna with blinking beacon
+      if (Math.abs(i) % 3 === 0) {
+        const antennaX = bx + bw / 2;
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(antennaX, by);
+        ctx.lineTo(antennaX, by - 24);
+        ctx.stroke();
+
+        const beaconFlash = Math.sin(this.gameTime * 5 + i * 2) > 0.2;
+        if (beaconFlash) {
+          ctx.fillStyle = i % 2 === 0 ? '#EF4444' : '#00F0FF';
+          ctx.beginPath();
+          ctx.arc(antennaX, by - 24, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+    ctx.restore();
+
+    // 5. Parallax Cyber City Skyline (Near Layer 2 - Darker with Neon Outline Highlights)
+    ctx.save();
+    const nearOffset = (camera.x * 0.2) % 300;
+    const nearBldCount = 10;
+    for (let i = -1; i < nearBldCount + 2; i++) {
+      const bx = i * 160 - nearOffset;
+      const bw = 120 + (Math.abs(i * 37) % 40);
+      const bh = 100 + (Math.abs(i * 53) % 90);
+      const by = height - 90 - bh;
+
+      // Dark obsidian skyscraper
+      ctx.fillStyle = '#080518';
+      ctx.fillRect(bx, by, bw, bh + 90);
+
+      // Neon roof trim edge
+      const trimColor = i % 2 === 0 ? '#00F0FF' : '#FF007F';
+      ctx.fillStyle = trimColor;
+      ctx.globalAlpha = 0.8;
+      ctx.fillRect(bx, by, bw, 2.5);
+
+      // Vertical neon light strip down building facade
+      ctx.globalAlpha = 0.6;
+      ctx.fillRect(bx + 8, by + 2, 2, bh);
+      ctx.fillRect(bx + bw - 10, by + 2, 2, bh);
+      ctx.globalAlpha = 1.0;
+
+      // Floating holographic billboard icon on some buildings
+      if (Math.abs(i) % 4 === 1) {
+        const hx = bx + bw * 0.5;
+        const hy = by + 28;
+        const pulse = 0.4 + 0.3 * Math.sin(this.gameTime * 3 + i);
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        ctx.strokeStyle = '#00F0FF';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(hx - 18, hy - 10, 36, 20);
+        ctx.fillStyle = '#FF007F';
+        ctx.font = 'bold 9px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('NEON', hx, hy + 3);
+        ctx.restore();
+      }
+    }
+    ctx.restore();
+
+    // 6. 3D Perspective Digital Cyber Grid (Horizon Grid at bottom)
+    ctx.save();
+    const gridY = height - 80;
+    const gridGrad = ctx.createLinearGradient(0, gridY, 0, height);
+    gridGrad.addColorStop(0, 'rgba(6, 3, 18, 0.9)');
+    gridGrad.addColorStop(1, 'rgba(22, 5, 47, 0.95)');
+    ctx.fillStyle = gridGrad;
+    ctx.fillRect(0, gridY, width, height - gridY);
+
+    // Glowing horizon separation line
+    ctx.strokeStyle = '#FF007F';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(0, gridY);
+    ctx.lineTo(width, gridY);
+    ctx.stroke();
+
+    // Perspective converging rays radiating from vanishing point
+    const vpX = width * 0.5 - (camera.x * 0.05) % width;
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+    ctx.lineWidth = 1.2;
+    const numRays = 18;
+    for (let r = 0; r <= numRays; r++) {
+      const bottomX = (r / numRays) * (width + 400) - 200;
+      ctx.beginPath();
+      ctx.moveTo(vpX, gridY);
+      ctx.lineTo(bottomX, height);
+      ctx.stroke();
+    }
+
+    // Scrolling horizontal grid lines
+    const gridScroll = (camera.x * 0.35 + this.gameTime * 25) % 18;
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+    for (let d = 0; d < 5; d++) {
+      const t = (d * 18 + gridScroll) / 90;
+      if (t > 0 && t <= 1) {
+        const lineY = gridY + Math.pow(t, 1.8) * (height - gridY);
+        ctx.lineWidth = 0.8 + t * 1.5;
+        ctx.globalAlpha = 0.2 + t * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0, lineY);
+        ctx.lineTo(width, lineY);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // 7. Floating Neon Cyber Motes / Upward Drifting Data Embers
+    ctx.save();
+    for (let p = 0; p < 18; p++) {
+      const px = ((p * 181 + 67) - camera.x * 0.15 + width * 10) % width;
+      const cycle = (this.gameTime * 20 + p * 37) % height;
+      const py = height - cycle;
+      const wobble = Math.sin(this.gameTime * 2 + p) * 10;
+      const pColor = p % 2 === 0 ? '#00F0FF' : '#FF007F';
+      const pAlpha = 0.2 + 0.6 * Math.sin((cycle / height) * Math.PI);
+
+      ctx.globalAlpha = pAlpha;
+      ctx.fillStyle = pColor;
+      ctx.beginPath();
+      ctx.arc(px + wobble, py, p % 3 === 0 ? 2 : 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  private drawSpaceBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+
+    // 1. Deep Inky Cosmic Void Gradient
+    const voidGrad = ctx.createLinearGradient(0, 0, 0, height);
+    voidGrad.addColorStop(0, '#010008');
+    voidGrad.addColorStop(0.45, '#070314');
+    voidGrad.addColorStop(1, '#110526');
+    ctx.fillStyle = voidGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Translucent Cosmic Nebulae Clouds (Parallax drifting galaxy dust)
+    ctx.save();
+    // Violet Nebula
+    const neb1X = ((width * 0.28) - (camera.x * 0.02) + width * 2) % (width + 400) - 200;
+    const neb1Y = height * 0.35;
+    const neb1Grad = ctx.createRadialGradient(neb1X, neb1Y, 20, neb1X, neb1Y, 260);
+    neb1Grad.addColorStop(0, 'rgba(124, 58, 237, 0.26)');
+    neb1Grad.addColorStop(0.5, 'rgba(147, 51, 234, 0.12)');
+    neb1Grad.addColorStop(1, 'rgba(124, 58, 237, 0)');
+    ctx.fillStyle = neb1Grad;
+    ctx.fillRect(neb1X - 260, neb1Y - 260, 520, 520);
+
+    // Cyan/Blue Stellar Nursery
+    const neb2X = ((width * 0.72) - (camera.x * 0.035) + width * 2) % (width + 400) - 200;
+    const neb2Y = height * 0.52;
+    const neb2Grad = ctx.createRadialGradient(neb2X, neb2Y, 30, neb2X, neb2Y, 280);
+    neb2Grad.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
+    neb2Grad.addColorStop(0.55, 'rgba(30, 64, 175, 0.12)');
+    neb2Grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = neb2Grad;
+    ctx.fillRect(neb2X - 280, neb2Y - 280, 560, 560);
+    ctx.restore();
+
+    // 3. Multi-layer Parallax Starfield & Constellations
+    ctx.save();
+    for (let i = 0; i < 56; i++) {
+      const sx = ((i * 139 + 31) - camera.x * 0.025 + width * 10) % width;
+      const sy = (i * 83 + 19) % (height * 0.85);
+      const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(this.gameTime * 2.2 + i * 1.3));
+      const starColor = i % 4 === 0 ? '#38BDF8' : (i % 4 === 1 ? '#C084FC' : '#F8FAFC');
+
+      ctx.globalAlpha = twinkle;
+      ctx.fillStyle = starColor;
+      ctx.fillRect(sx, sy, i % 5 === 0 ? 2 : 1.2, i % 5 === 0 ? 2 : 1.2);
+
+      // Diffraction cross on the brightest major stars
+      if (i % 7 === 0) {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(sx - 3, sy, 7, 1);
+        ctx.fillRect(sx, sy - 3, 1, 7);
+      }
+    }
+
+    // Faint Constellation Tracer Lines
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const cX1 = ((220) - camera.x * 0.025 + width * 10) % width;
+    const cX2 = ((310) - camera.x * 0.025 + width * 10) % width;
+    const cX3 = ((390) - camera.x * 0.025 + width * 10) % width;
+    if (Math.abs(cX1 - cX2) < 200 && Math.abs(cX2 - cX3) < 200) {
+      ctx.moveTo(cX1, 140);
+      ctx.lineTo(cX2, 190);
+      ctx.lineTo(cX3, 160);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 4. Majestic Ringed Exoplanet & Moon
+    ctx.save();
+    const planetX = ((width * 0.78) - (camera.x * 0.04) + width * 3) % (width + 360) - 80;
+    const planetY = height * 0.26;
+    const pRadius = 46;
+
+    // Back half of planetary rings (drawn behind planet)
+    ctx.save();
+    ctx.translate(planetX, planetY);
+    ctx.rotate(-0.35);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, pRadius * 2.2, pRadius * 0.52, 0, Math.PI, 0);
+    ctx.strokeStyle = 'rgba(147, 197, 253, 0.45)';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, pRadius * 2.38, pRadius * 0.56, 0, Math.PI, 0);
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.35)';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.restore();
+
+    // Planet Body Sphere
+    const pGrad = ctx.createRadialGradient(
+      planetX - pRadius * 0.35, planetY - pRadius * 0.35, pRadius * 0.1,
+      planetX, planetY, pRadius
+    );
+    pGrad.addColorStop(0, '#93C5FD');
+    pGrad.addColorStop(0.3, '#3B82F6');
+    pGrad.addColorStop(0.7, '#1E1B4B');
+    pGrad.addColorStop(1, '#020617');
+    ctx.fillStyle = pGrad;
+    ctx.beginPath();
+    ctx.arc(planetX, planetY, pRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Planet Atmospheric Rim Glow
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Surface Atmospheric Bands
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(planetX, planetY, pRadius, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+    ctx.fillRect(planetX - pRadius, planetY - 14, pRadius * 2, 7);
+    ctx.fillRect(planetX - pRadius, planetY + 8, pRadius * 2, 9);
+    ctx.fillRect(planetX - pRadius, planetY + 24, pRadius * 2, 5);
+    ctx.restore();
+
+    // Front half of planetary rings (drawn in front of planet)
+    ctx.save();
+    ctx.translate(planetX, planetY);
+    ctx.rotate(-0.35);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, pRadius * 2.2, pRadius * 0.52, 0, 0, Math.PI);
+    ctx.strokeStyle = 'rgba(147, 197, 253, 0.55)';
+    ctx.lineWidth = 10;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, pRadius * 2.38, pRadius * 0.56, 0, 0, Math.PI);
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.45)';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.restore();
+
+    // Distant Cratered Moon
+    const moonX = planetX - 82;
+    const moonY = planetY + 54;
+    const moonGrad = ctx.createRadialGradient(moonX - 3, moonY - 3, 2, moonX, moonY, 13);
+    moonGrad.addColorStop(0, '#E2E8F0');
+    moonGrad.addColorStop(0.5, '#64748B');
+    moonGrad.addColorStop(1, '#0F172A');
+    ctx.fillStyle = moonGrad;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, 13, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 5. Distant Orbital Space Station Silhouette
+    ctx.save();
+    const stX = ((width * 0.18) - (camera.x * 0.06) + width * 2) % (width + 400) - 100;
+    const stY = height * 0.48;
+    ctx.fillStyle = '#090D1A';
+    // Central Hub
+    ctx.fillRect(stX, stY, 44, 18);
+    // Solar Array Wings
+    ctx.fillStyle = 'rgba(30, 41, 59, 0.85)';
+    ctx.fillRect(stX - 36, stY + 2, 32, 14);
+    ctx.fillRect(stX + 48, stY + 2, 32, 14);
+    // Antenna Mast
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(stX + 22, stY);
+    ctx.lineTo(stX + 22, stY - 14);
+    ctx.stroke();
+    // Blinking Navigation Beacons
+    const beaconPulse = Math.sin(this.gameTime * 4) > 0 ? 1 : 0.2;
+    ctx.fillStyle = `rgba(239, 68, 68, ${beaconPulse})`;
+    ctx.fillRect(stX + 21, stY - 15, 2, 2);
+    ctx.fillStyle = `rgba(34, 197, 94, ${beaconPulse})`;
+    ctx.fillRect(stX - 36, stY + 1, 2, 2);
+    ctx.restore();
+
+    // 6. Floating Cosmic Stardust Motes
+    ctx.save();
+    for (let p = 0; p < 20; p++) {
+      const px = ((p * 179 + 53) - camera.x * 0.12 + width * 10) % width;
+      const cycle = (this.gameTime * 18 + p * 41) % height;
+      const py = height - cycle;
+      const wobble = Math.sin(this.gameTime * 2 + p) * 8;
+      const pColor = p % 2 === 0 ? '#38BDF8' : '#C084FC';
+      const pAlpha = 0.2 + 0.5 * Math.sin((cycle / height) * Math.PI);
+
+      ctx.globalAlpha = pAlpha;
+      ctx.fillStyle = pColor;
+      ctx.beginPath();
+      ctx.arc(px + wobble, py, p % 3 === 0 ? 2 : 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  private drawVolcanoBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+    const { theme } = level;
+
+    // 1. Smoky Ash Sky Gradient (Charcoal black to deep dark crimson to burning magma)
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, theme.skyColorTop || '#0C0202');
+    skyGrad.addColorStop(0.45, '#2D0505');
+    skyGrad.addColorStop(0.85, theme.skyColorBottom || '#5C0F0F');
+    skyGrad.addColorStop(1, '#831808');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Parallax Distant Calderas & Volcanic Mountain Peaks (Layer 1 - slow)
+    ctx.save();
+    ctx.fillStyle = theme.mountainColor || '#1E0505';
+    ctx.globalAlpha = 0.55;
+    const caldOffset = (camera.x * 0.1) % 500;
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for (let x = -500; x < width + 500; x += 250) {
+      const peakX = x - caldOffset;
+      const peakY = height - 260 - Math.sin(x * 0.008) * 90;
+      // Crater flat top
+      ctx.lineTo(peakX, peakY);
+      ctx.lineTo(peakX + 40, peakY + 12);
+      ctx.lineTo(peakX + 70, peakY);
+      ctx.lineTo(peakX + 130, height - 120);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Lava rivers flowing down distant peaks
+    ctx.strokeStyle = '#EA580C';
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.75;
+    for (let x = -500; x < width + 500; x += 250) {
+      const peakX = x - caldOffset;
+      const peakY = height - 260 - Math.sin(x * 0.008) * 90;
+      ctx.beginPath();
+      ctx.moveTo(peakX + 55, peakY + 6);
+      ctx.quadraticCurveTo(peakX + 45, peakY + 70, peakX + 75, height - 90);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 3. Parallax Mid Basalt Crags (Layer 2 - medium)
+    ctx.save();
+    ctx.fillStyle = '#140303';
+    ctx.globalAlpha = 0.75;
+    const cragOffset = (camera.x * 0.28) % 360;
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for (let x = -360; x < width + 360; x += 180) {
+      const cragX = x - cragOffset;
+      const cragY = height - 160 - Math.cos(x * 0.015) * 55;
+      ctx.lineTo(cragX, cragY);
+      ctx.lineTo(cragX + 90, height - 90);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Glowing magma rim on mid crags
+    ctx.strokeStyle = '#DC2626';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    for (let x = -360; x < width + 360; x += 180) {
+      const cragX = x - cragOffset;
+      const cragY = height - 160 - Math.cos(x * 0.015) * 55;
+      if (x === -360) ctx.moveTo(cragX, cragY);
+      else ctx.lineTo(cragX, cragY);
+      ctx.lineTo(cragX + 90, height - 90);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // 4. Billowing Smoldering Ash & Smoke Clouds
+    ctx.save();
+    const cloudTime = this.gameTime * 12;
+    const smokeOffset = (camera.x * 0.18 + cloudTime) % (width + 360);
+    for (let i = 0; i < 5; i++) {
+      const sx = (i * 260 - smokeOffset + width * 2) % (width + 360) - 120;
+      const sy = 40 + (i % 3) * 50;
+      const r = 55 + (i % 2) * 25;
+      ctx.fillStyle = 'rgba(40, 8, 8, 0.45)';
+      ctx.beginPath();
+      ctx.arc(sx, sy, r * 0.5, 0, Math.PI * 2);
+      ctx.arc(sx + r * 0.4, sy - r * 0.2, r * 0.6, 0, Math.PI * 2);
+      ctx.arc(sx + r * 0.8, sy, r * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Glowing under-edge of ash clouds
+      ctx.fillStyle = 'rgba(234, 88, 12, 0.18)';
+      ctx.beginPath();
+      ctx.arc(sx + r * 0.4, sy + r * 0.1, r * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 5. Rising Fiery Sparks & Lava Embers
+    ctx.save();
+    for (let p = 0; p < 26; p++) {
+      const px = ((p * 167 + 41) - camera.x * 0.14 + width * 10) % width;
+      const cycle = (this.gameTime * 24 + p * 43) % height;
+      const py = height - cycle;
+      const wobble = Math.sin(this.gameTime * 3 + p) * 10;
+      const emberAlpha = 0.25 + 0.65 * Math.sin((cycle / height) * Math.PI);
+      const emberColor = p % 3 === 0 ? '#FEF08A' : (p % 3 === 1 ? '#F97316' : '#EF4444');
+
+      ctx.globalAlpha = emberAlpha;
+      ctx.fillStyle = emberColor;
+      ctx.beginPath();
+      ctx.arc(px + wobble, py, p % 4 === 0 ? 2 : 1.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 6. Subterranean Boiling Magma Horizon Glow (At bottom of screen)
+    ctx.save();
+    const bottomGlow = ctx.createLinearGradient(0, height - 70, 0, height);
+    bottomGlow.addColorStop(0, 'rgba(234, 88, 12, 0)');
+    bottomGlow.addColorStop(0.6, 'rgba(220, 38, 38, 0.25)');
+    bottomGlow.addColorStop(1, 'rgba(249, 115, 22, 0.45)');
+    ctx.fillStyle = bottomGlow;
+    ctx.fillRect(0, height - 70, width, 70);
+    ctx.restore();
+  }
+
+  private drawVolcanoPlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const orange = theme.accentColor || '#F97316';
+    const crimson = theme.platformBorder || '#DC2626';
+
+    // 1. BOUNCY PLATFORM (Volcanic Steam Geyser Pad)
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Basalt base frame
+      ctx.fillStyle = '#1C1917';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = crimson;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Steam geyser vent coil
+      const coilSteps = 3;
+      const stepH = (p.height - 10) / coilSteps;
+      ctx.strokeStyle = orange;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let i = 0; i < coilSteps; i++) {
+        const sy = p.y + p.height - 6 - i * stepH;
+        ctx.moveTo(p.x + 8, sy);
+        ctx.lineTo(p.x + p.width - 8, sy - stepH * 0.5);
+      }
+      ctx.stroke();
+
+      // Bouncing volcanic top plate
+      const pulse = Math.sin(this.gameTime * 8) * 3;
+      ctx.fillStyle = '#B91C1C';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + pulse, p.width - 4, 8, 4);
+      ctx.fill();
+
+      // Scorched gold crest
+      ctx.fillStyle = '#FEF08A';
+      ctx.fillRect(p.x + 6, p.y + pulse + 2, p.width - 12, 2.5);
+      ctx.restore();
+      return;
+    }
+
+    // 2. ONE-WAY PLATFORM (Scorched Magma Grate)
+    if (p.type === 'one-way') {
+      ctx.save();
+      ctx.fillStyle = 'rgba(69, 10, 10, 0.45)';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Top glowing molten lip
+      ctx.fillStyle = orange;
+      ctx.fillRect(p.x, p.y, p.width, 3);
+      ctx.fillStyle = '#FEF08A';
+      ctx.fillRect(p.x + 4, p.y + 0.5, p.width - 8, 1.2);
+
+      ctx.fillStyle = '#1C1917';
+      ctx.fillRect(p.x, p.y + p.height - 2, p.width, 2);
+
+      // Vertical red-hot iron bars
+      const barW = 16;
+      const numBars = Math.floor(p.width / barW);
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.55)';
+      ctx.lineWidth = 1.2;
+      for (let i = 1; i < numBars; i++) {
+        ctx.beginPath();
+        ctx.moveTo(p.x + i * barW, p.y + 3);
+        ctx.lineTo(p.x + i * barW, p.y + p.height - 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+      return;
+    }
+
+    // 3. CRUMBLING PLATFORM (Cooling Volcanic Crust Rock)
+    if (p.type === 'crumbling') {
+      if (p.respawnTimer !== undefined && p.respawnTimer > 0) {
+        if (p.respawnTimer < 0.75) {
+          ctx.save();
+          const pulse = 0.3 + Math.sin(this.gameTime * 25) * 0.2;
+          ctx.globalAlpha = Math.max(0, pulse);
+          ctx.strokeStyle = orange;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(p.x + 1, p.y + 1, p.width - 2, p.height - 2);
+          ctx.restore();
+        }
+        return;
+      }
+
+      ctx.save();
+      if (p.crumbling && p.crumbleTimer !== undefined) {
+        const shake = Math.min(5, (0.65 - p.crumbleTimer) * 10);
+        ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * (shake * 0.5));
+      }
+
+      // Dark basalt crust
+      ctx.fillStyle = p.crumbling ? '#450A0A' : '#1C1917';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      ctx.strokeStyle = p.crumbling ? '#F97316' : '#DC2626';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x + 1, p.y + 1, p.width - 2, p.height - 2);
+
+      // Searing glowing cracks through crust
+      ctx.strokeStyle = '#FEF08A';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(p.x + p.width * 0.3, p.y);
+      ctx.lineTo(p.x + p.width * 0.5, p.y + p.height * 0.5);
+      ctx.lineTo(p.x + p.width * 0.8, p.y + p.height);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // 4. SOLID / MOVING PLATFORMS (Basalt Obsidian with Glowing Magma Veins)
+    ctx.save();
+
+    // Radiant magma under-glow
+    const underGlow = ctx.createLinearGradient(0, p.y + p.height, 0, p.y + p.height + 12);
+    underGlow.addColorStop(0, 'rgba(234, 88, 12, 0.35)');
+    underGlow.addColorStop(1, 'rgba(234, 88, 12, 0)');
+    ctx.fillStyle = underGlow;
+    ctx.fillRect(p.x + 4, p.y + p.height, p.width - 8, 12);
+
+    // Deep Obsidian Basalt Chassis Body
+    const bodyGrad = ctx.createLinearGradient(0, p.y + 6, 0, p.y + p.height);
+    bodyGrad.addColorStop(0, '#262220');
+    bodyGrad.addColorStop(0.4, '#1C1917');
+    bodyGrad.addColorStop(1, '#0C0A09');
+    ctx.fillStyle = bodyGrad;
+    ctx.fillRect(p.x, p.y + 6, p.width, Math.max(0, p.height - 6));
+
+    // Outer frame stroke
+    ctx.strokeStyle = 'rgba(220, 38, 38, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+    // Embedded glowing magma fissure veins
+    if (p.width >= 40 && p.height >= 16) {
+      const midY = p.y + p.height * 0.55;
+      ctx.strokeStyle = 'rgba(249, 115, 22, 0.65)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(p.x + 10, midY);
+      ctx.lineTo(p.x + p.width * 0.4, midY - 2);
+      ctx.lineTo(p.x + p.width * 0.55, midY + 3);
+      ctx.lineTo(p.x + p.width - 10, midY + 1);
+      ctx.stroke();
+
+      // Glowing heat nodes
+      ctx.fillStyle = '#FEF08A';
+      ctx.beginPath();
+      ctx.arc(p.x + 10, midY, 1.8, 0, Math.PI * 2);
+      ctx.arc(p.x + p.width - 10, midY + 1, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Top Scorched Magma Rail
+    ctx.fillStyle = orange;
+    ctx.fillRect(p.x, p.y, p.width, 6);
+
+    // Incandescent white-gold core crest
+    ctx.fillStyle = '#FEF08A';
+    ctx.fillRect(p.x + 2, p.y + 1, p.width - 4, 2.5);
+
+    // Moving Platform: Fiery volcanic thrusters
+    if (p.speed && p.speed > 0) {
+      ctx.strokeStyle = '#FEF08A';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+    }
+
+    ctx.restore();
+  }
+
   private drawPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
+
+    // Check if Neon Night theme platform styles
+    if (this.isNeonTheme(theme)) {
+      this.drawNeonPlatform(p, theme);
+      return;
+    }
+
+    // Check if Cosmic Space theme platform styles
+    if (this.isSpaceTheme(theme)) {
+      this.drawSpacePlatform(p, theme);
+      return;
+    }
+
+    // Check if Infernal Volcano theme platform styles
+    if (this.isVolcanoTheme(theme)) {
+      this.drawVolcanoPlatform(p, theme);
+      return;
+    }
+
+    // Generic Anti-Gravity Tractor Beam platform fallback
+    if (p.type === 'anti_grav') {
+      this.drawSpacePlatform(p, theme);
+      return;
+    }
 
     if (p.type === 'bouncy') {
       // Spring / Bouncy Pad
@@ -355,12 +1279,560 @@ export class GameRenderer {
     }
   }
 
-  private drawHazard(h: Hazard) {
+  private drawNeonPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
+    const cyan = theme.neonCyan || '#00F0FF';
+    const magenta = theme.neonMagenta || '#FF007F';
+
+    // 1. BOUNCY PLATFORM (Kinetic Grav-Pad / Ion Shock Ring)
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Cyber base bracket
+      ctx.fillStyle = '#0B0F19';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Kinetic magnetic ring coil
+      const coilSteps = 3;
+      const stepH = (p.height - 10) / coilSteps;
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < coilSteps; i++) {
+        const sy = p.y + p.height - 6 - i * stepH;
+        ctx.moveTo(p.x + 10, sy);
+        ctx.lineTo(p.x + p.width - 10, sy - stepH * 0.5);
+      }
+      ctx.stroke();
+
+      // Pulsing energy rings
+      const pulse = Math.sin(this.gameTime * 8) * 3;
+      const ringAlpha = 0.35 + 0.35 * Math.sin(this.gameTime * 6);
+      ctx.fillStyle = magenta;
+      ctx.globalAlpha = ringAlpha;
+      ctx.beginPath();
+      ctx.ellipse(p.x + p.width / 2, p.y + 4 + pulse, p.width * 0.45, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Top kinetic launch bar
+      ctx.globalAlpha = 1.0;
+      ctx.fillStyle = magenta;
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + pulse, p.width - 4, 8, 4);
+      ctx.fill();
+
+      // Blinding white-hot core strip
+      ctx.fillStyle = '#FFE4E6';
+      ctx.fillRect(p.x + 6, p.y + pulse + 2, p.width - 12, 2.5);
+      ctx.restore();
+      return;
+    }
+
+    // 2. ONE-WAY PLATFORM (Holographic Laser Grating)
+    if (p.type === 'one-way') {
+      ctx.save();
+      // Holographic semi-transparent emitter fill
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.16)';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Upper laser guide beam
+      ctx.fillStyle = cyan;
+      ctx.fillRect(p.x, p.y, p.width, 3);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(p.x + 4, p.y + 0.5, p.width - 8, 1.2);
+
+      // Lower guide beam
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.6)';
+      ctx.fillRect(p.x, p.y + p.height - 2, p.width, 2);
+
+      // Left and right metallic emitter projector brackets
+      ctx.fillStyle = '#1E293B';
+      ctx.fillRect(p.x, p.y - 1, 6, p.height + 2);
+      ctx.fillRect(p.x + p.width - 6, p.y - 1, 6, p.height + 2);
+      ctx.fillStyle = magenta;
+      ctx.fillRect(p.x + 2, p.y + 2, 2, p.height - 4);
+      ctx.fillRect(p.x + p.width - 4, p.y + 2, 2, p.height - 4);
+
+      // Animated glowing chevrons indicating jump-through
+      const chevronCount = Math.max(1, Math.floor((p.width - 24) / 22));
+      const sweepOffset = (this.gameTime * 25) % 22;
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < chevronCount; i++) {
+        const cx = p.x + 14 + i * 22 + (sweepOffset * 0.3);
+        if (cx + 8 < p.x + p.width - 8) {
+          ctx.beginPath();
+          ctx.moveTo(cx, p.y + p.height - 3);
+          ctx.lineTo(cx + 4, p.y + 3);
+          ctx.lineTo(cx + 8, p.y + p.height - 3);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+      return;
+    }
+
+    // 3. CRUMBLING PLATFORM (Quantum Glitch / Hologram Platform)
+    if (p.type === 'crumbling') {
+      if (p.respawnTimer !== undefined && p.respawnTimer > 0) {
+        if (p.respawnTimer < 0.75) {
+          ctx.save();
+          const pulse = 0.3 + Math.sin(this.gameTime * 25) * 0.2;
+          ctx.globalAlpha = Math.max(0, pulse);
+          ctx.strokeStyle = cyan;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(p.x + 1, p.y + 1, p.width - 2, p.height - 2);
+          ctx.restore();
+        }
+        return;
+      }
+
+      ctx.save();
+      // Glitch shaking with chromatic aberration offset
+      if (p.crumbling && p.crumbleTimer !== undefined) {
+        const glitchAmt = Math.min(6, (0.65 - p.crumbleTimer) * 11);
+        const gx = (Math.random() - 0.5) * glitchAmt;
+        const gy = (Math.random() - 0.5) * (glitchAmt * 0.5);
+        ctx.translate(gx, gy);
+
+        // Red/Cyan Chromatic Aberration ghosting
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = '#FF0055';
+        ctx.fillRect(p.x - 3, p.y, p.width, p.height);
+        ctx.fillStyle = '#00F0FF';
+        ctx.fillRect(p.x + 3, p.y, p.width, p.height);
+        ctx.globalAlpha = 1.0;
+      }
+
+      // Main Glitch Platform Body
+      ctx.fillStyle = p.crumbling ? '#1F0A2E' : '#110724';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Glowing Neon Frame
+      ctx.strokeStyle = p.crumbling ? magenta : cyan;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x + 1, p.y + 1, p.width - 2, p.height - 2);
+
+      // Digital Grid Mesh
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
+      ctx.lineWidth = 1;
+      const numVGrid = Math.floor(p.width / 14);
+      for (let i = 1; i < numVGrid; i++) {
+        ctx.beginPath();
+        ctx.moveTo(p.x + i * 14, p.y + 1);
+        ctx.lineTo(p.x + i * 14, p.y + p.height - 1);
+        ctx.stroke();
+      }
+
+      // Glitch fracture lines if crumbling
+      if (p.crumbling) {
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p.x + p.width * 0.25, p.y);
+        ctx.lineTo(p.x + p.width * 0.45, p.y + p.height * 0.7);
+        ctx.lineTo(p.x + p.width * 0.8, p.y + p.height);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 4. SOLID / MOVING PLATFORMS (Cyber Chassis with Neon Laser Rail & Circuit Nodes)
+    ctx.save();
+
+    // Soft Neon Under-Glow
+    const underGlow = ctx.createLinearGradient(0, p.y + p.height, 0, p.y + p.height + 12);
+    underGlow.addColorStop(0, 'rgba(0, 240, 255, 0.22)');
+    underGlow.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    ctx.fillStyle = underGlow;
+    ctx.fillRect(p.x + 4, p.y + p.height, p.width - 8, 12);
+
+    // Dark Cyber Chassis Body
+    const bodyGrad = ctx.createLinearGradient(0, p.y + 6, 0, p.y + p.height);
+    bodyGrad.addColorStop(0, '#0F172A');
+    bodyGrad.addColorStop(1, '#050914');
+    ctx.fillStyle = bodyGrad;
+    ctx.fillRect(p.x, p.y + 6, p.width, Math.max(0, p.height - 6));
+
+    // Outer cyber frame stroke
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+    // Embedded glowing circuit trace lines
+    ctx.strokeStyle = 'rgba(255, 0, 127, 0.35)';
+    ctx.lineWidth = 1;
+    if (p.width >= 40 && p.height >= 16) {
+      const midY = p.y + p.height * 0.55;
+      ctx.beginPath();
+      ctx.moveTo(p.x + 12, midY);
+      ctx.lineTo(p.x + p.width * 0.4, midY);
+      ctx.lineTo(p.x + p.width * 0.48, midY + 4);
+      ctx.lineTo(p.x + p.width - 12, midY + 4);
+      ctx.stroke();
+
+      // Pulsing circuit data nodes
+      const nodePulse = 0.4 + 0.6 * Math.sin(this.gameTime * 5 + p.x);
+      ctx.fillStyle = cyan;
+      ctx.globalAlpha = nodePulse;
+      ctx.beginPath();
+      ctx.arc(p.x + 12, midY, 2, 0, Math.PI * 2);
+      ctx.arc(p.x + p.width - 12, midY + 4, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+    }
+
+    // Blinding Top Neon Laser Rail
+    ctx.fillStyle = cyan;
+    ctx.fillRect(p.x, p.y, p.width, 6);
+
+    // Ultra-bright laser core filament
+    ctx.fillStyle = '#E0FFFF';
+    ctx.fillRect(p.x + 2, p.y + 1, p.width - 4, 2.5);
+
+    // Terminal capacitors on left and right edges
+    ctx.fillStyle = magenta;
+    ctx.fillRect(p.x, p.y, 4, 6);
+    ctx.fillRect(p.x + p.width - 4, p.y, 4, 6);
+
+    // Moving Platform: Mag-Lev Thruster Pods & Animated Direction Lights
+    if (p.speed && p.speed > 0) {
+      // Mag-lev border glow
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+
+      // Downward plasma exhaust jet cones
+      const thrusterW = 14;
+      const leftTX = p.x + 14;
+      const rightTX = p.x + p.width - 14 - thrusterW;
+      const jetPulse = 4 + Math.sin(this.gameTime * 20) * 3;
+
+      ctx.fillStyle = cyan;
+      // Left thruster jet
+      ctx.beginPath();
+      ctx.moveTo(leftTX, p.y + p.height);
+      ctx.lineTo(leftTX + thrusterW, p.y + p.height);
+      ctx.lineTo(leftTX + thrusterW / 2, p.y + p.height + jetPulse);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right thruster jet
+      ctx.beginPath();
+      ctx.moveTo(rightTX, p.y + p.height);
+      ctx.lineTo(rightTX + thrusterW, p.y + p.height);
+      ctx.lineTo(rightTX + thrusterW / 2, p.y + p.height + jetPulse);
+      ctx.closePath();
+      ctx.fill();
+
+      // Animated travel direction chevron lights
+      const dir = (p.vx ?? 0) >= 0 ? 1 : -1;
+      const animX = (this.gameTime * 30 * dir) % 16;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(p.x + p.width / 2 + animX, p.y + p.height / 2, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  private drawSpacePlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const cyan = theme.accentColor || '#38BDF8';
+    const indigo = theme.platformBorder || '#818CF8';
+
+    // 1. ANTI-GRAVITY TRACTOR BEAM / GRAV-LIFT PLATFORM
+    if (p.type === 'anti_grav') {
+      ctx.save();
+      const emitterH = Math.min(14, p.height * 0.15);
+      const beamH = p.height - emitterH;
+
+      // Base Emitter Bracket at bottom
+      const baseGrad = ctx.createLinearGradient(0, p.y + beamH, 0, p.y + p.height);
+      baseGrad.addColorStop(0, '#1E293B');
+      baseGrad.addColorStop(1, '#0B0F19');
+      ctx.fillStyle = baseGrad;
+      ctx.fillRect(p.x, p.y + beamH, p.width, emitterH);
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y + beamH, p.width, emitterH);
+
+      // Warning hazard stripes on emitter face
+      const stripeW = 10;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(p.x, p.y + beamH, p.width, emitterH);
+      ctx.clip();
+      ctx.fillStyle = '#F59E0B';
+      for (let sx = p.x - emitterH; sx < p.x + p.width; sx += stripeW * 2) {
+        ctx.beginPath();
+        ctx.moveTo(sx, p.y + p.height);
+        ctx.lineTo(sx + stripeW, p.y + p.height);
+        ctx.lineTo(sx + stripeW + emitterH, p.y + beamH);
+        ctx.lineTo(sx + emitterH, p.y + beamH);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Pulsing central power crystal on emitter
+      const crystalPulse = 0.5 + 0.5 * Math.sin(this.gameTime * 8);
+      ctx.fillStyle = cyan;
+      ctx.globalAlpha = crystalPulse;
+      ctx.fillRect(p.x + p.width / 2 - 8, p.y + beamH + 2, 16, emitterH - 4);
+      ctx.globalAlpha = 1.0;
+
+      // Vertical Upward Tractor Beam Column
+      const beamGrad = ctx.createLinearGradient(p.x, 0, p.x + p.width, 0);
+      beamGrad.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
+      beamGrad.addColorStop(0.3, 'rgba(124, 58, 237, 0.16)');
+      beamGrad.addColorStop(0.7, 'rgba(124, 58, 237, 0.16)');
+      beamGrad.addColorStop(1, 'rgba(56, 189, 248, 0.28)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(p.x + 2, p.y, p.width - 4, beamH);
+
+      // Left & Right Magnetic Containment Laser Rails
+      ctx.fillStyle = cyan;
+      ctx.fillRect(p.x, p.y, 2, beamH);
+      ctx.fillRect(p.x + p.width - 2, p.y, 2, beamH);
+
+      // Animated Ascending Tractor Chevrons (indicating upward buoyancy)
+      const chevronSpacing = 36;
+      const sweepOffset = (this.gameTime * 55) % chevronSpacing;
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 2;
+      const numChevrons = Math.floor(beamH / chevronSpacing) + 1;
+      for (let i = 0; i <= numChevrons; i++) {
+        const cy = p.y + beamH - (i * chevronSpacing + sweepOffset);
+        if (cy >= p.y && cy <= p.y + beamH) {
+          const ratio = (cy - p.y) / beamH;
+          ctx.globalAlpha = 0.25 + 0.65 * (1 - Math.abs(ratio - 0.5) * 1.5);
+          ctx.beginPath();
+          ctx.moveTo(p.x + 8, cy + 6);
+          ctx.lineTo(p.x + p.width / 2, cy - 2);
+          ctx.lineTo(p.x + p.width - 8, cy + 6);
+          ctx.stroke();
+        }
+      }
+
+      // Top Dissipation Ion Halo
+      const topPulse = 0.6 + 0.4 * Math.sin(this.gameTime * 10);
+      ctx.globalAlpha = topPulse;
+      ctx.fillStyle = '#E0F2FE';
+      ctx.fillRect(p.x + 4, p.y, p.width - 8, 2);
+      ctx.restore();
+      return;
+    }
+
+    // 2. KINETIC BOUNCY PLATFORM (Orbital Ion Launch Pad)
+    if (p.type === 'bouncy') {
+      ctx.save();
+      ctx.fillStyle = '#0B0F19';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      const coilSteps = 3;
+      const stepH = (p.height - 10) / coilSteps;
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < coilSteps; i++) {
+        const sy = p.y + p.height - 6 - i * stepH;
+        ctx.moveTo(p.x + 10, sy);
+        ctx.lineTo(p.x + p.width - 10, sy - stepH * 0.5);
+      }
+      ctx.stroke();
+
+      const pulse = Math.sin(this.gameTime * 8) * 3;
+      ctx.fillStyle = '#0284C7';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + pulse, p.width - 4, 8, 4);
+      ctx.fill();
+
+      ctx.fillStyle = '#E0F2FE';
+      ctx.fillRect(p.x + 6, p.y + pulse + 2, p.width - 12, 2.5);
+      ctx.restore();
+      return;
+    }
+
+    // 3. ONE-WAY PLATFORM (Holographic Solar Array Grating)
+    if (p.type === 'one-way') {
+      ctx.save();
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.16)';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      ctx.fillStyle = cyan;
+      ctx.fillRect(p.x, p.y, p.width, 3);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(p.x + 4, p.y + 0.5, p.width - 8, 1.2);
+
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.7)';
+      ctx.fillRect(p.x, p.y + p.height - 2, p.width, 2);
+
+      const cellW = 18;
+      const numCells = Math.floor(p.width / cellW);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < numCells; i++) {
+        ctx.beginPath();
+        ctx.moveTo(p.x + i * cellW, p.y + 3);
+        ctx.lineTo(p.x + i * cellW, p.y + p.height - 2);
+        ctx.stroke();
+      }
+
+      const chevronCount = Math.max(1, Math.floor((p.width - 24) / 22));
+      const sweepOffset = (this.gameTime * 25) % 22;
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < chevronCount; i++) {
+        const cx = p.x + 14 + i * 22 + (sweepOffset * 0.3);
+        if (cx + 8 < p.x + p.width - 8) {
+          ctx.beginPath();
+          ctx.moveTo(cx, p.y + p.height - 3);
+          ctx.lineTo(cx + 4, p.y + 3);
+          ctx.lineTo(cx + 8, p.y + p.height - 3);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+      return;
+    }
+
+    // 4. CRUMBLING PLATFORM (Unstable Cosmic Meteorite / Asteroid Rock)
+    if (p.type === 'crumbling') {
+      if (p.respawnTimer !== undefined && p.respawnTimer > 0) {
+        if (p.respawnTimer < 0.75) {
+          ctx.save();
+          const pulse = 0.3 + Math.sin(this.gameTime * 25) * 0.2;
+          ctx.globalAlpha = Math.max(0, pulse);
+          ctx.strokeStyle = indigo;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(p.x + 1, p.y + 1, p.width - 2, p.height - 2);
+          ctx.restore();
+        }
+        return;
+      }
+
+      ctx.save();
+      if (p.crumbling && p.crumbleTimer !== undefined) {
+        const shake = Math.min(5, (0.65 - p.crumbleTimer) * 10);
+        ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * (shake * 0.5));
+      }
+
+      ctx.fillStyle = p.crumbling ? '#1E1B4B' : '#0F172A';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      ctx.strokeStyle = p.crumbling ? '#C084FC' : '#38BDF8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x + 1, p.y + 1, p.width - 2, p.height - 2);
+
+      ctx.strokeStyle = 'rgba(192, 132, 252, 0.5)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(p.x + p.width * 0.25, p.y);
+      ctx.lineTo(p.x + p.width * 0.45, p.y + p.height * 0.6);
+      ctx.lineTo(p.x + p.width * 0.75, p.y + p.height);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // 5. SOLID / MOVING PLATFORMS (Starship Modular Titanium Hull Plating)
+    ctx.save();
+
+    // Soft Starlight Under-Glow
+    const underGlow = ctx.createLinearGradient(0, p.y + p.height, 0, p.y + p.height + 10);
+    underGlow.addColorStop(0, 'rgba(56, 189, 248, 0.2)');
+    underGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = underGlow;
+    ctx.fillRect(p.x + 4, p.y + p.height, p.width - 8, 10);
+
+    // Dark Titanium Chassis Body
+    const bodyGrad = ctx.createLinearGradient(0, p.y + 6, 0, p.y + p.height);
+    bodyGrad.addColorStop(0, '#0F172A');
+    bodyGrad.addColorStop(1, '#050914');
+    ctx.fillStyle = bodyGrad;
+    ctx.fillRect(p.x, p.y + 6, p.width, Math.max(0, p.height - 6));
+
+    // Outer frame stroke
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+    // Embedded glowing data conduit line
+    if (p.width >= 40 && p.height >= 16) {
+      const midY = p.y + p.height * 0.55;
+      ctx.strokeStyle = 'rgba(129, 140, 248, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(p.x + 12, midY);
+      ctx.lineTo(p.x + p.width * 0.45, midY);
+      ctx.lineTo(p.x + p.width * 0.52, midY + 4);
+      ctx.lineTo(p.x + p.width - 12, midY + 4);
+      ctx.stroke();
+
+      ctx.fillStyle = cyan;
+      ctx.beginPath();
+      ctx.arc(p.x + 12, midY, 2, 0, Math.PI * 2);
+      ctx.arc(p.x + p.width - 12, midY + 4, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Top Stellar Laser Rail
+    ctx.fillStyle = cyan;
+    ctx.fillRect(p.x, p.y, p.width, 6);
+
+    // Ultra-bright core filament
+    ctx.fillStyle = '#F0F9FF';
+    ctx.fillRect(p.x + 2, p.y + 1, p.width - 4, 2.5);
+
+    // Moving Platform: Ion Plasma Thruster Pods
+    if (p.speed && p.speed > 0) {
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(p.x - 1, p.y - 1, p.width + 2, p.height + 2);
+
+      const thrusterW = 14;
+      const leftTX = p.x + 14;
+      const rightTX = p.x + p.width - 14 - thrusterW;
+      const jetPulse = 4 + Math.sin(this.gameTime * 20) * 3;
+
+      ctx.fillStyle = '#38BDF8';
+      ctx.beginPath();
+      ctx.moveTo(leftTX, p.y + p.height);
+      ctx.lineTo(leftTX + thrusterW, p.y + p.height);
+      ctx.lineTo(leftTX + thrusterW / 2, p.y + p.height + jetPulse);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(rightTX, p.y + p.height);
+      ctx.lineTo(rightTX + thrusterW, p.y + p.height);
+      ctx.lineTo(rightTX + thrusterW / 2, p.y + p.height + jetPulse);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  private drawHazard(h: Hazard, theme?: LevelData['theme']) {
+    const { ctx } = this;
+    const isNeon = theme ? this.isNeonTheme(theme) : false;
+    const isSpace = theme ? this.isSpaceTheme(theme) : false;
 
     if (h.type === 'spike') {
-      ctx.fillStyle = '#DC2626';
-      ctx.strokeStyle = '#991B1B';
+      ctx.fillStyle = isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : '#DC2626');
+      ctx.strokeStyle = isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : '#991B1B');
       ctx.lineWidth = 1.5;
 
       const numSpikes = Math.max(1, Math.floor(h.width / 14));
@@ -378,13 +1850,13 @@ export class GameRenderer {
       ctx.stroke();
 
       // Gleam on spike tips
-      ctx.fillStyle = '#FCA5A5';
+      ctx.fillStyle = (isNeon || isSpace) ? '#FFFFFF' : '#FCA5A5';
       for (let i = 0; i < numSpikes; i++) {
         const sx = h.x + i * spikeW;
         ctx.fillRect(sx + spikeW * 0.45, h.y + 2, 2, 4);
       }
     } else if (h.type === 'saw') {
-      // Spinning Buzzsaw
+      // Spinning Buzzsaw / Orbital Plasma Orb
       ctx.save();
       const cx = h.x + h.width / 2;
       const cy = h.y + h.height / 2;
@@ -394,9 +1866,14 @@ export class GameRenderer {
       ctx.translate(cx, cy);
       ctx.rotate(rot);
 
+      if (isSpace) {
+        ctx.shadowColor = '#38BDF8';
+        ctx.shadowBlur = 8;
+      }
+
       // Outer saw teeth
-      ctx.fillStyle = '#E2E8F0';
-      ctx.strokeStyle = '#64748B';
+      ctx.fillStyle = (isNeon || isSpace) ? '#0E172A' : '#E2E8F0';
+      ctx.strokeStyle = isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : '#64748B');
       ctx.lineWidth = 2;
       ctx.beginPath();
       const teeth = 8;
@@ -411,41 +1888,82 @@ export class GameRenderer {
       ctx.stroke();
 
       // Center core
-      ctx.fillStyle = '#EF4444';
+      ctx.fillStyle = isSpace ? '#818CF8' : (isNeon ? '#FF007F' : '#EF4444');
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#F87171';
+      ctx.fillStyle = isSpace ? '#E0F2FE' : (isNeon ? '#00F0FF' : '#F87171');
       ctx.beginPath();
       ctx.arc(0, 0, r * 0.2, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
     } else if (h.type === 'lava') {
-      // Molten Lava
-      ctx.fillStyle = '#DC2626';
-      ctx.fillRect(h.x, h.y, h.width, h.height);
+      const isVolcano = theme ? this.isVolcanoTheme(theme) : false;
+      const fillHeight = Math.max(h.height, 960 - h.y);
 
-      // Bubbling top wave
-      ctx.fillStyle = '#F97316';
+      // Deep Molten Magma / Plasma Void Gradient
+      const lavaGrad = ctx.createLinearGradient(0, h.y, 0, h.y + fillHeight);
+      if (isSpace) {
+        lavaGrad.addColorStop(0, '#6366F1');
+        lavaGrad.addColorStop(0.3, '#312E81');
+        lavaGrad.addColorStop(1, '#04020C');
+      } else if (isNeon) {
+        lavaGrad.addColorStop(0, '#FF007F');
+        lavaGrad.addColorStop(0.3, '#701A75');
+        lavaGrad.addColorStop(1, '#0B0726');
+      } else {
+        // Volcanic Incandescent Molten Magma
+        lavaGrad.addColorStop(0, '#F97316');
+        lavaGrad.addColorStop(0.12, '#EF4444');
+        lavaGrad.addColorStop(0.45, '#991B1B');
+        lavaGrad.addColorStop(1, '#1C0606');
+      }
+      ctx.fillStyle = lavaGrad;
+      ctx.fillRect(h.x, h.y, h.width, fillHeight);
+
+      // Bubbling Magma Wave Crest
+      ctx.fillStyle = isSpace ? '#38BDF8' : (isNeon ? '#00F0FF' : '#FEF08A');
       ctx.beginPath();
       ctx.moveTo(h.x, h.y);
-      for (let x = h.x; x <= h.x + h.width; x += 20) {
-        const wave = Math.sin(x * 0.05 + this.gameTime * 5) * 4;
+      for (let x = h.x; x <= h.x + h.width; x += 16) {
+        const wave = Math.sin(x * 0.05 + this.gameTime * 6) * 4.5;
         ctx.lineTo(x, h.y + wave);
       }
-      ctx.lineTo(h.x + h.width, h.y + h.height);
-      ctx.lineTo(h.x, h.y + h.height);
+      ctx.lineTo(h.x + h.width, h.y + 12);
+      ctx.lineTo(h.x, h.y + 12);
       ctx.closePath();
       ctx.fill();
 
-      // Glowing yellow hot rim
-      ctx.fillStyle = '#FDE047';
-      for (let x = h.x; x < h.x + h.width; x += 40) {
-        const bx = x + Math.sin(x + this.gameTime * 3) * 6;
-        const by = h.y + 2 + Math.cos(x + this.gameTime * 4) * 2;
-        ctx.fillRect(bx, by, 6, 2);
+      // Bubbling Magma & Floating Charred Crust Rocks
+      if (isVolcano || (!isSpace && !isNeon)) {
+        // Floating basalt crust chunks bobbing on magma surface
+        ctx.fillStyle = '#292524';
+        const chunkSpacing = 48;
+        const numChunks = Math.floor(h.width / chunkSpacing);
+        for (let i = 0; i < numChunks; i++) {
+          const cx = h.x + 12 + i * chunkSpacing + Math.sin(this.gameTime * 2 + i) * 6;
+          const waveY = h.y + Math.sin(cx * 0.05 + this.gameTime * 6) * 4.5;
+          ctx.fillRect(cx, waveY - 2, 14, 5);
+        }
+
+        // Bursting Magma Bubbles
+        ctx.fillStyle = '#FEF08A';
+        for (let i = 0; i < 4; i++) {
+          const bx = h.x + ((i * 113 + this.gameTime * 35) % Math.max(10, h.width - 20)) + 10;
+          const bWave = h.y + Math.sin(bx * 0.05 + this.gameTime * 6) * 4.5;
+          const bRadius = 2 + Math.abs(Math.sin(this.gameTime * 8 + i * 2)) * 3;
+          ctx.beginPath();
+          ctx.arc(bx, bWave, bRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Rising steam & heat shimmer warning indicators along moving lava pits
+      if (h.speed && h.distanceY) {
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.45)';
+        ctx.fillRect(h.x + 2, h.y - 4, h.width - 4, 2);
       }
     }
   }

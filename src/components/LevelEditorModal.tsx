@@ -66,6 +66,34 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
       const overrides = localStorage.getItem('barnaby_dev_level_overrides');
       if (overrides) {
         const parsed = JSON.parse(overrides);
+        if (parsed[1] && (parsed[1].worldHeight <= 600 || parsed[1].title?.includes('Runner'))) {
+          delete parsed[1];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[2] && (parsed[2].worldHeight <= 650 || parsed[2].title?.includes('Labyrinth'))) {
+          delete parsed[2];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[3] && (parsed[3].worldHeight <= 650 || !parsed[3].title?.includes('Blaster'))) {
+          delete parsed[3];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[4] && (parsed[4].worldHeight <= 650 || !parsed[4].title?.includes('Neon'))) {
+          delete parsed[4];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[5] && (parsed[5].worldHeight <= 650 || !parsed[5].title?.includes('Matrix Hub') || (parsed[5].platforms && parsed[5].platforms.some((p: any) => p.id === 'l5_term_step1' && p.height > 50)))) {
+          delete parsed[5];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[6] && (parsed[6].worldHeight <= 650 || !parsed[6].title?.includes('Space Station') || !parsed[6].theme?.name?.includes('Cosmic'))) {
+          delete parsed[6];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[7] && (parsed[7].worldHeight <= 650 || !parsed[7].title?.includes('Nebula Fortress') || !parsed[7].theme?.name?.includes('Cosmic'))) {
+          delete parsed[7];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         const targetId = levels[levelIndex]?.id;
         if (targetId && parsed[targetId]) {
           return JSON.parse(JSON.stringify(parsed[targetId]));
@@ -118,6 +146,34 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
       const overrides = localStorage.getItem('barnaby_dev_level_overrides');
       if (overrides) {
         const parsed = JSON.parse(overrides);
+        if (parsed[1] && (parsed[1].worldHeight <= 600 || parsed[1].title?.includes('Runner'))) {
+          delete parsed[1];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[2] && (parsed[2].worldHeight <= 650 || parsed[2].title?.includes('Labyrinth'))) {
+          delete parsed[2];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[3] && (parsed[3].worldHeight <= 650 || !parsed[3].title?.includes('Blaster'))) {
+          delete parsed[3];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[4] && (parsed[4].worldHeight <= 650 || !parsed[4].title?.includes('Neon'))) {
+          delete parsed[4];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[5] && (parsed[5].worldHeight <= 650 || !parsed[5].title?.includes('Matrix Hub') || (parsed[5].platforms && parsed[5].platforms.some((p: any) => p.id === 'l5_term_step1' && p.height > 50)))) {
+          delete parsed[5];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[6] && (parsed[6].worldHeight <= 650 || !parsed[6].title?.includes('Space Station') || !parsed[6].theme?.name?.includes('Cosmic'))) {
+          delete parsed[6];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[7] && (parsed[7].worldHeight <= 650 || !parsed[7].title?.includes('Nebula Fortress') || !parsed[7].theme?.name?.includes('Cosmic'))) {
+          delete parsed[7];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         if (parsed[nextLvl.id]) {
           nextLvl = parsed[nextLvl.id];
         }
@@ -341,12 +397,13 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
       newLvl.enemies.push(newEnemy);
       setSelectedEntity({ kind: 'enemy', id: newEnemy.id, index: newLvl.enemies.length - 1 });
     } else if (category === 'platform') {
+      const isAntiGrav = type === 'anti_grav';
       const newPlat: Platform = {
         id: `p_${Date.now().toString(36)}`,
         x: spawnX,
         y: spawnY,
-        width: type === 'bouncy' ? 50 : 140,
-        height: type === 'bouncy' ? 16 : 24,
+        width: type === 'bouncy' ? 50 : isAntiGrav ? 64 : 140,
+        height: type === 'bouncy' ? 16 : isAntiGrav ? 260 : 24,
         type: type as PlatformType
       };
       newLvl.platforms.push(newPlat);
@@ -490,6 +547,26 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         ctx.fillRect(p.x, p.y, p.width, p.height);
         ctx.strokeStyle = '#FBBF24';
         ctx.strokeRect(p.x, p.y, p.width, p.height);
+      } else if (p.type === 'anti_grav') {
+        // Anti-Gravity Tractor Beam preview in editor
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+        ctx.fillRect(p.x, p.y, p.width, p.height);
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(p.x, p.y, p.width, p.height);
+        // Base emitter
+        ctx.fillStyle = '#1E293B';
+        ctx.fillRect(p.x, p.y + p.height - 14, p.width, 14);
+        // Ascending chevrons
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 1.5;
+        for (let cy = p.y + p.height - 24; cy > p.y + 10; cy -= 30) {
+          ctx.beginPath();
+          ctx.moveTo(p.x + 6, cy + 4);
+          ctx.lineTo(p.x + p.width / 2, cy - 2);
+          ctx.lineTo(p.x + p.width - 6, cy + 4);
+          ctx.stroke();
+        }
       } else if (p.type === 'crumbling') {
         ctx.fillStyle = '#64748B';
         ctx.fillRect(p.x, p.y, p.width, p.height);
@@ -1194,6 +1271,31 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
                 {activeItem.type || selectedEntity?.kind}:
               </span>
 
+              {selectedEntity?.kind === 'platform' && (
+                <select
+                  value={activeItem.type || 'solid'}
+                  onChange={(e) => {
+                    pushUndo(level);
+                    const newLvl = JSON.parse(JSON.stringify(level));
+                    const newType = e.target.value as PlatformType;
+                    const plat = newLvl.platforms[selectedEntity.index];
+                    plat.type = newType;
+                    if (newType === 'anti_grav') {
+                      plat.width = Math.max(48, plat.width);
+                      plat.height = Math.max(120, plat.height);
+                    }
+                    setLevel(newLvl);
+                  }}
+                  className="bg-slate-900 border border-slate-700 text-sky-300 rounded px-1.5 py-0.5 text-[11px]"
+                >
+                  <option value="solid">Solid</option>
+                  <option value="one-way">One-Way</option>
+                  <option value="bouncy">Bouncy</option>
+                  <option value="crumbling">Crumbling</option>
+                  <option value="anti_grav">Anti-Grav</option>
+                </select>
+              )}
+
               <div className="flex items-center gap-1 font-mono text-[11px]">
                 <span>X:</span>
                 <input
@@ -1332,6 +1434,14 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               title="Add Platform"
             >
               <span>🧱 Platform</span>
+            </button>
+
+            <button
+              onClick={() => handleAddItem('anti_grav', 'platform')}
+              className="px-2 py-1 bg-sky-950/60 hover:bg-sky-900/70 text-cyan-300 font-bold rounded-lg border border-cyan-500/40 flex items-center gap-1 transition-colors"
+              title="Add Anti-Gravity Tractor Beam"
+            >
+              <span>🌌 Grav Beam</span>
             </button>
 
             <button

@@ -573,6 +573,65 @@ class SoundEngine {
     } catch {}
   }
 
+  // CINEMATIC LEVEL TRANSITION SOUND
+  public playLevelTransition() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+
+      // 1. Gentle low-frequency cinematic ambient sweep
+      const sweepOsc = this.ctx.createOscillator();
+      const sweepGain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(250, now);
+      filter.frequency.exponentialRampToValueAtTime(1400, now + 0.3);
+      filter.frequency.exponentialRampToValueAtTime(300, now + 0.65);
+
+      sweepOsc.type = 'sine';
+      sweepOsc.frequency.setValueAtTime(110, now);
+      sweepOsc.frequency.exponentialRampToValueAtTime(220, now + 0.28);
+      sweepOsc.frequency.exponentialRampToValueAtTime(82, now + 0.65);
+
+      sweepGain.gain.setValueAtTime(0.01, now);
+      sweepGain.gain.linearRampToValueAtTime(0.24, now + 0.18);
+      sweepGain.gain.exponentialRampToValueAtTime(0.005, now + 0.65);
+
+      sweepOsc.connect(filter);
+      filter.connect(sweepGain);
+      sweepGain.connect(this.masterGain);
+
+      sweepOsc.start(now);
+      sweepOsc.stop(now + 0.66);
+
+      // 2. Chime chord shimmer (ascending ethereal fifths)
+      const chimes = [440, 554.37, 659.25, 880];
+      chimes.forEach((freq, idx) => {
+        if (!this.ctx || !this.masterGain) return;
+        const chimeOsc = this.ctx.createOscillator();
+        const chimeGain = this.ctx.createGain();
+        const t = now + 0.1 + idx * 0.045;
+
+        chimeOsc.type = 'triangle';
+        chimeOsc.frequency.setValueAtTime(freq, t);
+
+        chimeGain.gain.setValueAtTime(0.01, t);
+        chimeGain.gain.linearRampToValueAtTime(0.12, t + 0.03);
+        chimeGain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+
+        chimeOsc.connect(chimeGain);
+        chimeGain.connect(this.masterGain);
+
+        chimeOsc.start(t);
+        chimeOsc.stop(t + 0.35);
+      });
+    } catch {}
+  }
+
   // RETRO CHIPTUNE BGM GENERATOR
   private startMusic() {
     if (this.isMusicPlaying) return;
@@ -761,6 +820,33 @@ class SoundEngine {
 
       osc.start(now);
       osc.stop(now + 0.13);
+    } catch {}
+  }
+
+  // ANTI-GRAVITY TRACTOR BEAM LIFT SOUND (Harmonic sci-fi upward resonance)
+  public playGravBeam() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(740, now + 0.22);
+
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.linearRampToValueAtTime(0.24, now + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(now);
+      osc.stop(now + 0.23);
     } catch {}
   }
 

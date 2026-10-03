@@ -48,6 +48,7 @@ export class PhysicsEngine {
     if (player.invulnerableTimer > 0) player.invulnerableTimer -= dt;
     if (player.speedBoostTimer > 0) player.speedBoostTimer -= dt;
     if (player.jumpBoostTimer > 0) player.jumpBoostTimer -= dt;
+    if (player.gravSoundTimer && player.gravSoundTimer > 0) player.gravSoundTimer -= dt;
 
     if (player.coyoteTimer > 0) player.coyoteTimer -= dt;
     if (player.jumpBufferTimer > 0) player.jumpBufferTimer -= dt;
@@ -357,8 +358,12 @@ export class PhysicsEngine {
           h.y += (h.vy || 0) * fpsRatio;
           const minY = Math.min(h.startY, h.startY + h.distanceY);
           const maxY = Math.max(h.startY, h.startY + h.distanceY);
-          if (h.y < minY || h.y > maxY) {
-            h.vy = -(h.vy || h.speed);
+          if (h.y < minY) {
+            h.y = minY;
+            h.vy = Math.abs(h.vy || h.speed);
+          } else if (h.y > maxY) {
+            h.y = maxY;
+            h.vy = -Math.abs(h.vy || h.speed);
           }
         }
       }
@@ -618,15 +623,68 @@ export class PhysicsEngine {
           particles.addPopup(e.x + e.width / 2, e.y - 12, 'HONK! 🪿', '#F97316');
         }
       }
+
+      // NEW FIRE ENEMY: FIRE IMP (spits leaping fireballs)
+      if (e.type === 'fire_imp') {
+        if (e.shootTimer === undefined) e.shootTimer = 1.8 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0) {
+          e.shootTimer = 3.2;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 18;
+          level.enemyProjectiles.push({
+            id: `fireball_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 4,
+            vx: e.facing * 3.2,
+            vy: -1.8,
+            width: 18,
+            height: 18,
+            type: 'fireball',
+            rotation: 0,
+            life: 0,
+            maxLife: 5.0,
+            bounces: 0
+          });
+          particles.emitSparkles(projX, e.y + 8, '#F97316', 8);
+          particles.addPopup(e.x + e.width / 2, e.y - 10, 'BURN! 🔥', '#EA580C');
+        }
+      }
     });
 
-    // 3.8 Update Enemy Projectiles (ants, tumbling logs, stink clouds, honk waves)
+    // 3.8 Update Enemy Projectiles (ants, tumbling logs, stink clouds, honk waves, fireballs)
     if (level.enemyProjectiles && level.enemyProjectiles.length > 0) {
       for (let i = level.enemyProjectiles.length - 1; i >= 0; i--) {
         const ep = level.enemyProjectiles[i];
         ep.life += dt;
 
-        if (ep.type === 'log') {
+        if (ep.type === 'fireball') {
+          // Bouncing spinning fireball
+          ep.vy += 0.28 * fpsRatio;
+          ep.x += ep.vx * fpsRatio;
+          ep.y += ep.vy * fpsRatio;
+          ep.rotation = (ep.rotation || 0) + (ep.vx > 0 ? 0.22 : -0.22) * fpsRatio;
+          if (Math.random() < 0.4) {
+            particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#F97316', 2);
+          }
+
+          // Platform bounces
+          for (const p of level.platforms) {
+            if (
+              ep.x + ep.width > p.x &&
+              ep.x < p.x + p.width &&
+              ep.y + ep.height >= p.y &&
+              ep.y + ep.height <= p.y + 16 &&
+              ep.vy > 0
+            ) {
+              ep.y = p.y - ep.height;
+              ep.vy = -Math.abs(ep.vy) * 0.7;
+              ep.bounces = (ep.bounces || 0) + 1;
+              particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height, '#F59E0B', 4);
+              break;
+            }
+          }
+        } else if (ep.type === 'log') {
           ep.vy += 0.35 * fpsRatio;
           ep.x += ep.vx * fpsRatio;
           ep.y += ep.vy * fpsRatio;
@@ -892,7 +950,7 @@ export class PhysicsEngine {
 
   private resolveHorizontalCollisions(player: Player, platforms: Platform[]) {
     for (const p of platforms) {
-      if (p.type === 'one-way') continue; // Pass-through on X
+      if (p.type === 'one-way' || p.type === 'anti_grav') continue; // Pass-through on X
       if (p.id === player.ridingPlatformId) continue; // Don't block horizontal movement against the platform you are riding
       if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
 
@@ -935,6 +993,39 @@ export class PhysicsEngine {
           player.canDoubleJump = true;
           player.hasDoubleJumped = false;
           player.coyoteTimer = this.COYOTE_TIME;
+        }
+        continue;
+      }
+
+      // ANTI-GRAVITY TRACTOR BEAM PLATFORMS
+      if (p.type === 'anti_grav') {
+        if (this.isOverlapping(player, p)) {
+          // Buoyant anti-gravity upward tractor force
+          player.vy = Math.max(-7.4, player.vy - 0.95);
+          player.isGrounded = false;
+          player.isJumping = true;
+          player.canDoubleJump = true;
+          player.hasDoubleJumped = false;
+          player.ridingPlatformId = null;
+
+          // Sweeping mobile tractor beam horizontal momentum
+          if (p.vx) {
+            player.x += p.vx;
+          }
+
+          // Ion particles rising inside beam
+          if (Math.random() < 0.35) {
+            particles.emitDust(
+              player.x + Math.random() * player.width, 
+              player.y + player.height * 0.8, 
+              2, 
+              '#38BDF8'
+            );
+          }
+          if (sound && (!player.gravSoundTimer || player.gravSoundTimer <= 0)) {
+            sound.playGravBeam();
+            player.gravSoundTimer = 0.28;
+          }
         }
         continue;
       }
@@ -1142,7 +1233,7 @@ export class PhysicsEngine {
           sound.playStomp();
           if (onEnemyDefeated) onEnemyDefeated(e);
           particles.emitEnemyPop(e.x + e.width / 2, e.y + e.height / 2, '#10B981', 16);
-          const pts = e.type === 'goose' ? 450 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' ? 350 : 250));
+          const pts = e.type === 'goose' ? 450 : (e.type === 'fire_imp' ? 400 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' ? 350 : 250)));
           particles.addPopup(e.x + e.width / 2, e.y, `+${pts}`, '#34D399');
           onScoreAdd(pts);
         } else {

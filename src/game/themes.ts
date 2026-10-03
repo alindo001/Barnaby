@@ -121,5 +121,53 @@ export const THEMES: Record<string, LevelTheme> = {
     platformTop: '#A855F7',
     platformBorder: '#3B0764',
     accentColor: '#EC4899'
+  },
+  neonNight: {
+    id: 'neon_night',
+    name: 'Neon Night',
+    skyColorTop: '#060312',
+    skyColorBottom: '#240647',
+    cloudColor: '#FF007F',
+    mountainColor: '#0E0728',
+    platformFill: '#0D1117',
+    platformTop: '#00F0FF',
+    platformBorder: '#FF007F',
+    accentColor: '#00F0FF',
+    neonCyan: '#00F0FF',
+    neonMagenta: '#FF007F',
+    neonPurple: '#A855F7',
+    neonYellow: '#FFE600',
+    gridLineColor: 'rgba(0, 240, 255, 0.35)',
+    sunColor: '#FF007F'
+  },
+  space: {
+    id: 'space_station',
+    name: 'Cosmic Deep Space',
+    skyColorTop: '#02000A',
+    skyColorBottom: '#0A051E',
+    cloudColor: '#7C3AED',
+    mountainColor: '#120A2A',
+    platformFill: '#0B0F19',
+    platformTop: '#38BDF8',
+    platformBorder: '#818CF8',
+    accentColor: '#38BDF8',
+    spaceVoid: '#010008',
+    spaceNebula1: 'rgba(124, 58, 237, 0.28)',
+    spaceNebula2: 'rgba(56, 189, 248, 0.22)',
+    spaceStarColor: '#F8FAFC'
+  },
+  volcano: {
+    id: 'volcano_inferno',
+    name: 'Infernal Volcano',
+    skyColorTop: '#0F0303',
+    skyColorBottom: '#3D0707',
+    cloudColor: '#7F1D1D',
+    mountainColor: '#260606',
+    platformFill: '#1C1917',   // Basalt obsidian rock
+    platformTop: '#EA580C',    // Scorched magma crust
+    platformBorder: '#DC2626', // Crimson molten edge
+    accentColor: '#F97316',    // Blazing orange
+    magmaGlow: 'rgba(239, 68, 68, 0.45)',
+    emberColor: '#FDE047'
   }
 };

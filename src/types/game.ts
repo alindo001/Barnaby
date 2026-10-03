@@ -1,6 +1,6 @@
 export type GameState = 'MENU' | 'PLAYING' | 'PAUSED' | 'LEVEL_COMPLETE' | 'GAME_OVER' | 'VICTORY';
 
-export type PlatformType = 'solid' | 'one-way' | 'bouncy' | 'crumbling' | 'ice';
+export type PlatformType = 'solid' | 'one-way' | 'bouncy' | 'crumbling' | 'ice' | 'anti_grav';
 
 export interface Platform {
   id: string;
@@ -94,9 +94,9 @@ export interface BlasterBullet {
   maxLife: number;
 }
 
-export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose';
+export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose' | 'fire_imp';
 
-export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave';
+export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave' | 'fireball';
 
 export interface EnemyProjectile {
   id: string;
@@ -186,6 +186,7 @@ export interface Player {
   standingOnIce?: boolean;
   // Character visual customization
   character?: CharacterConfig;
+  gravSoundTimer?: number;
 }
 
 export type CharacterType = 'bird' | 'frog' | 'axolotl' | 'capybara';
@@ -264,6 +265,7 @@ export interface Camera {
 }
 
 export interface LevelTheme {
+  id?: string;
   name: string;
   skyColorTop: string;
   skyColorBottom: string;
@@ -273,6 +275,16 @@ export interface LevelTheme {
   platformTop: string;
   platformBorder: string;
   accentColor: string;
+  neonCyan?: string;
+  neonMagenta?: string;
+  neonPurple?: string;
+  neonYellow?: string;
+  gridLineColor?: string;
+  sunColor?: string;
+  spaceVoid?: string;
+  spaceNebula1?: string;
+  spaceNebula2?: string;
+  spaceStarColor?: string;
 }
 
 export type LevelGameplayType = 'runner' | 'terrain' | 'rocketeer' | 'gadget';
@@ -340,6 +352,26 @@ export interface GameStats {
   blasterAmmo?: number;
   maxBlasterAmmo?: number;
   hasShield?: boolean;
+  isTransitioning?: boolean;
+  transitionProgress?: number;
+}
+
+export interface LevelTransitionState {
+  active: boolean;
+  phase: 'fade_out' | 'hold' | 'fade_in';
+  progress: number; // 0 to 1
+  holdTime?: number;
+  holdDuration?: number;
+  duration: number; // Duration of each fade phase in seconds
+  targetLevelIndex: number;
+  resetCheckpoints: boolean;
+  levelTitle?: string;
+  worldName?: string;
+  category?: string;
+  description?: string;
+  parTime?: number;
+  threeStarScore?: number;
+  onComplete?: () => void;
 }
 
 export interface InputState {

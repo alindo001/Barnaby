@@ -199,6 +199,24 @@ export const ENEMY_COMPENDIUM: EnemyCompendiumEntry[] = [
     color: '#EAB308',
     bgColor: 'bg-amber-950/40',
     borderColor: 'border-amber-500/40'
+  },
+  {
+    type: 'fire_imp',
+    name: 'Ignis the Fire Imp',
+    species: 'Daemonium Pyrotechnicus',
+    tagline: 'Mischievous volcanic spark-spitter born from liquid magma',
+    description: 'Birthed directly from the molten volcanic vents of the Infernal Caldera, this blazing imp hops across jagged obsidian ridges, spitting crackling fireballs that tumble and bounce along the ground!',
+    threatLevel: 'Menacing',
+    threatStars: 4,
+    attackName: '🔥 Molten Fireball Spit',
+    attackDescription: 'Gathers molten heat from its flaming crest and hurls spinning fireballs toward Barnaby. Jump over the rolling fireballs or deflect with Bubble Shield!',
+    weakness: 'Stomp on its head from above, or blast with plasma bolts and jetpack rockets.',
+    habitat: 'Volcanic Vents, Molten Calderas, Obsidian Ridges',
+    points: 400,
+    emoji: '🔥',
+    color: '#EF4444',
+    bgColor: 'bg-red-950/40',
+    borderColor: 'border-orange-500/50'
   }
 ];
 

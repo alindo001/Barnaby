@@ -24,12 +24,18 @@ export default function App() {
     score: 0,
     coins: 0,
     gems: 0,
+    acorns: 0,
+    totalLevelAcorns: 0,
+    levelAcorns: {},
+    highestClearedLevelId: 0,
     lives: 3,
     time: 0,
     levelIndex: 0,
     levelStars: {},
     highScores: {},
-    deaths: 0
+    deaths: 0,
+    enemiesDefeated: {},
+    totalEnemiesDefeated: 0
   });
 
   const [currentLevel, setCurrentLevel] = useState<LevelData | null>(null);
@@ -127,7 +133,7 @@ export default function App() {
   // Action Handlers
   const handleStartGame = useCallback(() => {
     if (engineRef.current) {
-      engineRef.current.startLevel(0);
+      engineRef.current.transitionToLevel(0, true);
     }
   }, []);
 
@@ -157,8 +163,9 @@ export default function App() {
 
   const handleSelectLevel = useCallback((index: number) => {
     if (engineRef.current) {
-      engineRef.current.startLevel(index);
+      engineRef.current.transitionToLevel(index, true);
     }
+    setShowLevelSelect(false);
   }, []);
 
   const handleToggleSound = useCallback(() => {
@@ -293,11 +300,11 @@ export default function App() {
       />
 
       {/* In-Game Active HUD */}
-      {gameState === 'PLAYING' && currentLevel && (
+      {gameState === 'PLAYING' && currentLevel && !stats.isTransitioning && (
         <GameHUD
           stats={stats}
           currentLevel={currentLevel}
-          isPaused={gameState === 'PAUSED'}
+          isPaused={false}
           soundEnabled={soundEnabled}
           musicEnabled={musicEnabled}
           dpadSize={dpadSize}
@@ -318,7 +325,7 @@ export default function App() {
       )}
 
       {/* On-Screen Touch Controls (Mobile/Tablet or when touch enabled) */}
-      {(isTouchDevice || gameState === 'PLAYING') && (
+      {(isTouchDevice || gameState === 'PLAYING') && !stats.isTransitioning && (
         <TouchControls 
           hasJetpack={stats.hasJetpack} 
           hasBlaster={stats.hasBlaster}
@@ -333,7 +340,7 @@ export default function App() {
       )}
 
       {/* Menus / Overlays (Start, Pause, Level Cleared, Game Over, Victory) */}
-      {currentLevel && (
+      {currentLevel && !stats.isTransitioning && (
         <GameOverlay
           gameState={gameState}
           stats={stats}
