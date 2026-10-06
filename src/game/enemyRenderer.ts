@@ -1044,7 +1044,7 @@ export function drawEnemyFigure(
     ctx.fill();
 
     ctx.restore();
-  } else {
+  } else if (e.type === 'slime') {
     // ==========================================
     // CLASSIC SLIME
     // ==========================================
@@ -1078,6 +1078,349 @@ export function drawEnemyFigure(
     ctx.arc(eyeOffsetX - 3, -0.5, 1, 0, Math.PI * 2);
     ctx.arc(eyeOffsetX + 3, -0.5, 1, 0, Math.PI * 2);
     ctx.fill();
+  } else if (e.type === 'crystal_golem') {
+    // ==========================================
+    // PRISMATIC ENEMY: CRYSTAL GOLEM (Prismor)
+    // Faceted amethyst & obsidian automaton, sharp shoulder crystal clusters, glowing cyan eye slit
+    // ==========================================
+    const stepBob = Math.sin(animTime * 8) * 1.5;
+    ctx.translate(cx, cy + stepBob);
+    if (facing === -1) ctx.scale(-1, 1);
+
+    // Glowing Crystal Resonance Aura
+    ctx.save();
+    ctx.shadowColor = '#C084FC';
+    ctx.shadowBlur = 10;
+
+    // 1. Heavy Crystalline Obsidian Legs
+    const legWalk = Math.sin(animTime * 8) * 4;
+    ctx.fillStyle = '#180E29';
+    ctx.strokeStyle = '#6B21A8';
+    ctx.lineWidth = 1.4;
+    // Left Leg
+    ctx.beginPath();
+    ctx.moveTo(-7, 6);
+    ctx.lineTo(-9 + legWalk * 0.4, 13);
+    ctx.lineTo(-3 + legWalk * 0.4, 13);
+    ctx.lineTo(-3, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Right Leg
+    ctx.beginPath();
+    ctx.moveTo(3, 6);
+    ctx.lineTo(1 - legWalk * 0.4, 13);
+    ctx.lineTo(7 - legWalk * 0.4, 13);
+    ctx.lineTo(7, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 2. Main Torso - Faceted Obsidian Bedrock
+    ctx.fillStyle = '#1A0F2E';
+    ctx.beginPath();
+    ctx.moveTo(-11, -5);
+    ctx.lineTo(11, -5);
+    ctx.lineTo(8, 7);
+    ctx.lineTo(-8, 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Inner Amethyst Geode Fracture Lines
+    ctx.strokeStyle = '#A855F7';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(-5, -3);
+    ctx.lineTo(0, 1);
+    ctx.lineTo(6, -2);
+    ctx.moveTo(0, 1);
+    ctx.lineTo(-2, 5);
+    ctx.stroke();
+
+    // 3. Spiky Crystalline Shoulder Clusters (Defensive spikes!)
+    ctx.fillStyle = '#C084FC';
+    ctx.strokeStyle = '#E9D5FF';
+    ctx.lineWidth = 1.2;
+    // Left shoulder cluster
+    ctx.beginPath();
+    ctx.moveTo(-10, -5);
+    ctx.lineTo(-14, -13);
+    ctx.lineTo(-9, -8);
+    ctx.lineTo(-6, -11);
+    ctx.lineTo(-5, -5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Right shoulder cluster
+    ctx.beginPath();
+    ctx.moveTo(5, -5);
+    ctx.lineTo(8, -12);
+    ctx.lineTo(10, -8);
+    ctx.lineTo(14, -14);
+    ctx.lineTo(11, -5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // 4. Head / Visor Dome
+    ctx.fillStyle = '#261545';
+    ctx.strokeStyle = '#9333EA';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(-6, -6);
+    ctx.lineTo(6, -6);
+    ctx.lineTo(4, -12);
+    ctx.lineTo(-4, -12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Glowing Cyan Visor Eye Slit
+    ctx.fillStyle = '#00F0FF';
+    ctx.shadowColor = '#00F0FF';
+    ctx.shadowBlur = 8;
+    ctx.fillRect(-3.5, -9.5, 7, 2.5);
+
+    // 5. Heavy Crystal Fist
+    const punchX = 10 + Math.sin(animTime * 6) * 2;
+    ctx.fillStyle = '#A855F7';
+    ctx.strokeStyle = '#F3E8FF';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(punchX, 1);
+    ctx.lineTo(punchX + 5, 2);
+    ctx.lineTo(punchX + 4, 7);
+    ctx.lineTo(punchX - 1, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+  } else if (e.type === 'crystal_bat') {
+    // ==========================================
+    // PRISMATIC ENEMY: CRYSTAL BAT (Glint)
+    // Translucent glowing amethyst crystal wings, violet body, glowing cyan eyes
+    // ==========================================
+    const flap = Math.sin(animTime * 14);
+    ctx.translate(cx, cy);
+    if (facing === -1) ctx.scale(-1, 1);
+
+    ctx.save();
+    ctx.shadowColor = '#A855F7';
+    ctx.shadowBlur = 8;
+
+    // Translucent Faceted Crystal Wings
+    const wingY = flap * 7;
+    ctx.fillStyle = 'rgba(192, 132, 252, 0.75)';
+    ctx.strokeStyle = '#E9D5FF';
+    ctx.lineWidth = 1.2;
+
+    // Left Wing
+    ctx.beginPath();
+    ctx.moveTo(-3, -1);
+    ctx.lineTo(-15, -9 + wingY);
+    ctx.lineTo(-12, 1 + wingY * 0.5);
+    ctx.lineTo(-8, 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Right Wing
+    ctx.beginPath();
+    ctx.moveTo(3, -1);
+    ctx.lineTo(15, -9 + wingY);
+    ctx.lineTo(12, 1 + wingY * 0.5);
+    ctx.lineTo(8, 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Wing Crystal Veins
+    ctx.strokeStyle = '#06B6D4';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(-10, -5 + wingY * 0.7);
+    ctx.moveTo(0, 0); ctx.lineTo(10, -5 + wingY * 0.7);
+    ctx.stroke();
+
+    // Bat Fur Body
+    ctx.fillStyle = '#2E1065';
+    ctx.beginPath();
+    ctx.ellipse(0, 1, 5, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pointed Ears
+    ctx.fillStyle = '#4C1D95';
+    ctx.beginPath();
+    ctx.moveTo(-4, -4); ctx.lineTo(-6, -10); ctx.lineTo(-1, -6);
+    ctx.moveTo(4, -4); ctx.lineTo(6, -10); ctx.lineTo(1, -6);
+    ctx.fill();
+
+    // Glowing Cyan Eyes
+    ctx.fillStyle = '#22D3EE';
+    ctx.shadowColor = '#22D3EE';
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.arc(-2, -1, 1.4, 0, Math.PI * 2);
+    ctx.arc(2, -1, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (e.type === 'dune_scorpion') {
+    // ==========================================
+    // TWILIGHT DUNES ENEMY: DUNE SCORPION (Scorpius)
+    // Armored desert arachnid with snapping pincers, 6 skittering legs,
+    // and a venomous curved stinger tail arching over the body
+    // ==========================================
+    ctx.translate(cx, cy);
+    if (facing === -1) ctx.scale(-1, 1);
+
+    const legCycle = Math.sin(animTime * 16);
+    const clawPinch = Math.sin(animTime * 8) * 0.18;
+    const tailSway = Math.sin(animTime * 4) * 2;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(245, 158, 11, 0.4)';
+    ctx.shadowBlur = 6;
+
+    // 6 Skittering Legs (Underneath body)
+    ctx.strokeStyle = '#92400E';
+    ctx.lineWidth = 1.8;
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 3; i++) {
+      const legX = -4 + i * 5;
+      const legOffset = Math.sin(animTime * 16 + i * 2) * 3;
+      // Front leg
+      ctx.beginPath();
+      ctx.moveTo(legX, 4);
+      ctx.lineTo(legX - 2, 8 + legOffset);
+      ctx.lineTo(legX - 5, 12);
+      ctx.stroke();
+
+      // Back leg
+      ctx.beginPath();
+      ctx.moveTo(legX, 4);
+      ctx.lineTo(legX + 2, 8 - legOffset);
+      ctx.lineTo(legX + 5, 12);
+      ctx.stroke();
+    }
+
+    // Segmented Armored Body (Carapace)
+    const abdomenColors = ['#78350F', '#92400E', '#B45309', '#D97706'];
+    for (let s = 0; s < 3; s++) {
+      ctx.fillStyle = abdomenColors[s % abdomenColors.length];
+      ctx.strokeStyle = '#451A03';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(-8 + s * 4, -2, 6, 9, 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Main Cephalothorax (Head/Torso)
+    ctx.fillStyle = '#B45309';
+    ctx.strokeStyle = '#451A03';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.ellipse(3, 2, 7, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Golden Chitin Top Ridge
+    ctx.fillStyle = '#F59E0B';
+    ctx.beginPath();
+    ctx.ellipse(3, 0, 4, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glowing Desert Cyan Eyes
+    ctx.fillStyle = '#06B6D4';
+    ctx.shadowColor = '#06B6D4';
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    ctx.arc(6, 0, 1.3, 0, Math.PI * 2);
+    ctx.arc(8, 2, 1.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Snapping Armored Pincers (Front Claws)
+    ctx.strokeStyle = '#92400E';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(7, 4);
+    ctx.lineTo(13, 2);
+    ctx.stroke();
+
+    // Pincer Claws
+    ctx.fillStyle = '#D97706';
+    ctx.strokeStyle = '#78350F';
+    ctx.lineWidth = 1.2;
+    // Upper jaw
+    ctx.beginPath();
+    ctx.moveTo(13, 2);
+    ctx.lineTo(17, 0 - clawPinch * 4);
+    ctx.lineTo(15, 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Lower jaw
+    ctx.beginPath();
+    ctx.moveTo(13, 2);
+    ctx.lineTo(17, 4 + clawPinch * 4);
+    ctx.lineTo(15, 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Venomous Curved Stinger Tail (Arching overhead to the front)
+    ctx.strokeStyle = '#B45309';
+    ctx.fillStyle = '#D97706';
+    ctx.lineWidth = 1.4;
+
+    const tailSegs = [
+      { x: -9, y: 1, r: 3.5 },
+      { x: -12, y: -3 + tailSway * 0.2, r: 3.2 },
+      { x: -11, y: -8 + tailSway * 0.5, r: 3 },
+      { x: -7, y: -12 + tailSway * 0.8, r: 2.8 },
+      { x: -1, y: -13 + tailSway, r: 2.6 }
+    ];
+
+    for (let t = 0; t < tailSegs.length; t++) {
+      const seg = tailSegs[t];
+      ctx.fillStyle = t % 2 === 0 ? '#B45309' : '#D97706';
+      ctx.beginPath();
+      ctx.arc(seg.x, seg.y, seg.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Aculeus / Stinger Bulb & Needle (Pointing forward menacingly)
+    const stingerX = 4 + tailSway;
+    const stingerY = -12;
+    ctx.fillStyle = '#EF4444';
+    ctx.strokeStyle = '#7F1D1D';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(stingerX - 3, stingerY, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Curved Stinger Needle
+    ctx.strokeStyle = '#FDE047';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(stingerX - 1, stingerY);
+    ctx.quadraticCurveTo(stingerX + 4, stingerY - 1, stingerX + 5, stingerY + 4);
+    ctx.stroke();
+
+    // Pulsing Venom Drop
+    const venomGlow = Math.sin(animTime * 6) * 0.3 + 0.7;
+    ctx.fillStyle = `rgba(34, 211, 238, ${venomGlow})`;
+    ctx.beginPath();
+    ctx.arc(stingerX + 5, stingerY + 4, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   }
 
   ctx.restore();
@@ -1316,6 +1659,94 @@ export function drawEnemyProjectileFigure(
     ctx.beginPath();
     ctx.arc(-r * 0.35, -r * 0.25, 2, 0, Math.PI * 2);
     ctx.arc(r * 0.3, r * 0.3, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (ep.type === 'crystal_shard') {
+    // ==========================================
+    // ROTATING FACETED CRYSTAL SHARD
+    // Sharp hexagonal geode prism with dual-tone purple/cyan glow & refractive center
+    // ==========================================
+    const r = ep.width / 2;
+    const rot = ep.rotation || 0;
+    ctx.rotate(rot);
+
+    ctx.save();
+    ctx.shadowColor = '#C084FC';
+    ctx.shadowBlur = 10;
+
+    // Outer Faceted Crystal Prism (Diamond / Hexagon)
+    ctx.fillStyle = '#C084FC';
+    ctx.strokeStyle = '#00F0FF';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(r * 1.2, 0);
+    ctx.lineTo(r * 0.4, -r * 0.7);
+    ctx.lineTo(-r * 0.7, -r * 0.6);
+    ctx.lineTo(-r * 1.1, 0);
+    ctx.lineTo(-r * 0.7, r * 0.6);
+    ctx.lineTo(r * 0.4, r * 0.7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Inner Refraction Ridge
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(r * 1.2, 0);
+    ctx.lineTo(-r * 0.4, 0);
+    ctx.moveTo(-r * 0.4, 0);
+    ctx.lineTo(r * 0.4, -r * 0.7);
+    ctx.moveTo(-r * 0.4, 0);
+    ctx.lineTo(r * 0.4, r * 0.7);
+    ctx.stroke();
+
+    // Incandescent Core Spark
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(0, 0, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  } else if (ep.type === 'sand_burst') {
+    // ==========================================
+    // TWILIGHT DUNES PROJECTILE: SPINNING SAND BURST
+    // Whirling vortex of glowing desert sand, terracotta pebbles, and solar sparks
+    // ==========================================
+    const r = ep.width / 2;
+    const spin = ep.rotation || gameTime * 8;
+    ctx.rotate(spin);
+
+    ctx.save();
+    ctx.shadowColor = '#F59E0B';
+    ctx.shadowBlur = 8;
+
+    // Glowing Golden Sand Core
+    const sandGrad = ctx.createRadialGradient(0, 0, 1, 0, 0, r);
+    sandGrad.addColorStop(0, '#FEF3C7');
+    sandGrad.addColorStop(0.5, '#F59E0B');
+    sandGrad.addColorStop(1, 'rgba(180, 83, 9, 0)');
+    ctx.fillStyle = sandGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Whirling Sand Shards & Pebbles (3 orbiting arcs)
+    ctx.fillStyle = '#D97706';
+    for (let i = 0; i < 4; i++) {
+      const angle = (i * Math.PI) / 2;
+      const px = Math.cos(angle) * (r * 0.7);
+      const py = Math.sin(angle) * (r * 0.7);
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Solar Sparks
+    ctx.fillStyle = '#06B6D4';
+    ctx.beginPath();
+    ctx.arc(0, 0, 1.8, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();

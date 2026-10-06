@@ -75,10 +75,10 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         paddingLeft: 'max(0.5rem, env(safe-area-inset-left, 0.5rem))',
         paddingRight: 'max(0.5rem, env(safe-area-inset-right, 0.5rem))'
       }}
-      className="absolute top-0 left-0 right-0 pointer-events-none flex justify-between items-start select-none z-10 max-w-full overflow-hidden"
+      className="absolute top-0 left-0 right-0 pointer-events-none flex justify-between items-start gap-2 select-none z-10 w-full max-w-full box-border"
     >
       {/* Left HUD: Level Info, Lives, Stats & Active Powerup Status */}
-      <div className="flex flex-col gap-1.5 pointer-events-auto max-w-[62%] sm:max-w-none">
+      <div className="flex flex-col gap-1.5 pointer-events-auto max-w-[56%] sm:max-w-[62%] md:max-w-none min-w-0">
         {/* Compact Unified Stats Card */}
         <div className="bg-slate-900/85 backdrop-blur-md px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-700/60 shadow-lg text-white flex flex-col gap-1">
           {/* Top Row: Level Title + Hearts */}
@@ -101,7 +101,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           </div>
 
           {/* Bottom Row: Score, Coins, Gems, Time */}
-          <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs font-medium text-slate-200 pt-0.5 border-t border-slate-800/80">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs font-medium text-slate-200 pt-0.5 border-t border-slate-800/80">
             <div className="flex items-center gap-1 font-mono text-amber-300 shrink-0">
               <span className="text-slate-400 font-sans hidden sm:inline text-[10px]">SCORE:</span>
               <span className="font-bold">{stats.score.toLocaleString()}</span>
@@ -270,107 +270,129 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             </span>
           </div>
         )}
+
+        {/* Prismatic Magnet Powerup Status Badge */}
+        {stats.magnetTimer !== undefined && stats.magnetTimer > 0 && (
+          <div 
+            id="hud-magnet-badge" 
+            className="flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-md px-2 sm:px-2.5 py-1 rounded-lg border border-purple-400/80 shadow-lg shadow-purple-500/20 text-xs animate-in fade-in duration-200"
+          >
+            <span className="text-xs animate-pulse">🧲</span>
+            <span className="text-[10px] sm:text-[11px] font-black text-purple-300 tracking-wide">
+              MAGNET
+            </span>
+            <span className="text-[9px] text-purple-200 bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/50 font-mono font-bold">
+              {Math.ceil(stats.magnetTimer)}s
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Right HUD: Compact Quick Action Toolbar */}
-      <div className="flex items-center gap-1 sm:gap-1.5 p-1 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto shrink-0">
-        {onToggleDpadSize && (
+      {/* Right HUD: Ergonomic Quick Action Toolbar (Primary Actions + Utility Tools) */}
+      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-1.5 pointer-events-auto shrink-0 max-w-[44%] sm:max-w-none">
+        {/* Secondary Utility Controls Pill */}
+        <div className="flex items-center gap-0.5 sm:gap-1 p-1 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg shrink-0">
+          {onToggleDpadSize && (
+            <button
+              id="btn-hud-dpad-size"
+              onClick={onToggleDpadSize}
+              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-cyan-400 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              title={`Cycle Button Size (Current: ${dpadSize.toUpperCase()})`}
+            >
+              <SlidersHorizontal size={14} className="text-cyan-400" />
+            </button>
+          )}
+
+          {onOpenCharacterSelect && (
+            <button
+              id="btn-hud-character"
+              onClick={onOpenCharacterSelect}
+              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-emerald-400 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              title="Character Locker (Barnaby, Ribbit, Lottie, Chilli)"
+            >
+              <Sparkles size={14} className="text-emerald-400" />
+            </button>
+          )}
+
+          {onOpenEnemyGallery && (
+            <button
+              id="btn-hud-enemy-gallery"
+              onClick={onOpenEnemyGallery}
+              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-300 hover:text-amber-200 active:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+              title={`Critter Codex & Enemy Gallery (Defeated: ${stats.totalEnemiesDefeated || 0})`}
+            >
+              <span className="text-sm">🐾</span>
+            </button>
+          )}
+
+          {onOpenEditor && (
+            <button
+              id="btn-hud-dev-editor"
+              onClick={onOpenEditor}
+              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-400 hover:text-amber-300 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              title="🛠️ Level Visual Editor & Inspector (DEV ONLY)"
+            >
+              <Wrench size={14} />
+            </button>
+          )}
+
           <button
-            id="btn-hud-dpad-size"
-            onClick={onToggleDpadSize}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-cyan-400 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
-            title={`Cycle Button Size (Current: ${dpadSize.toUpperCase()})`}
+            id="btn-help"
+            onClick={onOpenHelp}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title="Controls & Help"
           >
-            <SlidersHorizontal size={14} className="text-cyan-400" />
+            <HelpCircle size={14} />
           </button>
-        )}
 
-        {onOpenCharacterSelect && (
           <button
-            id="btn-hud-character"
-            onClick={onOpenCharacterSelect}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-emerald-400 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
-            title="Character Locker (Barnaby, Ribbit, Lottie, Chilli)"
+            id="btn-fullscreen"
+            onClick={onToggleFullscreen}
+            className="w-7 h-7 sm:w-8 sm:h-8 hidden md:flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title="Fullscreen"
           >
-            <Sparkles size={14} className="text-emerald-400" />
+            <Maximize size={14} />
           </button>
-        )}
+        </div>
 
-        {onOpenEnemyGallery && (
+        {/* Primary Gameplay Controls Pill */}
+        <div className="flex items-center gap-0.5 sm:gap-1 p-1 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700/70 shadow-lg shrink-0">
           <button
-            id="btn-hud-enemy-gallery"
-            onClick={onOpenEnemyGallery}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-300 hover:text-amber-200 active:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
-            title={`Critter Codex & Enemy Gallery (Defeated: ${stats.totalEnemiesDefeated || 0})`}
+            id="btn-level-select"
+            onClick={onOpenLevelSelect}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title="Level Select"
           >
-            <span className="text-sm">🐾</span>
+            <Layers size={14} />
           </button>
-        )}
 
-        <button
-          id="btn-level-select"
-          onClick={onOpenLevelSelect}
-          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-          title="Level Select"
-        >
-          <Layers size={14} />
-        </button>
-
-        {onOpenEditor && (
           <button
-            id="btn-hud-dev-editor"
-            onClick={onOpenEditor}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-amber-400 hover:text-amber-300 active:text-white rounded-lg hover:bg-slate-800 transition-colors"
-            title="🛠️ Level Visual Editor & Inspector (DEV ONLY)"
+            id="btn-restart"
+            onClick={onRestart}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title="Restart Level (R)"
           >
-            <Wrench size={14} />
+            <RotateCcw size={14} />
           </button>
-        )}
 
-        <button
-          id="btn-restart"
-          onClick={onRestart}
-          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-          title="Restart Level (R)"
-        >
-          <RotateCcw size={14} />
-        </button>
+          <button
+            id="btn-sound"
+            onClick={onToggleSound}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title={soundEnabled ? "Mute Sound" : "Enable Sound"}
+          >
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} className="text-rose-400" />}
+          </button>
 
-        <button
-          id="btn-sound"
-          onClick={onToggleSound}
-          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-          title={soundEnabled ? "Mute Sound" : "Enable Sound"}
-        >
-          {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} className="text-rose-400" />}
-        </button>
-
-        <button
-          id="btn-pause"
-          onClick={onTogglePause}
-          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-          title="Pause Game (P / Esc)"
-        >
-          {isPaused ? <Play size={14} /> : <Pause size={14} />}
-        </button>
-
-        <button
-          id="btn-help"
-          onClick={onOpenHelp}
-          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-          title="Controls & Help"
-        >
-          <HelpCircle size={14} />
-        </button>
-
-        <button
-          id="btn-fullscreen"
-          onClick={onToggleFullscreen}
-          className="w-7 h-7 sm:w-8 sm:h-8 hidden md:flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-          title="Fullscreen"
-        >
-          <Maximize size={14} />
-        </button>
+          <button
+            id="btn-pause"
+            onClick={onTogglePause}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            title="Pause Game (P / Esc)"
+          >
+            {isPaused ? <Play size={14} /> : <Pause size={14} />}
+          </button>
+        </div>
       </div>
     </div>
   );

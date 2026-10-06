@@ -86,6 +86,7 @@ export class GameEngine {
     hasBlaster?: boolean;
     blasterAmmo?: number;
     hasSnowCannon?: boolean;
+    magnetTimer?: number;
     score?: number;
     coins?: number;
     gems?: number;
@@ -181,6 +182,50 @@ export class GameEngine {
           delete parsed[16];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[17] && (parsed[17].worldHeight < 800 || !parsed[17].title?.includes('Prismatic') || parsed[17].theme?.id !== 'prismatic_sanctum')) {
+          delete parsed[17];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[18] && (parsed[18].worldHeight < 800 || !parsed[18].title?.includes('Prismatic') || parsed[18].theme?.id !== 'prismatic_sanctum' || !parsed[18].startWithJetpack)) {
+          delete parsed[18];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[19] && (parsed[19].worldHeight < 800 || !parsed[19].title?.includes('Prismatic') || parsed[19].theme?.id !== 'prismatic_sanctum' || !parsed[19].startWithJetpack)) {
+          delete parsed[19];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[20] && (parsed[20].worldHeight < 800 || !parsed[20].title?.includes('Prismatic') || parsed[20].theme?.id !== 'prismatic_sanctum' || !parsed[20].startWithJetpack)) {
+          delete parsed[20];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[21] && (parsed[21].worldHeight < 800 || !parsed[21].title?.includes('Great Sandstone Oasis') || parsed[21].theme?.id !== 'twilight_dunes')) {
+          delete parsed[21];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[22] && (parsed[22].worldHeight < 800 || !parsed[22].title?.includes('Aeronaut') || parsed[22].theme?.id !== 'twilight_dunes' || !parsed[22].startWithJetpack)) {
+          delete parsed[22];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[23] && (parsed[23].worldHeight < 800 || !parsed[23].title?.includes('Pharaoh') || parsed[23].theme?.id !== 'twilight_dunes')) {
+          delete parsed[23];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[24] && (!parsed[24].isUnderwater || parsed[24].worldHeight < 800 || !parsed[24].title?.includes('Aquifer'))) {
+          delete parsed[24];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[25] && (parsed[25].worldHeight < 800 || !parsed[25].title?.includes('Citadel') || parsed[25].theme?.id !== 'twilight_dunes')) {
+          delete parsed[25];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[26] && !parsed[26].platforms?.some((p: any) => p.id === 'w3_l6_spring_acorn1')) {
+          delete parsed[26];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[27] && (parsed[27].worldHeight < 800 || !parsed[27].title?.includes('Osiris') || parsed[27].theme?.id !== 'twilight_dunes')) {
+          delete parsed[27];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         this.levels = this.levels.map(lvl => parsed[lvl.id] ? parsed[lvl.id] : lvl);
       }
     } catch {}
@@ -192,6 +237,7 @@ export class GameEngine {
     }
 
     this.currentLevel = this.cloneLevel(this.levels[0]);
+    this.physics.initPlatforms(this.currentLevel);
     this.player = this.createPlayer(this.currentLevel.playerStart.x, this.currentLevel.playerStart.y);
     this.camera = {
       x: 0,
@@ -329,6 +375,7 @@ export class GameEngine {
         blasterAmmo: this.player ? (this.player.blasterAmmo ?? 0) : 0,
         maxBlasterAmmo: this.player ? (this.player.maxBlasterAmmo ?? 30) : 30,
         hasSnowCannon: this.player ? !!this.player.hasSnowCannon : false,
+        magnetTimer: this.player ? (this.player.magnetTimer ?? 0) : 0,
         isTransitioning: !!(this.transitionState && this.transitionState.active),
         transitionProgress: this.transitionState ? this.transitionState.progress : 0
       });
@@ -408,6 +455,50 @@ export class GameEngine {
           delete parsed[16];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[17] && (parsed[17].worldHeight < 800 || !parsed[17].title?.includes('Prismatic') || parsed[17].theme?.id !== 'prismatic_sanctum')) {
+          delete parsed[17];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[18] && (parsed[18].worldHeight < 800 || !parsed[18].title?.includes('Prismatic') || parsed[18].theme?.id !== 'prismatic_sanctum' || !parsed[18].startWithJetpack)) {
+          delete parsed[18];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[19] && (parsed[19].worldHeight < 800 || !parsed[19].title?.includes('Prismatic') || parsed[19].theme?.id !== 'prismatic_sanctum' || !parsed[19].startWithJetpack)) {
+          delete parsed[19];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[20] && (parsed[20].worldHeight < 800 || !parsed[20].title?.includes('Prismatic') || parsed[20].theme?.id !== 'prismatic_sanctum' || !parsed[20].startWithJetpack)) {
+          delete parsed[20];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[21] && (parsed[21].worldHeight < 800 || !parsed[21].title?.includes('Great Sandstone Oasis') || parsed[21].theme?.id !== 'twilight_dunes')) {
+          delete parsed[21];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[22] && (parsed[22].worldHeight < 800 || !parsed[22].title?.includes('Aeronaut') || parsed[22].theme?.id !== 'twilight_dunes' || !parsed[22].startWithJetpack)) {
+          delete parsed[22];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[23] && (parsed[23].worldHeight < 800 || !parsed[23].title?.includes('Pharaoh') || parsed[23].theme?.id !== 'twilight_dunes')) {
+          delete parsed[23];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[24] && (!parsed[24].isUnderwater || parsed[24].worldHeight < 800 || !parsed[24].title?.includes('Aquifer'))) {
+          delete parsed[24];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[25] && (parsed[25].worldHeight < 800 || !parsed[25].title?.includes('Citadel') || parsed[25].theme?.id !== 'twilight_dunes')) {
+          delete parsed[25];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[26] && !parsed[26].platforms?.some((p: any) => p.id === 'w3_l6_spring_acorn1')) {
+          delete parsed[26];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[27] && (parsed[27].worldHeight < 800 || !parsed[27].title?.includes('Osiris') || parsed[27].theme?.id !== 'twilight_dunes')) {
+          delete parsed[27];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         if (parsed[this.currentLevel.id]) {
           this.currentLevel = this.cloneLevel(parsed[this.currentLevel.id]);
         }
@@ -422,6 +513,7 @@ export class GameEngine {
     const startY = (!resetCheckpoints && this.lastCheckpoint) ? this.lastCheckpoint.y : this.currentLevel.playerStart.y;
 
     this.player = this.createPlayer(startX, startY);
+    this.physics.initPlatforms(this.currentLevel);
 
     if (this.currentLevel.startWithJetpack || this.currentLevel.category === 'rocketeer' || this.currentLevel.id >= 58) {
       this.player.hasJetpack = true;
@@ -499,6 +591,7 @@ export class GameEngine {
         this.player.blasterAmmo = 0;
       }
       this.player.hasSnowCannon = !!this.lastCheckpoint.hasSnowCannon;
+      this.player.magnetTimer = this.lastCheckpoint.magnetTimer ?? 0;
 
       // Revert run stats to the checkpoint snapshot!
       this.stats.score = this.lastCheckpoint.score ?? 0;
@@ -891,6 +984,7 @@ export class GameEngine {
             hasBlaster: this.player ? this.player.hasBlaster : false,
             blasterAmmo: this.player ? this.player.blasterAmmo : 0,
             hasSnowCannon: this.player ? !!this.player.hasSnowCannon : false,
+            magnetTimer: this.player ? (this.player.magnetTimer ?? 0) : 0,
             score: this.stats.score,
             coins: this.stats.coins,
             gems: this.stats.gems,

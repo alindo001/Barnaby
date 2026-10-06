@@ -292,6 +292,14 @@ export class GameRenderer {
     return theme.id === 'clockwork_core' || (theme.name ? theme.name.toLowerCase().includes('clockwork') || theme.name.toLowerCase().includes('cogworks') || theme.name.toLowerCase().includes('steampunk') : false);
   }
 
+  private isPrismaticSanctumTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'prismatic_sanctum' || (theme.name ? theme.name.toLowerCase().includes('prismatic') || theme.name.toLowerCase().includes('geode') || theme.name.toLowerCase().includes('sanctum') : false);
+  }
+
+  private isTwilightDunesTheme(theme: LevelData['theme']): boolean {
+    return theme.id === 'twilight_dunes' || (theme.name ? theme.name.toLowerCase().includes('dunes') || theme.name.toLowerCase().includes('desert') : false);
+  }
+
   private drawBackground(level: LevelData, camera: Camera, width: number, height: number) {
     const { ctx } = this;
     const { theme } = level;
@@ -335,6 +343,18 @@ export class GameRenderer {
     // Check if Clockwork Cogworks aesthetic
     if (this.isClockworkTheme(theme)) {
       this.drawClockworkBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Prismatic Geode Sanctum aesthetic
+    if (this.isPrismaticSanctumTheme(theme)) {
+      this.drawPrismaticSanctumBackground(level, camera, width, height);
+      return;
+    }
+
+    // Check if Twilight Dunes aesthetic
+    if (this.isTwilightDunesTheme(theme)) {
+      this.drawTwilightDunesBackground(level, camera, width, height);
       return;
     }
 
@@ -1731,6 +1751,334 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawPrismaticSanctumBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+    const { theme } = level;
+
+    // 1. Midnight Obsidian & Amethyst Sky Gradient
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, theme.skyColorTop || '#070312');
+    skyGrad.addColorStop(0.55, '#19062D');
+    skyGrad.addColorStop(1, theme.skyColorBottom || '#24083E');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Parallax Ceilings & Hanging Amethyst Stalactites (Layer 1 - slow, camera.x * 0.04)
+    ctx.save();
+    const ceilOffset = (camera.x * 0.04) % 360;
+    ctx.fillStyle = '#10051F';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    for (let x = -360; x < width + 360; x += 60) {
+      const sx = x - ceilOffset;
+      const stalactiteLen = 45 + Math.sin(x * 0.08) * 35;
+      ctx.lineTo(sx, 0);
+      ctx.lineTo(sx + 30, stalactiteLen);
+      ctx.lineTo(sx + 60, 0);
+    }
+    ctx.lineTo(width, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Glowing crystalline tips on stalactites
+    for (let x = -360; x < width + 360; x += 60) {
+      const sx = x - ceilOffset;
+      const stalactiteLen = 45 + Math.sin(x * 0.08) * 35;
+      const tipPulse = Math.sin(this.gameTime * 3 + x) * 0.3 + 0.7;
+      ctx.fillStyle = `rgba(192, 132, 252, ${tipPulse * 0.7})`;
+      ctx.beginPath();
+      ctx.arc(sx + 30, stalactiteLen, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 3. Colossal Parallax Crystal Spires & Geodes in Midground (camera.x * 0.08)
+    ctx.save();
+    const crystalList = [
+      { xRel: 0.12, yRel: 0.70, w: 90, h: 220, color: 'rgba(168, 85, 247, 0.20)', stroke: 'rgba(192, 132, 252, 0.4)', type: 'amethyst' },
+      { xRel: 0.32, yRel: 0.65, w: 120, h: 280, color: 'rgba(6, 182, 212, 0.18)', stroke: 'rgba(34, 211, 238, 0.38)', type: 'cyan' },
+      { xRel: 0.58, yRel: 0.72, w: 100, h: 240, color: 'rgba(244, 63, 94, 0.18)', stroke: 'rgba(251, 113, 133, 0.38)', type: 'rose' },
+      { xRel: 0.84, yRel: 0.68, w: 130, h: 300, color: 'rgba(168, 85, 247, 0.22)', stroke: 'rgba(192, 132, 252, 0.45)', type: 'amethyst' }
+    ];
+
+    for (const c of crystalList) {
+      const cx = ((width * c.xRel - camera.x * 0.08) % (width + 500) + width + 500) % (width + 500) - 250;
+      const cy = height * c.yRel;
+
+      // Glow halo behind crystal spire
+      ctx.save();
+      const pulse = Math.sin(this.gameTime * 2.5 + c.xRel * 10) * 0.1 + 0.35;
+      const glowGrad = ctx.createRadialGradient(cx, cy - c.h * 0.5, 10, cx, cy - c.h * 0.5, c.w * 1.5);
+      glowGrad.addColorStop(0, c.stroke);
+      glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glowGrad;
+      ctx.globalAlpha = pulse;
+      ctx.beginPath();
+      ctx.arc(cx, cy - c.h * 0.5, c.w * 1.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Main Crystal Spire (Faceted Hexagonal Obelisk)
+      ctx.save();
+      ctx.fillStyle = c.color;
+      ctx.strokeStyle = c.stroke;
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - c.h); // Crystal Tip
+      ctx.lineTo(cx + c.w * 0.45, cy - c.h * 0.75);
+      ctx.lineTo(cx + c.w * 0.45, cy);
+      ctx.lineTo(cx - c.w * 0.45, cy);
+      ctx.lineTo(cx - c.w * 0.45, cy - c.h * 0.75);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Inner Facet Reflection Lines
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - c.h);
+      ctx.lineTo(cx, cy);
+      ctx.moveTo(cx, cy - c.h * 0.75);
+      ctx.lineTo(cx + c.w * 0.45, cy - c.h * 0.75);
+      ctx.moveTo(cx, cy - c.h * 0.75);
+      ctx.lineTo(cx - c.w * 0.45, cy - c.h * 0.75);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // 4. Parallax Distant Cavern Ridges (Layer 3 - medium, camera.x * 0.14)
+    ctx.save();
+    ctx.fillStyle = '#16082A';
+    ctx.globalAlpha = 0.65;
+    const ridgeOffset = (camera.x * 0.14) % 400;
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for (let x = -400; x < width + 400; x += 150) {
+      const rx = x - ridgeOffset;
+      const ry = height - 120 - Math.sin(x * 0.02) * 50;
+      ctx.lineTo(rx, ry);
+      ctx.lineTo(rx + 75, height - 70);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // 5. Diagonal Prismatic Refraction Beams (Atmospheric light shafts)
+    ctx.save();
+    const beamCount = 4;
+    for (let b = 0; b < beamCount; b++) {
+      const beamX = ((b * 320 + 80 - camera.x * 0.05) % (width + 400) + width + 400) % (width + 400) - 200;
+      const beamAlpha = Math.sin(this.gameTime * 1.5 + b * 1.6) * 0.04 + 0.08;
+      
+      const beamGrad = ctx.createLinearGradient(beamX, 0, beamX + 160, height);
+      beamGrad.addColorStop(0, b % 2 === 0 ? `rgba(168, 85, 247, ${beamAlpha * 1.4})` : `rgba(6, 182, 212, ${beamAlpha * 1.4})`);
+      beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(beamX - 30, 0);
+      ctx.lineTo(beamX + 50, 0);
+      ctx.lineTo(beamX + 220, height);
+      ctx.lineTo(beamX + 110, height);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 6. Ambient Floating Crystal Dust Sparks rising gently
+    ctx.save();
+    const moteCount = 20;
+    for (let m = 0; m < moteCount; m++) {
+      const mx = ((m * 89 + Math.sin(m * 17) * 200 - camera.x * 0.12) % (width + 100) + width + 100) % (width + 100) - 50;
+      const mCycle = (this.gameTime * 0.2 + m * 0.13) % 1;
+      const my = height - mCycle * height;
+      const mAlpha = Math.sin(mCycle * Math.PI) * 0.75;
+      const mColor = m % 3 === 0 ? '#00F0FF' : (m % 3 === 1 ? '#C084FC' : '#F43F5E');
+
+      ctx.fillStyle = mColor;
+      ctx.globalAlpha = mAlpha;
+      ctx.beginPath();
+      ctx.arc(mx, my, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  private drawTwilightDunesBackground(level: LevelData, camera: Camera, width: number, height: number) {
+    const { ctx } = this;
+
+    // 1. Twilight Desert Sky Gradient
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    skyGrad.addColorStop(0, '#140508');    // Deep twilight violet-plum
+    skyGrad.addColorStop(0.35, '#2A0D0B'); // Deep twilight dusk
+    skyGrad.addColorStop(0.65, '#5B220B'); // Sunset terracotta
+    skyGrad.addColorStop(0.85, '#9A3412'); // Rich amber horizon
+    skyGrad.addColorStop(1.0, '#D97706');  // Radiant dusk horizon gold
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Twinkling Desert Stars in Upper Dusk
+    ctx.save();
+    const starCount = 35;
+    for (let s = 0; s < starCount; s++) {
+      const starX = ((s * 137 + 50 - camera.x * 0.015) % width + width) % width;
+      const starY = (s * 31) % (height * 0.38);
+      const twinkle = Math.sin(this.gameTime * 2.5 + s * 1.7) * 0.35 + 0.65;
+      ctx.fillStyle = s % 4 === 0 ? '#FDE68A' : (s % 4 === 1 ? '#67E8F9' : '#FFFFFF');
+      ctx.globalAlpha = twinkle * (1 - starY / (height * 0.42));
+      ctx.beginPath();
+      ctx.arc(starX, starY, s % 3 === 0 ? 1.5 : 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 3. Colossal Setting Twilight Sun on the Horizon
+    ctx.save();
+    const sunX = ((width * 0.72 - camera.x * 0.025) % (width + 400) + width + 400) % (width + 400) - 200;
+    const sunY = height * 0.62;
+    const sunRadius = 65;
+
+    // Atmospheric Solar Corona Glow
+    const sunCorona = ctx.createRadialGradient(sunX, sunY, sunRadius * 0.3, sunX, sunY, sunRadius * 2.4);
+    sunCorona.addColorStop(0, 'rgba(251, 191, 36, 0.45)');
+    sunCorona.addColorStop(0.5, 'rgba(234, 88, 12, 0.25)');
+    sunCorona.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = sunCorona;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunRadius * 2.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Giant Glowing Sun Disc
+    const sunDisc = ctx.createLinearGradient(sunX, sunY - sunRadius, sunX, sunY + sunRadius);
+    sunDisc.addColorStop(0, '#FEF08A');
+    sunDisc.addColorStop(0.4, '#F59E0B');
+    sunDisc.addColorStop(1, '#DC2626');
+    ctx.fillStyle = sunDisc;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 4. Parallax Layer 1: Distant Ancient Pyramids & Obelisks (camera.x * 0.035)
+    ctx.save();
+    const pyrOffset = (camera.x * 0.035) % 600;
+    ctx.fillStyle = '#2A0E08';
+    ctx.globalAlpha = 0.55;
+    for (let x = -600; x < width + 600; x += 300) {
+      const px = x - pyrOffset;
+      const py = height * 0.68;
+      // Grand Pyramid silhouette
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px + 90, py - 95);
+      ctx.lineTo(px + 180, py);
+      ctx.closePath();
+      ctx.fill();
+
+      // Slender Obelisk next to pyramid
+      ctx.fillRect(px + 215, py - 65, 8, 65);
+      ctx.beginPath();
+      ctx.moveTo(px + 215, py - 65);
+      ctx.lineTo(px + 219, py - 75);
+      ctx.lineTo(px + 223, py - 65);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 5. Parallax Layer 2: Rolling Sand Dunes with Golden Crests (camera.x * 0.08)
+    ctx.save();
+    const dune2Offset = (camera.x * 0.08) % 500;
+    ctx.fillStyle = '#3E170A';
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for (let x = -500; x < width + 500; x += 125) {
+      const dx = x - dune2Offset;
+      const dy = height * 0.72 + Math.sin(x * 0.015) * 45;
+      ctx.lineTo(dx, dy);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Glowing wind-rippled crest along Layer 2 dunes
+    ctx.strokeStyle = '#D97706';
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.45;
+    ctx.beginPath();
+    for (let x = -500; x < width + 500; x += 125) {
+      const dx = x - dune2Offset;
+      const dy = height * 0.72 + Math.sin(x * 0.015) * 45;
+      if (x === -500) ctx.moveTo(dx, dy);
+      else ctx.lineTo(dx, dy);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // 6. Parallax Layer 3: Near Sandstone Mesas, Ruined Arches & Palm Silhouettes (camera.x * 0.16)
+    ctx.save();
+    const mesaOffset = (camera.x * 0.16) % 650;
+    ctx.fillStyle = '#220B05';
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    for (let x = -650; x < width + 650; x += 220) {
+      const mx = x - mesaOffset;
+      const my = height * 0.82 + Math.sin(x * 0.01) * 35;
+      ctx.lineTo(mx, my);
+      ctx.lineTo(mx + 60, my - 25);
+      ctx.lineTo(mx + 150, my - 25);
+      ctx.lineTo(mx + 200, my);
+    }
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.fill();
+
+    // Oasis Palm Silhouettes & Ruined Pillars
+    ctx.fillStyle = '#170603';
+    for (let x = -650; x < width + 650; x += 440) {
+      const px = x - mesaOffset + 110;
+      const py = height * 0.82 - 25;
+      // Palm trunk
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.quadraticCurveTo(px + 8, py - 28, px + 14, py - 48);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#170603';
+      ctx.stroke();
+      // Palm fronds
+      for (let f = -2; f <= 2; f++) {
+        ctx.beginPath();
+        ctx.moveTo(px + 14, py - 48);
+        ctx.quadraticCurveTo(px + 14 + f * 12, py - 58, px + 14 + f * 18, py - 44);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#0F291E';
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // 7. Ambient Drifting Golden Sand Dust Motes
+    ctx.save();
+    const sandMoteCount = 28;
+    for (let m = 0; m < sandMoteCount; m++) {
+      const speed = 0.15 + (m % 3) * 0.08;
+      const mx = ((m * 73 + this.gameTime * 45 * speed - camera.x * 0.15) % (width + 80) + width + 80) % (width + 80) - 40;
+      const mCycle = (this.gameTime * 0.18 + m * 0.11) % 1;
+      const my = height * 0.25 + mCycle * (height * 0.72) + Math.sin(this.gameTime * 3 + m) * 12;
+      const mAlpha = Math.sin(mCycle * Math.PI) * 0.85;
+
+      ctx.fillStyle = m % 3 === 0 ? '#FBBF24' : (m % 3 === 1 ? '#F59E0B' : '#06B6D4');
+      ctx.globalAlpha = mAlpha;
+      ctx.beginPath();
+      ctx.arc(mx, my, m % 4 === 0 ? 2 : 1.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   private drawVolcanoPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
     const orange = theme.accentColor || '#F97316';
@@ -2196,7 +2544,119 @@ export class GameRenderer {
       return;
     }
 
-    // 4. SOLID PLATFORM: Ancient Sunken Abyssal Coral Bedrock
+    // 4. ANTI-GRAVITY PLATFORM: Hydrothermal Bubble Geyser Current Lift Well
+    if (p.type === 'anti_grav') {
+      ctx.save();
+      const emitterH = Math.min(18, p.height * 0.15);
+      const beamH = p.height - emitterH;
+
+      // Base Submerged Volcanic Chimney / Emitter
+      ctx.fillStyle = '#061826';
+      ctx.fillRect(p.x, p.y + beamH, p.width, emitterH);
+      ctx.strokeStyle = '#0284C7';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y + beamH, p.width, emitterH);
+
+      // Vent fissure glow
+      ctx.fillStyle = cyan;
+      ctx.fillRect(p.x + 6, p.y + beamH + 2, p.width - 12, 3);
+
+      // Hydrothermal Water Column / Current Beam
+      const beamGrad = ctx.createLinearGradient(p.x, 0, p.x + p.width, 0);
+      beamGrad.addColorStop(0, 'rgba(6, 182, 212, 0.05)');
+      beamGrad.addColorStop(0.25, 'rgba(34, 211, 238, 0.22)');
+      beamGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.38)');
+      beamGrad.addColorStop(0.75, 'rgba(34, 211, 238, 0.22)');
+      beamGrad.addColorStop(1, 'rgba(6, 182, 212, 0.05)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(p.x, p.y, p.width, beamH);
+
+      // Upward surging bubble stream
+      const t = this.gameTime * 4;
+      const numRings = Math.floor(beamH / 36);
+      for (let i = 0; i < numRings; i++) {
+        const ringY = p.y + ((i * 36 - t * 35) % beamH + beamH) % beamH;
+        const ringAlpha = Math.sin((ringY - p.y) / beamH * Math.PI) * 0.55;
+        if (ringAlpha > 0.05) {
+          ctx.strokeStyle = `rgba(186, 230, 253, ${ringAlpha})`;
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.ellipse(p.x + p.width / 2, ringY, p.width * 0.42, 4, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Rising bubbles along the ring
+          ctx.fillStyle = `rgba(224, 242, 254, ${ringAlpha * 0.8})`;
+          ctx.beginPath();
+          ctx.arc(p.x + p.width * 0.3, ringY - 2, 2.2, 0, Math.PI * 2);
+          ctx.arc(p.x + p.width * 0.7, ringY + 1, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Lateral water boundary shimmer
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x, p.y + beamH);
+      ctx.moveTo(p.x + p.width, p.y);
+      ctx.lineTo(p.x + p.width, p.y + beamH);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // 5. PHASE PLATFORM: Bioluminescent Phasing Jellyfish Coral Shelf
+    if (p.type === 'phase') {
+      ctx.save();
+      const isActive = p.isPhaseActive !== false;
+      const isWarning = !!p.phaseWarning;
+
+      let alpha = 1.0;
+      if (!isActive) {
+        alpha = 0.20 + Math.sin(this.gameTime * 8) * 0.08;
+      } else if (isWarning) {
+        alpha = Math.sin(this.gameTime * 30) > 0 ? 0.95 : 0.35;
+      }
+
+      ctx.globalAlpha = alpha;
+
+      // Platform body: Phosphorescent Marine Membrane
+      const phaseGrad = ctx.createLinearGradient(p.x, p.y, p.x + p.width, p.y + p.height);
+      if (isActive) {
+        phaseGrad.addColorStop(0, '#0D9488');
+        phaseGrad.addColorStop(0.5, '#06B6D4');
+        phaseGrad.addColorStop(1, '#0284C7');
+      } else {
+        phaseGrad.addColorStop(0, 'rgba(13, 148, 136, 0.25)');
+        phaseGrad.addColorStop(0.5, 'rgba(6, 182, 212, 0.25)');
+        phaseGrad.addColorStop(1, 'rgba(2, 132, 199, 0.25)');
+      }
+      ctx.fillStyle = phaseGrad;
+      ctx.beginPath();
+      ctx.roundRect(p.x, p.y, p.width, p.height, [4, 4, 6, 6]);
+      ctx.fill();
+
+      // Bioluminescent Border
+      ctx.strokeStyle = isActive ? (isWarning ? '#F43F5E' : '#38BDF8') : 'rgba(34, 211, 238, 0.4)';
+      ctx.lineWidth = isActive ? 1.6 : 1.0;
+      ctx.stroke();
+
+      // Hanging translucent tentacles
+      if (isActive) {
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
+        for (let tx = p.x + 8; tx < p.x + p.width - 6; tx += 12) {
+          const tLen = 4 + Math.sin(this.gameTime * 4 + tx) * 2;
+          ctx.fillRect(tx, p.y + p.height, 2, tLen);
+        }
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 6. SOLID PLATFORM: Ancient Sunken Abyssal Coral Bedrock
     ctx.save();
     // Bedrock Fill (Deep sunken trench rock)
     const fillGrad = ctx.createLinearGradient(0, p.y, 0, p.y + p.height);
@@ -2738,6 +3198,561 @@ export class GameRenderer {
     ctx.restore();
   }
 
+  private drawPrismaticSanctumPlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const crystalPurple = theme.crystalPurple || '#C084FC';
+    const crystalCyan = theme.crystalCyan || '#06B6D4';
+    const border = theme.platformBorder || '#6B21A8';
+    const fill = theme.platformFill || '#130C22';
+    const topColor = theme.platformTop || '#A855F7';
+
+    // 1. BOUNCY PLATFORM: Resonant Amethyst Geode Drum
+    if (p.type === 'bouncy') {
+      ctx.save();
+      // Obsidian Geode Bedrock Cup
+      ctx.fillStyle = '#10081C';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Inner Geode Cavity Glow
+      const cavityGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.height);
+      cavityGrad.addColorStop(0, 'rgba(168, 85, 247, 0.4)');
+      cavityGrad.addColorStop(1, 'rgba(16, 8, 28, 0.8)');
+      ctx.fillStyle = cavityGrad;
+      ctx.fillRect(p.x + 4, p.y + 4, p.width - 8, p.height - 10);
+
+      // Springing Crystal Geode Cap
+      const bounceBob = Math.sin(this.gameTime * 8) * 3;
+      ctx.fillStyle = topColor;
+      ctx.strokeStyle = '#F3E8FF';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(p.x + 2, p.y + bounceBob, p.width - 4, 9, 3);
+      ctx.fill();
+      ctx.stroke();
+
+      // Alternating Amethyst & Cyan Crystal Studs on Cap
+      const numStuds = Math.max(2, Math.floor(p.width / 24));
+      for (let s = 0; s < numStuds; s++) {
+        const sx = p.x + 8 + s * ((p.width - 16) / Math.max(1, numStuds - 1));
+        ctx.fillStyle = s % 2 === 0 ? crystalCyan : crystalPurple;
+        ctx.beginPath();
+        ctx.arc(sx, p.y + bounceBob + 4.5, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. CRUMBLING PLATFORM: Brittle Crystalline Geode Shelf
+    if (p.type === 'crumbling') {
+      ctx.save();
+      const shakeOffset = (p.crumbling && p.crumbleTimer !== undefined)
+        ? Math.sin(p.crumbleTimer * 40) * 2.5
+        : 0;
+
+      const alpha = p.respawnTimer ? 0.3 : 1;
+      ctx.globalAlpha = alpha;
+
+      // Faceted Brittle Crystal Slab
+      ctx.fillStyle = '#26123D';
+      ctx.fillRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      // Glowing Fracture Cracks
+      ctx.strokeStyle = p.crumbling ? '#00F0FF' : '#A855F7';
+      ctx.lineWidth = p.crumbling ? 1.8 : 1.2;
+      ctx.beginPath();
+      ctx.moveTo(p.x + shakeOffset + 4, p.y + 2);
+      ctx.lineTo(p.x + shakeOffset + p.width * 0.35, p.y + p.height - 3);
+      ctx.lineTo(p.x + shakeOffset + p.width * 0.65, p.y + 4);
+      ctx.lineTo(p.x + shakeOffset + p.width - 6, p.y + p.height - 2);
+      ctx.stroke();
+
+      // Crystalline Border
+      ctx.strokeStyle = crystalPurple;
+      ctx.lineWidth = 1.4;
+      ctx.strokeRect(p.x + shakeOffset, p.y, p.width, p.height);
+
+      ctx.restore();
+      return;
+    }
+
+    // 3. ONE-WAY PLATFORM: Prismatic Light Bridge Shelf
+    if (p.type === 'one-way') {
+      ctx.save();
+      // Shimmering translucent crystal gradient
+      const bridgeGrad = ctx.createLinearGradient(p.x, p.y, p.x + p.width, p.y);
+      bridgeGrad.addColorStop(0, 'rgba(168, 85, 247, 0.45)');
+      bridgeGrad.addColorStop(0.5, 'rgba(6, 182, 212, 0.65)');
+      bridgeGrad.addColorStop(1, 'rgba(168, 85, 247, 0.45)');
+      ctx.fillStyle = bridgeGrad;
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Radiant top glint edge
+      ctx.fillStyle = '#00F0FF';
+      ctx.fillRect(p.x, p.y, p.width, 2.5);
+
+      // Refractive edge markers
+      ctx.fillStyle = '#FFFFFF';
+      for (let fx = p.x + 6; fx < p.x + p.width - 6; fx += 28) {
+        ctx.fillRect(fx, p.y + 1, 3, 2);
+      }
+
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+      ctx.restore();
+      return;
+    }
+
+    // 4. ANTI-GRAVITY PLATFORM: Prismatic Resonance Lift Well
+    if (p.type === 'anti_grav') {
+      ctx.save();
+      const emitterH = Math.min(14, p.height * 0.15);
+      const beamH = p.height - emitterH;
+
+      // Base Obsidian Emitter Cradle
+      ctx.fillStyle = '#10081C';
+      ctx.fillRect(p.x, p.y + beamH, p.width, emitterH);
+      ctx.strokeStyle = crystalCyan;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y + beamH, p.width, emitterH);
+
+      // Resonant Crystal Prism in Emitter Center
+      ctx.fillStyle = '#06B6D4';
+      ctx.beginPath();
+      ctx.moveTo(p.x + p.width / 2, p.y + beamH + 2);
+      ctx.lineTo(p.x + p.width / 2 + 6, p.y + beamH + 7);
+      ctx.lineTo(p.x + p.width / 2, p.y + beamH + 12);
+      ctx.lineTo(p.x + p.width / 2 - 6, p.y + beamH + 7);
+      ctx.closePath();
+      ctx.fill();
+
+      // Shimmering Vertical Resonance Lift Beam
+      const beamGrad = ctx.createLinearGradient(p.x, 0, p.x + p.width, 0);
+      beamGrad.addColorStop(0, 'rgba(6, 182, 212, 0.06)');
+      beamGrad.addColorStop(0.3, 'rgba(192, 132, 252, 0.22)');
+      beamGrad.addColorStop(0.5, 'rgba(6, 182, 212, 0.38)');
+      beamGrad.addColorStop(0.7, 'rgba(192, 132, 252, 0.22)');
+      beamGrad.addColorStop(1, 'rgba(6, 182, 212, 0.06)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(p.x, p.y, p.width, beamH);
+
+      // Flowing Upward Ionic Resonance Energy Waves
+      const t = this.gameTime * 4;
+      const numLines = Math.floor(beamH / 40);
+      for (let i = 0; i < numLines; i++) {
+        const waveY = p.y + ((i * 40 - t * 30) % beamH + beamH) % beamH;
+        const waveAlpha = Math.sin((waveY - p.y) / beamH * Math.PI) * 0.45;
+        if (waveAlpha > 0.05) {
+          ctx.strokeStyle = `rgba(0, 240, 255, ${waveAlpha})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(p.x + 4, waveY);
+          ctx.lineTo(p.x + p.width - 4, waveY);
+          ctx.stroke();
+        }
+      }
+
+      // Outer Lateral Containment Beams
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x, p.y + beamH);
+      ctx.moveTo(p.x + p.width, p.y);
+      ctx.lineTo(p.x + p.width, p.y + beamH);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // 5. PHASE / DISAPPEARING CRYSTAL PLATFORM: Resonant Phase-Shift Crystal Floor
+    if (p.type === 'phase') {
+      ctx.save();
+      const isActive = p.isPhaseActive !== false;
+      const isWarning = !!p.phaseWarning; // Warning flicker before disappearing
+
+      let alpha = 1.0;
+      if (!isActive) {
+        // Immaterial phase: ethereal translucent outline with oscillating sine glow
+        alpha = 0.20 + Math.sin(this.gameTime * 10) * 0.08;
+      } else if (isWarning) {
+        // Fast warning strobe right before disappearing!
+        alpha = Math.sin(this.gameTime * 32) > 0 ? 0.95 : 0.35;
+      }
+
+      ctx.globalAlpha = alpha;
+
+      // Platform body: Refractive Amethyst Matrix
+      const phaseGrad = ctx.createLinearGradient(p.x, p.y, p.x + p.width, p.y + p.height);
+      if (isActive) {
+        phaseGrad.addColorStop(0, '#7E22CE');
+        phaseGrad.addColorStop(0.5, '#06B6D4');
+        phaseGrad.addColorStop(1, '#9333EA');
+      } else {
+        phaseGrad.addColorStop(0, 'rgba(126, 34, 206, 0.25)');
+        phaseGrad.addColorStop(0.5, 'rgba(6, 182, 212, 0.25)');
+        phaseGrad.addColorStop(1, 'rgba(147, 51, 234, 0.25)');
+      }
+      ctx.fillStyle = phaseGrad;
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Glowing Rune Border
+      ctx.strokeStyle = isActive ? (isWarning ? '#FF0055' : '#00F0FF') : 'rgba(192, 132, 252, 0.45)';
+      ctx.lineWidth = isActive ? 1.8 : 1.2;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+      // Internal Phase Grid Lines
+      ctx.strokeStyle = isActive ? 'rgba(255, 255, 255, 0.55)' : 'rgba(6, 182, 212, 0.2)';
+      ctx.lineWidth = 1;
+      const step = 20;
+      for (let x = p.x + step; x < p.x + p.width; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, p.y);
+        ctx.lineTo(x, p.y + p.height);
+        ctx.stroke();
+      }
+
+      // Phase Indicator Diamond Nodes
+      const numNodes = Math.max(2, Math.floor(p.width / 32));
+      for (let i = 0; i < numNodes; i++) {
+        const nx = p.x + 12 + i * ((p.width - 24) / Math.max(1, numNodes - 1));
+        const ny = p.y + p.height / 2;
+        ctx.fillStyle = isActive ? (isWarning ? '#FFE4E6' : '#FFFFFF') : 'rgba(192, 132, 252, 0.3)';
+        ctx.beginPath();
+        ctx.arc(nx, ny, isActive ? 2.5 : 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 6. SOLID & MOVING PLATFORMS: Polished Obsidian Bedrock with Amethyst Crystal Cap
+    ctx.save();
+    // Obsidian Bedrock body
+    ctx.fillStyle = fill;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+
+    // Glowing Amethyst Crystal Slab Cap
+    const capHeight = Math.min(10, p.height * 0.4);
+    const capGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + capHeight);
+    capGrad.addColorStop(0, '#C084FC');
+    capGrad.addColorStop(1, '#7E22CE');
+    ctx.fillStyle = capGrad;
+    ctx.fillRect(p.x, p.y, p.width, capHeight);
+
+    // Top Electric Cyan Glint Line
+    ctx.fillStyle = '#00F0FF';
+    ctx.fillRect(p.x, p.y, p.width, 2.2);
+
+    // Faceted Diamond Glints along the Crystal Cap
+    ctx.fillStyle = '#FFFFFF';
+    for (let gx = p.x + 10; gx < p.x + p.width - 10; gx += 36) {
+      ctx.beginPath();
+      ctx.moveTo(gx, p.y + 2);
+      ctx.lineTo(gx + 3, p.y + 5);
+      ctx.lineTo(gx, p.y + 8);
+      ctx.lineTo(gx - 3, p.y + 5);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Moving Platform Levitation Core (underneath)
+    if ((p.vx && p.vx !== 0) || (p.vy && p.vy !== 0) || (p.speed && p.speed > 0)) {
+      const corePulse = Math.sin(this.gameTime * 6) * 0.2 + 0.8;
+      ctx.fillStyle = `rgba(6, 182, 212, ${corePulse * 0.8})`;
+      ctx.beginPath();
+      ctx.arc(p.x + p.width / 2, p.y + p.height + 2, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Outer Faceted Border
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1.4;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+    ctx.restore();
+  }
+
+  private drawTwilightDunesPlatform(p: Platform, theme: LevelData['theme']) {
+    const { ctx } = this;
+    const amberSand = '#FBBF24';
+    const terracotta = '#9A3412';
+    const turquoise = '#06B6D4';
+
+    ctx.save();
+
+    // 1. BOUNCY PLATFORM: Ancient Solar Sand Geyser / Spring Trampoline
+    if (p.type === 'bouncy') {
+      // Sandstone base socket
+      ctx.fillStyle = '#1C0D06';
+      ctx.fillRect(p.x, p.y + p.height - 6, p.width, 6);
+      ctx.strokeStyle = terracotta;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(p.x, p.y + p.height - 6, p.width, 6);
+
+      // Spring coil with golden sunburst
+      const springPulse = Math.sin(this.gameTime * 12) * 2;
+      const springY = p.y + 4 + springPulse;
+
+      ctx.strokeStyle = '#D97706';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(p.x + 8, p.y + p.height - 6);
+      ctx.lineTo(p.x + p.width / 2, springY + 4);
+      ctx.lineTo(p.x + p.width - 8, p.y + p.height - 6);
+      ctx.stroke();
+
+      // Top sunstone bounce plate
+      ctx.fillStyle = '#B45309';
+      ctx.fillRect(p.x + 2, springY, p.width - 4, p.height - 8);
+      ctx.fillStyle = amberSand;
+      ctx.fillRect(p.x + 2, springY, p.width - 4, 3);
+
+      // Golden Sunburst Medallion
+      const cx = p.x + p.width / 2;
+      const cy = springY + (p.height - 8) / 2;
+      ctx.fillStyle = '#FEF08A';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. CRUMBLING PLATFORM: Weathered Cracked Sandstone Lattices
+    if (p.type === 'crumbling') {
+      const isCrumbling = p.crumbling || (p.crumbleTimer !== undefined && p.crumbleTimer > 0);
+      const shakeX = isCrumbling ? (Math.random() - 0.5) * 4 : 0;
+      const shakeY = isCrumbling ? (Math.random() - 0.5) * 2 : 0;
+
+      ctx.fillStyle = '#2A140B';
+      ctx.fillRect(p.x + shakeX, p.y + shakeY, p.width, p.height);
+
+      // Weathered Sand Crest
+      ctx.fillStyle = '#D97706';
+      ctx.fillRect(p.x + shakeX, p.y + shakeY, p.width, 3);
+
+      // Crack lines
+      ctx.strokeStyle = '#140803';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(p.x + shakeX + p.width * 0.25, p.y + shakeY);
+      ctx.lineTo(p.x + shakeX + p.width * 0.35, p.y + shakeY + p.height * 0.6);
+      ctx.lineTo(p.x + shakeX + p.width * 0.28, p.y + shakeY + p.height);
+      ctx.moveTo(p.x + shakeX + p.width * 0.65, p.y + shakeY);
+      ctx.lineTo(p.x + shakeX + p.width * 0.72, p.y + shakeY + p.height);
+      ctx.stroke();
+
+      // Falling sand dust if crumbling
+      if (isCrumbling) {
+        ctx.fillStyle = '#FBBF24';
+        for (let i = 0; i < 4; i++) {
+          ctx.beginPath();
+          ctx.arc(p.x + Math.random() * p.width, p.y + p.height + Math.random() * 8, 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.strokeStyle = terracotta;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x + shakeX, p.y + shakeY, p.width, p.height);
+      ctx.restore();
+      return;
+    }
+
+    // 3. ONE-WAY PLATFORM: Carved Sandstone Lintel Bridge
+    if (p.type === 'one-way') {
+      ctx.fillStyle = '#2E150B';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Top Golden Sand Edge
+      ctx.fillStyle = amberSand;
+      ctx.fillRect(p.x, p.y, p.width, 3);
+
+      // Ancient Geometric Sandstone Inlays
+      ctx.fillStyle = '#B45309';
+      for (let bx = p.x + 8; bx < p.x + p.width - 8; bx += 18) {
+        ctx.fillRect(bx, p.y + 4, 10, p.height - 6);
+      }
+
+      // Turquoise Jewels on Ends
+      ctx.fillStyle = turquoise;
+      ctx.beginPath();
+      ctx.arc(p.x + 4, p.y + p.height / 2, 2.2, 0, Math.PI * 2);
+      ctx.arc(p.x + p.width - 4, p.y + p.height / 2, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = terracotta;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+      ctx.restore();
+      return;
+    }
+
+    // 4. ANTI-GRAVITY PLATFORM: Solar Sand Whirlwind / Sunstone Geyser
+    if (p.type === 'anti_grav') {
+      const emitterH = 24;
+      const wellBaseY = p.y + p.height - emitterH;
+
+      // Vertical Rising Solar Sand Beam
+      const beamPulse = Math.sin(this.gameTime * 4) * 0.1 + 0.85;
+      const beamGrad = ctx.createLinearGradient(p.x, wellBaseY, p.x, p.y);
+      beamGrad.addColorStop(0, `rgba(245, 158, 11, ${0.45 * beamPulse})`);
+      beamGrad.addColorStop(0.5, `rgba(251, 191, 36, ${0.30 * beamPulse})`);
+      beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0.05)');
+
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(p.x + 4, p.y, p.width - 8, p.height - emitterH);
+
+      // Spiraling Golden Sand Particles within the geyser
+      const dustCount = 8;
+      for (let d = 0; d < dustCount; d++) {
+        const cycle = (this.gameTime * 1.5 + d * 0.16) % 1;
+        const partY = wellBaseY - cycle * (p.height - emitterH);
+        const swirl = Math.sin(cycle * Math.PI * 4 + d) * ((p.width - 16) * 0.45);
+        const partX = p.x + p.width / 2 + swirl;
+        const alpha = Math.sin(cycle * Math.PI) * 0.85;
+
+        ctx.fillStyle = d % 2 === 0 ? '#FDE047' : '#06B6D4';
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(partX, partY, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1.0;
+
+      // Solid Sandstone Emitter Base
+      ctx.fillStyle = '#23120B';
+      ctx.fillRect(p.x, wellBaseY, p.width, emitterH);
+      ctx.strokeStyle = terracotta;
+      ctx.lineWidth = 1.4;
+      ctx.strokeRect(p.x, wellBaseY, p.width, emitterH);
+
+      // Gilded Solar Glyph in Center
+      const ecx = p.x + p.width / 2;
+      const ecy = wellBaseY + emitterH / 2;
+      ctx.fillStyle = '#F59E0B';
+      ctx.beginPath();
+      ctx.arc(ecx, ecy, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FEF08A';
+      ctx.beginPath();
+      ctx.arc(ecx, ecy, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+      return;
+    }
+
+    // 5. PHASE PLATFORM: Mirage Sunstone Slabs (Phasing in & out)
+    if (p.type === 'phase') {
+      const isActive = p.isPhaseActive !== false;
+      const isWarning = !!p.phaseWarning;
+
+      let mirageAlpha = isActive ? 1.0 : 0.22;
+      if (isWarning) {
+        mirageAlpha = Math.sin(this.gameTime * 28) > 0 ? 0.95 : 0.35;
+      }
+
+      ctx.globalAlpha = mirageAlpha;
+      ctx.fillStyle = '#2A140B';
+      ctx.fillRect(p.x, p.y, p.width, p.height);
+
+      // Golden Mirage Crest
+      ctx.fillStyle = amberSand;
+      ctx.fillRect(p.x, p.y, p.width, 3);
+
+      // Mirage Heat Wave Ribbons
+      if (!isActive) {
+        ctx.strokeStyle = '#F59E0B';
+        ctx.lineWidth = 1.5;
+        const wave = Math.sin(this.gameTime * 8) * 3;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y + p.height / 2 + wave);
+        ctx.lineTo(p.x + p.width, p.y + p.height / 2 - wave);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = isActive ? '#F59E0B' : 'rgba(245, 158, 11, 0.4)';
+      ctx.lineWidth = 1.4;
+      ctx.strokeRect(p.x, p.y, p.width, p.height);
+      ctx.restore();
+      return;
+    }
+
+    // 6. SOLID & MOVING PLATFORMS: Sun-Baked Sandstone Bedrock with Golden Dune Crest
+    const stoneGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.height);
+    stoneGrad.addColorStop(0, '#35190D');
+    stoneGrad.addColorStop(0.5, '#261209');
+    stoneGrad.addColorStop(1, '#1A0C06');
+    ctx.fillStyle = stoneGrad;
+    ctx.fillRect(p.x, p.y, p.width, p.height);
+
+    // Weathered Horizontal Strata Lines
+    ctx.strokeStyle = 'rgba(154, 52, 18, 0.35)';
+    ctx.lineWidth = 1;
+    for (let sy = p.y + 14; sy < p.y + p.height - 4; sy += 18) {
+      ctx.beginPath();
+      ctx.moveTo(p.x + 4, sy);
+      ctx.lineTo(p.x + p.width - 4, sy);
+      ctx.stroke();
+    }
+
+    // Ancient Carved Hieroglyphs / Desert Sun Motifs
+    ctx.fillStyle = 'rgba(253, 230, 138, 0.22)';
+    for (let hx = p.x + 20; hx < p.x + p.width - 20; hx += 46) {
+      const hy = p.y + Math.min(p.height / 2, 16);
+      ctx.beginPath();
+      ctx.arc(hx, hy, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(hx - 5, hy + 5, 10, 1.5);
+    }
+
+    // Top Golden Wind-Rippled Sand Dune Crest
+    const sandH = Math.min(6, p.height * 0.35);
+    const sandGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + sandH);
+    sandGrad.addColorStop(0, amberSand);
+    sandGrad.addColorStop(1, '#D97706');
+    ctx.fillStyle = sandGrad;
+    ctx.fillRect(p.x, p.y, p.width, sandH);
+
+    // Fine Sparkling Silica Dots along top
+    ctx.fillStyle = '#FEF08A';
+    for (let sx = p.x + 6; sx < p.x + p.width - 6; sx += 22) {
+      ctx.fillRect(sx, p.y + 1, 2, 2);
+    }
+
+    // Lapis Lazuli / Turquoise Jewel Accents on Corners
+    ctx.fillStyle = turquoise;
+    ctx.beginPath();
+    ctx.arc(p.x + 3, p.y + 3, 2, 0, Math.PI * 2);
+    ctx.arc(p.x + p.width - 3, p.y + 3, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Moving Platform Solar Levitation Rune (Underneath)
+    if ((p.vx && p.vx !== 0) || (p.vy && p.vy !== 0) || (p.speed && p.speed > 0)) {
+      const runePulse = Math.sin(this.gameTime * 6) * 0.25 + 0.75;
+      ctx.fillStyle = `rgba(245, 158, 11, ${runePulse * 0.85})`;
+      ctx.beginPath();
+      ctx.arc(p.x + p.width / 2, p.y + p.height + 2, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Outer Chiseled Border
+    ctx.strokeStyle = terracotta;
+    ctx.lineWidth = 1.4;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+
+    ctx.restore();
+  }
+
   private drawPlatform(p: Platform, theme: LevelData['theme']) {
     const { ctx } = this;
 
@@ -2783,9 +3798,27 @@ export class GameRenderer {
       return;
     }
 
+    // Check if Prismatic Geode Sanctum theme platform styles
+    if (this.isPrismaticSanctumTheme(theme)) {
+      this.drawPrismaticSanctumPlatform(p, theme);
+      return;
+    }
+
+    // Check if Twilight Dunes theme platform styles
+    if (this.isTwilightDunesTheme(theme)) {
+      this.drawTwilightDunesPlatform(p, theme);
+      return;
+    }
+
     // Generic Anti-Gravity Tractor Beam platform fallback
     if (p.type === 'anti_grav') {
       this.drawSpacePlatform(p, theme);
+      return;
+    }
+
+    // Generic Phase Platform fallback
+    if (p.type === 'phase') {
+      this.drawPrismaticSanctumPlatform(p, theme);
       return;
     }
 
@@ -3515,10 +4548,11 @@ export class GameRenderer {
     const isGlacier = theme ? this.isGlacierTheme(theme) : false;
     const isCastle = theme ? this.isMedievalCastleTheme(theme) : false;
     const isClockwork = theme ? this.isClockworkTheme(theme) : false;
+    const isPrismatic = theme ? this.isPrismaticSanctumTheme(theme) : false;
 
     if (h.type === 'spike') {
-      ctx.fillStyle = isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : (isCastle ? '#334155' : (isClockwork ? '#B45309' : '#DC2626'))));
-      ctx.strokeStyle = isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : (isCastle ? '#64748B' : (isClockwork ? '#F59E0B' : '#991B1B'))));
+      ctx.fillStyle = isPrismatic ? '#A855F7' : (isGlacier ? '#BAE6FD' : (isSpace ? '#38BDF8' : (isNeon ? '#FF007F' : (isCastle ? '#334155' : (isClockwork ? '#B45309' : '#DC2626')))));
+      ctx.strokeStyle = isPrismatic ? '#00F0FF' : (isGlacier ? '#E0F2FE' : (isSpace ? '#93C5FD' : (isNeon ? '#00F0FF' : (isCastle ? '#64748B' : (isClockwork ? '#F59E0B' : '#991B1B')))));
       ctx.lineWidth = 1.5;
 
       const numSpikes = Math.max(1, Math.floor(h.width / 14));
@@ -3536,7 +4570,7 @@ export class GameRenderer {
       ctx.stroke();
 
       // Gleam on spike tips
-      ctx.fillStyle = (isNeon || isSpace || isGlacier) ? '#FFFFFF' : ((isCastle || isClockwork) ? '#F59E0B' : '#FCA5A5');
+      ctx.fillStyle = (isNeon || isSpace || isGlacier || isPrismatic) ? '#FFFFFF' : ((isCastle || isClockwork) ? '#F59E0B' : '#FCA5A5');
       for (let i = 0; i < numSpikes; i++) {
         const sx = h.x + i * spikeW;
         ctx.fillRect(sx + spikeW * 0.45, h.y + 2, 2, 4);
@@ -4052,6 +5086,77 @@ export class GameRenderer {
       ctx.font = 'bold 9px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('❄️ CANNON', cx, cy - 16);
+    } else if (c.type === 'powerup_magnet') {
+      // Prismatic Magnetic Prism / Horseshoe Magnet Pickup
+      const cx = c.x + c.width / 2;
+      const cy = c.y + c.height / 2 + bob;
+
+      // Pulsing Violet/Cyan Magnetic Field Aura
+      const aura = Math.sin(this.gameTime * 5) * 0.18 + 0.42;
+      const auraGrad = ctx.createRadialGradient(cx, cy, 2, cx, cy, c.width * 1.1);
+      auraGrad.addColorStop(0, 'rgba(192, 132, 252, 0.6)');
+      auraGrad.addColorStop(0.6, `rgba(6, 182, 212, ${aura})`);
+      auraGrad.addColorStop(1, 'rgba(168, 85, 247, 0)');
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, c.width * 1.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rotating magnetic field sparks
+      for (let i = 0; i < 4; i++) {
+        const ang = this.gameTime * 3 + (i * Math.PI) / 2;
+        const sx = cx + Math.cos(ang) * (c.width * 0.9);
+        const sy = cy + Math.sin(ang) * (c.width * 0.9);
+        ctx.fillStyle = i % 2 === 0 ? '#00F0FF' : '#C084FC';
+        ctx.fillRect(sx - 1.5, sy - 1.5, 3, 3);
+      }
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Stylized U-Magnet body
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = '#9333EA';
+      ctx.beginPath();
+      ctx.arc(0, 1, 9, 0, Math.PI, false);
+      ctx.stroke();
+
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#C084FC';
+      ctx.beginPath();
+      ctx.arc(0, 1, 9, 0, Math.PI, false);
+      ctx.stroke();
+
+      // Left Pole (North - Cyan)
+      ctx.fillStyle = '#06B6D4';
+      ctx.fillRect(-11, -8, 4, 9);
+      ctx.fillStyle = '#E0F2FE';
+      ctx.fillRect(-11, -8, 4, 3);
+
+      // Right Pole (South - Rose)
+      ctx.fillStyle = '#F43F5E';
+      ctx.fillRect(7, -8, 4, 9);
+      ctx.fillStyle = '#FFE4E6';
+      ctx.fillRect(7, -8, 4, 3);
+
+      // Electric Arc between poles
+      const arcY = -6 + Math.sin(this.gameTime * 20) * 2;
+      ctx.strokeStyle = '#00F0FF';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-7, arcY);
+      ctx.lineTo(-2, arcY - 2);
+      ctx.lineTo(2, arcY + 2);
+      ctx.lineTo(7, arcY);
+      ctx.stroke();
+
+      // Floating label
+      ctx.fillStyle = '#C084FC';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🧲 MAGNET', 0, -17);
+
+      ctx.restore();
     } else if (c.type === 'acorn') {
       // Golden Bird Acorn (with optional feather plumage style)
       const cx = c.x + c.width / 2;
@@ -4379,6 +5484,34 @@ export class GameRenderer {
         Math.PI * 2
       );
       ctx.fill();
+      ctx.restore();
+    }
+
+    // Active Prismatic Magnet Attraction Field Aura around player
+    if (p.magnetTimer && p.magnetTimer > 0) {
+      const magnetRadius = Math.max(p.width, p.height) * 0.85;
+      const magCenterY = p.y + p.height / 2;
+
+      ctx.save();
+      // Rotating magnetic flux rings
+      ctx.lineWidth = 1.6;
+      for (let r = 0; r < 2; r++) {
+        const ringAngle = this.gameTime * (r === 0 ? 3.5 : -2.8) + (r * Math.PI) / 2;
+        ctx.strokeStyle = r === 0 ? 'rgba(192, 132, 252, 0.85)' : 'rgba(6, 182, 212, 0.85)';
+        ctx.save();
+        ctx.translate(cx, magCenterY);
+        ctx.rotate(ringAngle);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, magnetRadius * 1.15, magnetRadius * 0.55, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Pulsing polarity spark
+        ctx.fillStyle = r === 0 ? '#00F0FF' : '#E9D5FF';
+        ctx.beginPath();
+        ctx.arc(magnetRadius * 1.15, 0, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
       ctx.restore();
     }
   }

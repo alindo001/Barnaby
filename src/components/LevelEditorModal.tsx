@@ -130,6 +130,10 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
           delete parsed[16];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
+        if (parsed[17] && (parsed[17].worldHeight < 800 || !parsed[17].title?.includes('Prismatic') || parsed[17].theme?.id !== 'prismatic_sanctum')) {
+          delete parsed[17];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
         const targetId = levels[levelIndex]?.id;
         if (targetId && parsed[targetId]) {
           return JSON.parse(JSON.stringify(parsed[targetId]));
@@ -244,6 +248,10 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         }
         if (parsed[16] && (parsed[16].worldHeight < 800 || !parsed[16].title?.includes('Aeronaut') || parsed[16].theme?.id !== 'clockwork_core' || !parsed[16].startWithJetpack)) {
           delete parsed[16];
+          localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
+        }
+        if (parsed[17] && (parsed[17].worldHeight < 800 || !parsed[17].title?.includes('Prismatic') || parsed[17].theme?.id !== 'prismatic_sanctum')) {
+          delete parsed[17];
           localStorage.setItem('barnaby_dev_level_overrides', JSON.stringify(parsed));
         }
         if (parsed[nextLvl.id]) {
@@ -807,6 +815,15 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
         ctx.arc(c.x + c.width / 2, c.y + c.height / 2, c.width / 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#38BDF8';
+        ctx.stroke();
+      } else if (c.type === 'powerup_magnet') {
+        // Purple/Cyan Prismatic Magnet
+        ctx.fillStyle = '#C084FC';
+        ctx.beginPath();
+        ctx.arc(c.x + c.width / 2, c.y + c.height / 2, c.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#00F0FF';
+        ctx.lineWidth = 2;
         ctx.stroke();
       } else if (c.type === 'blaster') {
         // Blaster
@@ -1490,6 +1507,14 @@ export const LevelEditorModal: React.FC<LevelEditorModalProps> = ({
               title="Add Bubble Shield"
             >
               <span>🛡️ Shield</span>
+            </button>
+
+            <button
+              onClick={() => handleAddItem('powerup_magnet', 'collectible')}
+              className="px-2 py-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-bold rounded-lg border border-purple-500/40 flex items-center gap-1 transition-colors"
+              title="Add Prismatic Magnet"
+            >
+              <span>🧲 Magnet</span>
             </button>
 
             <button

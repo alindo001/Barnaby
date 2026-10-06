@@ -431,6 +431,30 @@ export const ControlsHelpModal: React.FC<ControlsHelpModalProps> = ({
                     </div>
                   </div>
 
+                  <div className="p-2.5 bg-purple-950/40 rounded-xl border border-purple-500/50 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-purple-500/20 text-purple-300 rounded-lg mt-0.5 text-base">
+                      🧲
+                    </div>
+                    <div>
+                      <div className="font-bold text-purple-300">Prismatic Magnet Power-Up</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Equipped in the Prismatic Geode Sanctum! Generates a powerful 300px magnetic attraction field for 20 seconds. Automatically pulls distant coins, sparkling gems, fuel canisters, and Golden Acorns straight to Barnaby with electric purple & cyan tractor arcs!
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 bg-indigo-950/40 rounded-xl border border-indigo-400/50 flex items-start gap-2.5 shadow-sm">
+                    <div className="p-1 bg-indigo-500/20 text-indigo-300 rounded-lg mt-0.5 text-base">
+                      💠
+                    </div>
+                    <div>
+                      <div className="font-bold text-indigo-200">Phase-Shift Disappearing Crystal Floors</div>
+                      <div className="text-slate-300 leading-relaxed text-xs">
+                        Introduced in Level 20's <strong>Prism Core Climax</strong>! Ethereal crystalline platforms that alternate between solid tangible form and translucent immaterial ghost states on a rhythmic pulse. Watch for the <strong>rapid warning strobe</strong> right before a platform phases out, and time your jetpack hover or leap to the alternating solid phase group!
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="p-2.5 bg-sky-950/40 rounded-xl border border-sky-500/40 flex items-start gap-2.5 shadow-sm">
                     <div className="p-1 bg-sky-500/20 text-sky-400 rounded-lg mt-0.5">
                       <Zap size={14} />

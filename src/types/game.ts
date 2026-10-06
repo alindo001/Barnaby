@@ -1,6 +1,6 @@
 export type GameState = 'MENU' | 'PLAYING' | 'PAUSED' | 'LEVEL_COMPLETE' | 'GAME_OVER' | 'VICTORY';
 
-export type PlatformType = 'solid' | 'one-way' | 'bouncy' | 'crumbling' | 'ice' | 'anti_grav';
+export type PlatformType = 'solid' | 'one-way' | 'bouncy' | 'crumbling' | 'ice' | 'anti_grav' | 'phase';
 
 export interface Platform {
   id: string;
@@ -21,6 +21,13 @@ export interface Platform {
   crumbleTimer?: number;
   crumbling?: boolean;
   respawnTimer?: number;
+  // Phase / Disappearing platform properties
+  phasePeriod?: number; // Total cycle duration in seconds (default ~2.6s)
+  phaseOffset?: number; // Cycle time offset in seconds (e.g. 0s vs 1.3s for alternating groups)
+  phaseActiveDuration?: number; // Active solid duration in seconds (default ~1.4s)
+  isPhaseActive?: boolean; // Computed solid state for current frame
+  phaseWarning?: boolean; // True when platform is about to disappear (e.g. last 0.6s)
+  phaseTimeLeft?: number; // Time remaining in current phase state in seconds
 }
 
 export type HazardType = 'spike' | 'lava' | 'saw';
@@ -43,7 +50,7 @@ export interface Hazard {
   rotation?: number;
 }
 
-export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield' | 'acorn' | 'snow_cannon';
+export type CollectibleType = 'coin' | 'gem' | 'heart' | 'powerup_speed' | 'powerup_jump' | 'jetpack' | 'jetpack_fuel' | 'blaster' | 'blaster_ammo' | 'bubble_shield' | 'acorn' | 'snow_cannon' | 'powerup_magnet';
 
 export interface Collectible {
   id: string;
@@ -95,9 +102,9 @@ export interface BlasterBullet {
   isSnowball?: boolean;
 }
 
-export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose' | 'fire_imp' | 'frost_yeti' | 'urchin';
+export type EnemyType = 'slime' | 'patroller' | 'flyer' | 'anteater' | 'beaver' | 'hedgehog' | 'frog' | 'pigeon' | 'skunk' | 'goose' | 'fire_imp' | 'frost_yeti' | 'urchin' | 'crystal_golem' | 'crystal_bat' | 'dune_scorpion';
 
-export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave' | 'fireball' | 'snowball';
+export type EnemyProjectileType = 'ant' | 'log' | 'stink_cloud' | 'honk_wave' | 'fireball' | 'snowball' | 'crystal_shard' | 'sand_burst';
 
 export interface EnemyProjectile {
   id: string;
@@ -180,6 +187,8 @@ export interface Player {
   snowCannonCooldown?: number;
   // Shield state
   hasShield?: boolean;
+  // Prismatic Magnet powerup timer
+  magnetTimer?: number;
   // Double jump state (when not wearing jetpack)
   canDoubleJump?: boolean;
   hasDoubleJumped?: boolean;
@@ -309,6 +318,17 @@ export interface LevelTheme {
   copperPipe?: string;
   steamGlow?: string;
   amberDial?: string;
+  crystalCyan?: string;
+  crystalPurple?: string;
+  crystalPink?: string;
+  crystalGold?: string;
+  geodeGlow?: string;
+  sparkleColor?: string;
+  sandGold?: string;
+  ruinTerracotta?: string;
+  hieroglyphGold?: string;
+  oasisTurquoise?: string;
+  duneShadow?: string;
 }
 
 export type LevelGameplayType = 'runner' | 'terrain' | 'rocketeer' | 'gadget';
@@ -378,6 +398,7 @@ export interface GameStats {
   maxBlasterAmmo?: number;
   hasSnowCannon?: boolean;
   hasShield?: boolean;
+  magnetTimer?: number;
   isTransitioning?: boolean;
   transitionProgress?: number;
 }

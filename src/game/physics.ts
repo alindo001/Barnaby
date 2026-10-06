@@ -25,6 +25,21 @@ export class PhysicsEngine {
   private readonly JUMP_BUFFER = 0.12;
   private gameTime: number = 0;
 
+  public initPlatforms(level: LevelData) {
+    level.platforms.forEach(p => {
+      if (p.type === 'phase') {
+        const period = p.phasePeriod || 2.6;
+        const offset = p.phaseOffset || 0;
+        const activeTime = p.phaseActiveDuration || (period * 0.55);
+        const cycle = ((this.gameTime + offset) % period + period) % period;
+        const isActive = cycle < activeTime;
+        p.isPhaseActive = isActive;
+        p.phaseTimeLeft = isActive ? (activeTime - cycle) : (period - cycle);
+        p.phaseWarning = isActive && p.phaseTimeLeft < 0.6;
+      }
+    });
+  }
+
   public update(
     player: Player,
     level: LevelData,
@@ -53,6 +68,10 @@ export class PhysicsEngine {
     if (player.invulnerableTimer > 0) player.invulnerableTimer -= dt;
     if (player.speedBoostTimer > 0) player.speedBoostTimer -= dt;
     if (player.jumpBoostTimer > 0) player.jumpBoostTimer -= dt;
+    if (player.magnetTimer && player.magnetTimer > 0) {
+      player.magnetTimer -= dt;
+      if (player.magnetTimer <= 0) player.magnetTimer = 0;
+    }
     if (player.gravSoundTimer && player.gravSoundTimer > 0) player.gravSoundTimer -= dt;
 
     if (player.coyoteTimer > 0) player.coyoteTimer -= dt;
@@ -405,6 +424,23 @@ export class PhysicsEngine {
           }
         }
       }
+
+      // Rhythmic Phase-Shift Disappearing Crystal Platforms
+      if (p.type === 'phase') {
+        const period = p.phasePeriod || 2.6;
+        const offset = p.phaseOffset || 0;
+        const activeTime = p.phaseActiveDuration || (period * 0.55);
+        const cycle = ((this.gameTime + offset) % period + period) % period;
+        const isActive = cycle < activeTime;
+        p.isPhaseActive = isActive;
+        p.phaseTimeLeft = isActive ? (activeTime - cycle) : (period - cycle);
+        p.phaseWarning = isActive && p.phaseTimeLeft < 0.6;
+
+        if (!isActive && player.ridingPlatformId === p.id) {
+          player.ridingPlatformId = null;
+          player.isGrounded = false;
+        }
+      }
     });
 
     // 2. Moving Hazards (Buzzsaws)
@@ -471,7 +507,7 @@ export class PhysicsEngine {
           const feetY = e.y + e.height;
           let hasFooting = false;
           for (const p of level.platforms) {
-            if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+            if ((p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) || (p.type === 'phase' && p.isPhaseActive === false)) continue;
             if (frontX >= p.x && frontX <= p.x + p.width && Math.abs(p.y - feetY) <= 10) {
               hasFooting = true;
               break;
@@ -489,7 +525,7 @@ export class PhysicsEngine {
           const feetY = e.y + e.height;
           let restingPlat = null;
           for (const p of level.platforms) {
-            if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+            if ((p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) || (p.type === 'phase' && p.isPhaseActive === false)) continue;
             if (enemyCenterX >= p.x && enemyCenterX <= p.x + p.width) {
               if (feetY >= p.y - 4 && feetY <= p.y + 14) {
                 restingPlat = p;
@@ -508,7 +544,7 @@ export class PhysicsEngine {
 
             // Check landing on platform below
             for (const p of level.platforms) {
-              if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+              if ((p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) || (p.type === 'phase' && p.isPhaseActive === false)) continue;
               if (enemyCenterX >= p.x && enemyCenterX <= p.x + p.width) {
                 if (e.y + e.height >= p.y && (e.y + e.height - e.vy * fpsRatio) <= p.y + 6) {
                   e.y = p.y - e.height;
@@ -609,7 +645,7 @@ export class PhysicsEngine {
           const frogCenterX = e.x + e.width / 2;
           let landed = false;
           for (const p of level.platforms) {
-            if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+            if ((p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) || (p.type === 'phase' && p.isPhaseActive === false)) continue;
             if (frogCenterX >= p.x && frogCenterX <= p.x + p.width) {
               if (frogBottom >= p.y && (frogBottom - e.vy * fpsRatio) <= p.y + 8 && e.vy > 0) {
                 e.y = p.y - e.height;
@@ -756,6 +792,83 @@ export class PhysicsEngine {
           particles.emitWaterBubbles(e.x + e.width / 2, e.y + 4, 1);
         }
       }
+
+      // NEW PRISMATIC ENEMY: CRYSTAL GOLEM (Faceted amethyst automaton firing razor-sharp crystal shards)
+      if (e.type === 'crystal_golem') {
+        e.isSpiky = true; // Crystalline shoulder clusters prevent direct stomping!
+        // Face player if nearby
+        const distToPlayer = Math.hypot(player.x - (e.x + e.width / 2), player.y - (e.y + e.height / 2));
+        if (distToPlayer < 400) {
+          e.facing = player.x < e.x ? -1 : 1;
+        }
+
+        if (e.shootTimer === undefined) e.shootTimer = 2.0 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0 && distToPlayer < 440) {
+          e.shootTimer = 3.5;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 22;
+          level.enemyProjectiles.push({
+            id: `shard_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 6,
+            vx: e.facing * 3.6,
+            vy: 0,
+            width: 20,
+            height: 16,
+            type: 'crystal_shard',
+            rotation: 0,
+            life: 0,
+            maxLife: 4.8,
+            bounces: 0
+          });
+          particles.emitSparkles(projX, e.y + 8, '#C084FC', 14);
+          particles.emitSparkles(projX, e.y + 8, '#06B6D4', 10);
+          particles.addPopup(e.x + e.width / 2, e.y - 12, 'CRYSTAL SHARD! 💎', '#C084FC');
+        }
+      }
+
+      // NEW PRISMATIC ENEMY: CRYSTAL BAT (Sinusoidal cavern swooper)
+      if (e.type === 'crystal_bat') {
+        e.y += Math.sin(this.gameTime * 4.2 + e.x * 0.035) * 2.2 * fpsRatio;
+        if (Math.random() < 0.05) {
+          particles.emitSparkles(e.x + e.width / 2, e.y + e.height / 2, '#C084FC', 1);
+        }
+      }
+
+      // NEW TWILIGHT DUNES ENEMY: DUNE SCORPION (Armored arachnid firing whirling sand bursts)
+      if (e.type === 'dune_scorpion') {
+        e.isSpiky = true; // Venomous stinger protects against overhead stomps!
+        const distToPlayer = Math.hypot(player.x - (e.x + e.width / 2), player.y - (e.y + e.height / 2));
+        if (distToPlayer < 380) {
+          e.facing = player.x < e.x ? -1 : 1;
+        }
+
+        if (e.shootTimer === undefined) e.shootTimer = 1.8 + Math.random() * 1.5;
+        e.shootTimer -= dt;
+        if (e.shootTimer <= 0 && distToPlayer < 420) {
+          e.shootTimer = 3.2;
+          level.enemyProjectiles = level.enemyProjectiles || [];
+          const projX = e.facing === 1 ? e.x + e.width : e.x - 20;
+          level.enemyProjectiles.push({
+            id: `sand_${Date.now()}_${Math.random()}`,
+            x: projX,
+            y: e.y + 8,
+            vx: e.facing * 3.4,
+            vy: 0,
+            width: 18,
+            height: 18,
+            type: 'sand_burst',
+            rotation: 0,
+            life: 0,
+            maxLife: 4.5,
+            bounces: 0
+          });
+          particles.emitSparkles(projX, e.y + 8, '#F59E0B', 12);
+          particles.emitSparkles(projX, e.y + 8, '#FEF3C7', 8);
+          particles.addPopup(e.x + e.width / 2, e.y - 12, 'SAND BURST! 🦂', '#F59E0B');
+        }
+      }
     });
 
     // 3.8 Update Enemy Projectiles (ants, tumbling logs, stink clouds, honk waves, fireballs)
@@ -847,6 +960,22 @@ export class PhysicsEngine {
               particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height, '#E0F2FE', 5);
               break;
             }
+          }
+        } else if (ep.type === 'crystal_shard') {
+          // Swift spinning multifaceted crystal prism
+          ep.x += ep.vx * fpsRatio;
+          ep.rotation = (ep.rotation || 0) + (ep.vx > 0 ? 0.28 : -0.28) * fpsRatio;
+          if (Math.random() < 0.3) {
+            particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#C084FC', 1);
+            particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#06B6D4', 1);
+          }
+        } else if (ep.type === 'sand_burst') {
+          // Whirling spinning sand burst
+          ep.x += ep.vx * fpsRatio;
+          ep.rotation = (ep.rotation || 0) + (ep.vx > 0 ? 0.32 : -0.32) * fpsRatio;
+          if (Math.random() < 0.3) {
+            particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#F59E0B', 1);
+            particles.emitSparkles(ep.x + ep.width / 2, ep.y + ep.height / 2, '#FEF3C7', 1);
           }
         } else {
           // Ant: crawls forward along ground
@@ -975,7 +1104,7 @@ export class PhysicsEngine {
 
         // Check solid platform collision
         for (const p of level.platforms) {
-          if (p.type === 'one-way') continue;
+          if (p.type === 'one-way' || (p.type === 'phase' && p.isPhaseActive === false)) continue;
           if (this.isOverlapping(jp, p)) {
             this.explodeJetpack(jp, level, particles);
             level.launchedJetpacks.splice(i, 1);
@@ -1042,7 +1171,7 @@ export class PhysicsEngine {
 
         // Check solid platform collision
         for (const p of level.platforms) {
-          if (p.type === 'one-way') continue;
+          if (p.type === 'one-way' || (p.type === 'phase' && p.isPhaseActive === false)) continue;
           if (
             b.x >= p.x &&
             b.x <= p.x + p.width &&
@@ -1088,7 +1217,7 @@ export class PhysicsEngine {
 
   private resolveHorizontalCollisions(player: Player, platforms: Platform[]) {
     for (const p of platforms) {
-      if (p.type === 'one-way' || p.type === 'anti_grav') continue; // Pass-through on X
+      if (p.type === 'one-way' || p.type === 'anti_grav' || p.type === 'phase') continue; // Pass-through on X for floating ledges/phase slabs
       if (p.id === player.ridingPlatformId) continue; // Don't block horizontal movement against the platform you are riding
       if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
 
@@ -1118,6 +1247,48 @@ export class PhysicsEngine {
   ) {
     for (const p of platforms) {
       if (p.type === 'crumbling' && p.respawnTimer !== undefined && p.respawnTimer > 0) continue;
+
+      // PHASE / DISAPPEARING PLATFORMS
+      if (p.type === 'phase') {
+        if (!p.isPhaseActive) {
+          // If player was riding this platform, and it became inactive, detach immediately
+          if (player.ridingPlatformId === p.id) {
+            player.ridingPlatformId = null;
+            player.isGrounded = false;
+          }
+          continue; // Inactive: pass straight through!
+        }
+
+        // When active, acts as a firm stepping stone
+        const prevBottom = player.y - player.vy + player.height;
+        const playerBottom = player.y + player.height;
+        const isLanding = player.vy >= 0 && prevBottom <= p.y + 14 && playerBottom >= p.y - 2;
+        const isHorizAligned = player.x + player.width > p.x + 1 && player.x < p.x + p.width - 1;
+
+        if ((this.isOverlapping(player, p) && player.vy >= 0) || (isLanding && isHorizAligned)) {
+          player.y = p.y - player.height;
+          player.vy = 0;
+          player.isGrounded = true;
+          player.isJumping = false;
+          player.canDoubleJump = true;
+          player.hasDoubleJumped = false;
+          player.ridingPlatformId = p.id;
+          player.coyoteTimer = this.COYOTE_TIME;
+
+          if (!player.wasGrounded) {
+            player.scaleX = 1.3;
+            player.scaleY = 0.75;
+            sound.playJump();
+            particles.emitDust(player.x + player.width / 2, player.y + player.height, 4, theme.platformTop);
+          }
+        } else if (player.ridingPlatformId === p.id) {
+          // If player has walked off the platform boundaries
+          if (!isHorizAligned) {
+            player.ridingPlatformId = null;
+          }
+        }
+        continue;
+      }
 
       // ONE-WAY Platforms
       if (p.type === 'one-way') {
@@ -1231,6 +1402,32 @@ export class PhysicsEngine {
     onScoreAdd: (pts: number) => void,
     onAcornCollected?: () => void
   ) {
+    // PRISMATIC MAGNET ATTRACTION FIELD (pulls coins, gems, fuel, ammo, acorns)
+    if (player.magnetTimer && player.magnetTimer > 0) {
+      const px = player.x + player.width / 2;
+      const py = player.y + player.height / 2;
+      const magnetRange = 320;
+
+      collectibles.forEach(c => {
+        if (c.collected) return;
+        const cx = c.x + c.width / 2;
+        const cy = c.y + c.height / 2;
+        const dx = px - cx;
+        const dy = py - cy;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < magnetRange && dist > 1) {
+          const pullForce = Math.min(16, (1 - dist / magnetRange) * 13 + 5);
+          c.x += (dx / dist) * pullForce;
+          c.y += (dy / dist) * pullForce;
+          if (Math.random() < 0.2) {
+            particles.emitSparkles(cx, cy, '#C084FC', 1);
+            particles.emitSparkles(cx, cy, '#06B6D4', 1);
+          }
+        }
+      });
+    }
+
     collectibles.forEach(c => {
       if (c.collected) return;
       if (this.isOverlapping(player, c)) {
@@ -1308,6 +1505,12 @@ export class PhysicsEngine {
           sound.playShieldPickup();
           particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#38BDF8', 24);
           particles.addPopup(c.x + c.width / 2, c.y - 12, 'BUBBLE SHIELD! [HOLD JUMP TO GLIDE]', '#38BDF8');
+        } else if (c.type === 'powerup_magnet') {
+          player.magnetTimer = 20;
+          sound.playMagnetActivate();
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#A855F7', 30);
+          particles.emitSparkles(c.x + c.width / 2, c.y + c.height / 2, '#06B6D4', 20);
+          particles.addPopup(c.x + c.width / 2, c.y - 14, '🧲 PRISMATIC MAGNET! [20s]', '#C084FC');
         }
       }
     });
@@ -1357,14 +1560,14 @@ export class PhysicsEngine {
         const enemyTop = e.y + e.height * 0.4;
 
         if (player.vy > 0 && playerBottom <= enemyTop + 10) {
-          // If the enemy is currently spiky (like curled hedgehog or sea urchin)
-          if (e.isSpiky || e.type === 'urchin') {
+          // If the enemy is currently spiky (like curled hedgehog, sea urchin, or crystal golem)
+          if (e.isSpiky || e.type === 'urchin' || e.type === 'crystal_golem' || e.type === 'dune_scorpion') {
             if (player.hasShield) {
               this.popPlayerShield(player, particles);
               player.vy = -7.5;
             } else if (player.invulnerableTimer <= 0) {
               sound.playHit();
-              const spikyMsg = e.type === 'urchin' ? 'OUCH! SEA URCHIN SPINES!' : 'OUCH! SPIKY QUILLS!';
+              const spikyMsg = e.type === 'urchin' ? 'OUCH! SEA URCHIN SPINES!' : (e.type === 'crystal_golem' ? 'OUCH! CRYSTAL GOLEM ARMOR!' : (e.type === 'dune_scorpion' ? 'OUCH! VENOMOUS SCORPION STINGER! 🦂' : 'OUCH! SPIKY QUILLS!'));
               particles.addPopup(e.x + e.width / 2, e.y - 12, spikyMsg, '#F43F5E');
               this.killPlayer(player, particles, onPlayerDeath);
             }
@@ -1379,7 +1582,7 @@ export class PhysicsEngine {
           sound.playStomp();
           if (onEnemyDefeated) onEnemyDefeated(e);
           particles.emitEnemyPop(e.x + e.width / 2, e.y + e.height / 2, '#10B981', 16);
-          const pts = e.type === 'frost_yeti' ? 500 : (e.type === 'goose' ? 450 : (e.type === 'fire_imp' ? 400 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' ? 350 : 250))));
+          const pts = (e.type === 'frost_yeti') ? 500 : (e.type === 'goose' ? 450 : (e.type === 'fire_imp' ? 400 : (e.type === 'beaver' ? 400 : (e.type === 'anteater' || e.type === 'crystal_bat' ? 350 : 250))));
           particles.addPopup(e.x + e.width / 2, e.y, `+${pts}`, '#34D399');
           onScoreAdd(pts);
         } else {

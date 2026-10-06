@@ -79,15 +79,16 @@ export const THEMES: Record<string, LevelTheme> = {
     accentColor: '#38BDF8'
   },
   desert: {
+    id: 'twilight_dunes',
     name: 'Twilight Dunes',
-    skyColorTop: '#78350F',
-    skyColorBottom: '#F59E0B',
-    cloudColor: '#FEF3C7',
-    mountainColor: '#B45309',
-    platformFill: '#D97706',
-    platformTop: '#FBBF24',
-    platformBorder: '#B45309',
-    accentColor: '#EF4444'
+    skyColorTop: '#140508',
+    skyColorBottom: '#5B220B',
+    cloudColor: 'rgba(251, 191, 36, 0.22)',
+    mountainColor: '#2E1005',
+    platformFill: '#23120B',
+    platformTop: '#F59E0B',
+    platformBorder: '#9A3412',
+    accentColor: '#06B6D4'
   },
   tundra: {
     name: 'Frostbite Tundra',
@@ -235,5 +236,41 @@ export const THEMES: Record<string, LevelTheme> = {
     copperPipe: '#EA580C',       // High-pressure steam pipework
     steamGlow: 'rgba(254, 240, 199, 0.45)', // Pressurized steam plume glow
     amberDial: '#FBBF24'         // Illuminated manometer meter
+  },
+  prismaticSanctum: {
+    id: 'prismatic_sanctum',
+    name: 'Prismatic Geode Sanctum',
+    skyColorTop: '#070312',      // Deep midnight amethyst void
+    skyColorBottom: '#22083A',   // Ambient glowing purple cavern horizon
+    cloudColor: 'rgba(168, 85, 247, 0.22)', // Shimmering luminous crystal dust mist
+    mountainColor: '#120526',    // Distant subterranean crystal stalactites & cavern silhouettes
+    platformFill: '#130C22',     // Dark polished obsidian & amethyst bedrock
+    platformTop: '#A855F7',      // Radiant glowing amethyst crystal cap
+    platformBorder: '#6B21A8',   // Deep royal violet faceted border
+    accentColor: '#00F0FF',      // Electric cyan refraction glint
+    crystalCyan: '#06B6D4',      // Vibrant turquoise crystal refraction
+    crystalPurple: '#C084FC',    // Luminous amethyst crystal facet
+    crystalPink: '#F43F5E',      // Rose quartz crystal accent
+    crystalGold: '#FBBF24',      // Golden citrine core
+    geodeGlow: 'rgba(168, 85, 247, 0.45)', // Pulsating geode interior light
+    sparkleColor: '#E0F2FE'      // Prismatic sparkle reflection
+  },
+  twilightDunes: {
+    id: 'twilight_dunes',
+    name: 'Twilight Dunes',
+    skyColorTop: '#140508',      // Deep twilight indigo & plum dusk
+    skyColorBottom: '#5B220B',   // Warm desert horizon glowing with sunset amber
+    cloudColor: 'rgba(251, 191, 36, 0.22)', // Shimmering golden desert dust & heat haze
+    mountainColor: '#2E1005',    // Distant shifting sand dunes & sandstone mesas
+    platformFill: '#23120B',     // Ancient chiseled sandstone bedrock
+    platformTop: '#F59E0B',      // Warm sun-baked golden sand crest
+    platformBorder: '#9A3412',   // Carved terracotta & sandstone rim
+    accentColor: '#06B6D4',      // Desert oasis turquoise & lapis lazuli
+    sandGold: '#FBBF24',         // Sparkling golden silica
+    ruinTerracotta: '#C2410C',   // Sun-baked terracotta & clay bricks
+    hieroglyphGold: '#FDE68A',   // Gilded hieroglyphic inscriptions
+    oasisTurquoise: '#22D3EE',   // Pure oasis spring turquoise
+    sunColor: '#EA580C',         // Giant glowing twilight desert sun
+    duneShadow: '#1A0C06'        // Deep shadow
   }
 };

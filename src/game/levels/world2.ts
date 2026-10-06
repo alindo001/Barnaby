@@ -820,7 +820,7 @@ export const WORLD_2_LEVELS: LevelData[] = [
       { id: "w16_p_intake", x: 300, y: 180, width: 90, height: 20, type: "solid" },
       { id: "w16_p1_flue", x: 480, y: 640, width: 100, height: 260, type: "solid" },
       { id: "w16_p2_flue", x: 880, y: 560, width: 90, height: 340, type: "solid" },
-      { id: "w16_p3_moving", x: 1060, y: 420, width: 100, height: 20, type: "moving", vx: 0, vy: 1.2, minY: 280, maxY: 520 },
+      { id: "w16_p3_moving", x: 1060, y: 420, width: 100, height: 20, type: "solid", startX: 1060, startY: 280, distanceY: 240, speed: 1.2, vx: 0, vy: 1.2 },
       // Checkpoint 1 Deck
       { id: "w16_p_cp1", x: 1260, y: 600, width: 140, height: 300, type: "solid" },
 
@@ -829,17 +829,17 @@ export const WORLD_2_LEVELS: LevelData[] = [
       { id: "w16_p5_arch_low", x: 1720, y: 540, width: 90, height: 20, type: "solid" },
       { id: "w16_p6_arch_high", x: 1800, y: 320, width: 90, height: 20, type: "solid" },
       { id: "w16_p7_refill", x: 1940, y: 440, width: 100, height: 20, type: "solid" },
-      { id: "w16_p8_moving_horiz", x: 2120, y: 360, width: 90, height: 20, type: "moving", vx: 1.2, vy: 0, minX: 2120, maxX: 2360 },
+      { id: "w16_p8_moving_horiz", x: 2120, y: 360, width: 90, height: 20, type: "solid", startX: 2120, startY: 360, distanceX: 240, speed: 1.2, vx: 1.2, vy: 0 },
       { id: "w16_p9_cage_top", x: 2200, y: 260, width: 90, height: 20, type: "solid" },
       // Checkpoint 2 Station
       { id: "w16_p_cp2", x: 2540, y: 480, width: 150, height: 420, type: "solid" },
 
       // Sector 3: High Turbine Flues & Catwalks
       { id: "w16_p10_chimney", x: 2820, y: 580, width: 90, height: 320, type: "solid" },
-      { id: "w16_p11_moving_diag", x: 3040, y: 460, width: 90, height: 20, type: "moving", vx: 0, vy: -1.3, minY: 280, maxY: 520 },
+      { id: "w16_p11_moving_diag", x: 3040, y: 460, width: 90, height: 20, type: "solid", startX: 3040, startY: 280, distanceY: 240, speed: 1.3, vx: 0, vy: -1.3 },
       { id: "w16_p12_spindle", x: 3240, y: 360, width: 100, height: 20, type: "solid" },
       { id: "w16_p13_hanging", x: 3480, y: 460, width: 90, height: 20, type: "solid" },
-      { id: "w16_p14_moving", x: 3640, y: 380, width: 90, height: 20, type: "moving", vx: 1.1, vy: 0, minX: 3640, maxX: 3800 },
+      { id: "w16_p14_moving", x: 3640, y: 380, width: 90, height: 20, type: "solid", startX: 3640, startY: 380, distanceX: 160, speed: 1.1, vx: 1.1, vy: 0 },
       // Checkpoint 3 Hangar
       { id: "w16_p_cp3", x: 3820, y: 560, width: 150, height: 340, type: "solid" },
 
@@ -850,10 +850,10 @@ export const WORLD_2_LEVELS: LevelData[] = [
     ],
     hazards: [
       // Boiling machine oil vats below
-      { id: "w16_hz_pit1", x: 220, y: 880, width: 1040, height: 20, type: "oil" },
-      { id: "w16_hz_pit2", x: 1400, y: 880, width: 1140, height: 20, type: "oil" },
-      { id: "w16_hz_pit3", x: 2690, y: 880, width: 1130, height: 20, type: "oil" },
-      { id: "w16_hz_pit4", x: 3970, y: 880, width: 790, height: 20, type: "oil" },
+      { id: "w16_hz_pit1", x: 220, y: 880, width: 1040, height: 20, type: "lava" },
+      { id: "w16_hz_pit2", x: 1400, y: 880, width: 1140, height: 20, type: "lava" },
+      { id: "w16_hz_pit3", x: 2690, y: 880, width: 1130, height: 20, type: "lava" },
+      { id: "w16_hz_pit4", x: 3970, y: 880, width: 790, height: 20, type: "lava" },
 
       // Aerial rotating brass saws
       { id: "w16_hz_saw1", x: 680, y: 420, width: 40, height: 40, type: "saw" },
@@ -885,7 +885,7 @@ export const WORLD_2_LEVELS: LevelData[] = [
       { id: "w16_acorn_3", x: 4320, y: 130, width: 26, height: 26, type: "acorn", value: 1500 },
 
       // Power-ups
-      { id: "w16_shield_1", x: 1840, y: 280, width: 24, height: 24, type: "shield", value: 0 },
+      { id: "w16_shield_1", x: 1840, y: 280, width: 24, height: 24, type: "bubble_shield", value: 0 },
       { id: "w16_heart_1", x: 1380, y: 555, width: 22, height: 22, type: "heart", value: 0 },
       { id: "w16_heart_2", x: 3940, y: 515, width: 22, height: 22, type: "heart", value: 0 },
 
@@ -931,87 +931,723 @@ export const WORLD_2_LEVELS: LevelData[] = [
   },
   {
     id: 17,
-    title: "17. Crystal Caverns: Steps Exploration",
+    title: "17. Prismatic Geode Sanctum: The Crystal Colonnade",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
+    worldName: "Prismatic Geode Sanctum",
     gameplayType: "terrain",
     category: "classic",
-    description: "Explore the vertical elevations, moving platforms, and hidden secrets of Crystal Caverns.",
-    worldWidth: 4580,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4440,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1603,"y":470,"width":30,"height":40,"activated":false},{"x":3114,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l7_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w2_l7_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w2_l7_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w2_l7_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w2_l7_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w2_l7_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w2_l7_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.5599999999999998,"distanceX":140,"startX":2075,"startY":490,"vx":1.5599999999999998},{"id":"w2_l7_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w2_l7_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w2_l7_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w2_l7_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w2_l7_p11","x":3730,"y":392,"width":164,"height":26,"type":"solid"},{"id":"w2_l7_p12","x":4033,"y":292,"width":162,"height":26,"type":"bouncy"},{"id":"w2_l7_finish_base","x":4200,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w2_l7_secret_p1","x":1237,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w2_l7_secret_p2","x":2565,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w2_l7_secret_p3","x":4300,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l7_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l7_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l7_hz12","x":4073,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w2_l7_acorn_1","x":1269,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l7_acorn_2","x":2587,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l7_acorn_3","x":4337,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l7_c_1","x":600,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_2","x":940,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_4","x":1620,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_5","x":1960,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_6","x":2300,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l7_c_7","x":2640,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_8","x":2980,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_9","x":3320,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l7_c_10","x":3660,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l7_c_11","x":4000,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l7_e_1","x":491,"y":400,"width":28,"height":26,"type":"skunk","vx":0.97,"vy":0,"minX":386,"maxX":623,"facing":1},{"id":"w2_l7_e_2","x":1170,"y":389,"width":28,"height":26,"type":"goose","vx":-0.97,"vy":0,"minX":1114,"maxX":1253,"facing":-1},{"id":"w2_l7_e_3","x":1452,"y":289,"width":28,"height":26,"type":"patroller","vx":0.97,"vy":0,"minX":1379,"maxX":1553,"facing":1},{"id":"w2_l7_e_4","x":1800,"y":389,"width":28,"height":26,"type":"slime","vx":-0.97,"vy":0,"minX":1697,"maxX":1931,"facing":-1},{"id":"w2_l7_e_5","x":2171,"y":375,"width":26,"height":22,"type":"flyer","vx":1.3599999999999999,"vy":0,"minX":2025,"maxX":2345,"facing":1},{"id":"w2_l7_e_6","x":2771,"y":278,"width":28,"height":26,"type":"anteater","vx":-0.97,"vy":0,"minX":2704,"maxX":2865,"facing":-1}],
-    parTime: 79,
-    threeStarScore: 8000
+    description: "Delve into the glittering depths of the Prismatic Geode Sanctum! Collect the new Prismatic Magnet to vacuum up vast crystal riches, jump across resonant geode drums, and dodge razor crystal shards fired by the formidable Crystal Golems.",
+    worldWidth: 5300,
+    worldHeight: 940,
+    theme: THEMES.prismaticSanctum,
+    playerStart: { x: 80, y: 760 },
+    goal: { x: 5120, y: 360, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1720, y: 560, width: 30, height: 40, activated: false },
+      { x: 3460, y: 520, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The Geode Cavern Threshold (Descent & First Golem Sentry)
+      { id: "w17_p_start", x: 0, y: 800, width: 280, height: 140, type: "solid" },
+      { id: "w17_p1_step", x: 340, y: 740, width: 140, height: 200, type: "solid" },
+      { id: "w17_p2_spring", x: 530, y: 730, width: 50, height: 20, type: "bouncy" },
+      // High Route: Light Bridges
+      { id: "w17_p3_light1", x: 610, y: 560, width: 110, height: 16, type: "one-way" },
+      { id: "w17_p4_shelf", x: 750, y: 480, width: 120, height: 24, type: "solid" },
+      // Low Route: Cavern Floor
+      { id: "w17_p5_floor", x: 620, y: 820, width: 250, height: 120, type: "solid" },
+
+      // SECTOR 2: The Amethyst Chasm & Magnetic Prism Chamber
+      // Moving Levitation Platform across the deep fissure
+      { id: "w17_p6_lift1", x: 920, y: 640, width: 90, height: 20, type: "solid", startX: 920, startY: 640, distanceX: 220, speed: 1.3, vx: 1.3, vy: 0 },
+      // Central Altar perched with the PRISMATIC MAGNET POWERUP
+      { id: "w17_p7_magnet_pedestal", x: 1040, y: 480, width: 90, height: 22, type: "solid" },
+      // High Bouncy Geode to Golden Acorn #1
+      { id: "w17_p8_spring_high", x: 1260, y: 520, width: 50, height: 20, type: "bouncy" },
+      { id: "w17_p9_spire", x: 1380, y: 220, width: 90, height: 20, type: "solid" },
+      // Crumbling Crystal Lattices spanning the chasm
+      { id: "w17_p10_crumb1", x: 1350, y: 660, width: 70, height: 18, type: "crumbling" },
+      { id: "w17_p11_crumb2", x: 1470, y: 640, width: 70, height: 18, type: "crumbling" },
+      // Checkpoint 1 Deck
+      { id: "w17_p_cp1", x: 1640, y: 600, width: 200, height: 340, type: "solid" },
+
+      // SECTOR 3: The Resonant Geode Minefield & Crystal Bats
+      { id: "w17_p12_golem_tier", x: 1940, y: 540, width: 260, height: 400, type: "solid" },
+      { id: "w17_p13_geode_spring1", x: 2250, y: 520, width: 55, height: 20, type: "bouncy" },
+      { id: "w17_p14_secret_blaster", x: 2720, y: 200, width: 90, height: 20, type: "solid" },
+      // Dual Synchronized Moving Crystal Prisms
+      { id: "w17_p15_moving_vert", x: 2420, y: 440, width: 90, height: 20, type: "solid", startX: 2420, startY: 280, distanceY: 240, speed: 1.4, vx: 0, vy: 1.4 },
+      { id: "w17_p16_moving_horiz", x: 2580, y: 380, width: 90, height: 20, type: "solid", startX: 2580, startY: 380, distanceX: 240, speed: 1.3, vx: 1.3, vy: 0 },
+
+      // SECTOR 4: The Great Subterranean Crystal River & Checkpoint 2
+      { id: "w17_p17_river_floor", x: 2880, y: 880, width: 440, height: 60, type: "solid" },
+      { id: "w17_p18_vault_shelf", x: 3040, y: 860, width: 100, height: 80, type: "solid" },
+      { id: "w17_p_cp2", x: 3380, y: 560, width: 190, height: 380, type: "solid" },
+
+      // SECTOR 5: The Crystal Golem Sentry Gauntlet
+      { id: "w17_p19_tier1", x: 3680, y: 500, width: 240, height: 440, type: "solid" },
+      { id: "w17_p20_light_bridge", x: 3970, y: 440, width: 110, height: 16, type: "one-way" },
+      { id: "w17_p21_tier2", x: 4140, y: 400, width: 260, height: 540, type: "solid" },
+      { id: "w17_p22_spire_summit", x: 4390, y: 240, width: 85, height: 20, type: "solid" },
+
+      // SECTOR 6: The Grand Amethyst Cathedral & Goal Pedestal
+      { id: "w17_p23_crumb3", x: 4500, y: 460, width: 80, height: 20, type: "crumbling" },
+      { id: "w17_p24_spring_final", x: 4640, y: 480, width: 55, height: 20, type: "bouncy" },
+      { id: "w17_p_finish_approach", x: 4760, y: 420, width: 140, height: 520, type: "solid" },
+      { id: "w17_p_finish_altar", x: 4980, y: 420, width: 280, height: 520, type: "solid" }
+    ],
+    hazards: [
+      // Fissure spike beds & crystal spires
+      { id: "w17_hz1", x: 880, y: 914, width: 240, height: 26, type: "spike" },
+      { id: "w17_hz2", x: 1940, y: 914, width: 260, height: 26, type: "spike" },
+      { id: "w17_hz3", x: 3340, y: 914, width: 80, height: 26, type: "spike" },
+      { id: "w17_hz4", x: 4500, y: 914, width: 180, height: 26, type: "spike" }
+    ],
+    collectibles: [
+      // 3 Golden Acorns
+      { id: "w17_acorn1", x: 1412, y: 180, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w17_acorn2", x: 3075, y: 820, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w17_acorn3", x: 4420, y: 200, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // NEW POWERUP: PRISMATIC MAGNET (Vacuum up surrounding treasure with tractor beams!)
+      { id: "w17_mag1", x: 1070, y: 440, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w17_mag2", x: 3260, y: 840, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+
+      // Defensive Bubble Shield & Secret Laser Blaster
+      { id: "w17_shield1", x: 2380, y: 300, width: 28, height: 28, type: "bubble_shield", value: 600 },
+      { id: "w17_blaster1", x: 2750, y: 160, width: 28, height: 28, type: "blaster", value: 800 },
+
+      // Sector 1: Entrance Stepping Gems & Coins
+      { id: "w17_c1", x: 390, y: 690, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_c2", x: 440, y: 680, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem1", x: 790, y: 430, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w17_c3", x: 660, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 2: Wide Chasm Parabolic Coin Arc (Vacuumed by Prismatic Magnet!)
+      { id: "w17_c4", x: 960, y: 560, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_c5", x: 1000, y: 510, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem2", x: 1050, y: 360, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w17_c6", x: 1140, y: 510, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_c7", x: 1190, y: 560, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_c8", x: 1370, y: 620, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_c9", x: 1490, y: 600, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 3: Geode Minefield Gems & Coins
+      { id: "w17_gem3", x: 2060, y: 440, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w17_c10", x: 2450, y: 380, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_c11", x: 2620, y: 320, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem4", x: 2780, y: 320, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 4: Subterranean Crystal River Treasure Hoard
+      { id: "w17_c12", x: 2940, y: 840, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem5", x: 3000, y: 840, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w17_c13", x: 3160, y: 840, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem6", x: 3220, y: 840, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 5: Sentry Gauntlet Coins
+      { id: "w17_c14", x: 3800, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem7", x: 4020, y: 380, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w17_c15", x: 4260, y: 340, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 6: Cathedral Altar Finale Arc
+      { id: "w17_c16", x: 4820, y: 360, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w17_gem8", x: 4920, y: 320, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w17_c17", x: 5040, y: 360, width: 20, height: 20, type: "coin", value: 100 }
+    ],
+    enemies: [
+      // Sector 1: Sentry Anteater
+      { id: "w17_e_anteater1", x: 670, y: 794, width: 28, height: 26, type: "anteater", vx: -0.9, vy: 0, minX: 630, maxX: 780, facing: -1 },
+
+      // Sector 2: Swooping Crystal Bat across the Amethyst Fissure
+      { id: "w17_e_bat1", x: 1200, y: 460, width: 26, height: 22, type: "crystal_bat", vx: 1.3, vy: 0, minX: 1120, maxX: 1320, facing: 1 },
+
+      // Sector 3: PRISMOR THE CRYSTAL GOLEM #1 (Shooting razor crystal shards!)
+      { id: "w17_e_golem1", x: 2040, y: 508, width: 28, height: 32, type: "crystal_golem", vx: 0.9, vy: 0, minX: 1960, maxX: 2160, facing: 1 },
+      // Airborne Crystal Bat
+      { id: "w17_e_bat2", x: 2340, y: 340, width: 26, height: 22, type: "crystal_bat", vx: -1.3, vy: 0, minX: 2220, maxX: 2460, facing: -1 },
+
+      // Sector 4: Subterranean River Hedgehog
+      { id: "w17_e_hedge1", x: 3180, y: 854, width: 28, height: 26, type: "hedgehog", vx: 0.9, vy: 0, minX: 3120, maxX: 3280, facing: 1 },
+
+      // Sector 5: PRISMOR THE CRYSTAL GOLEM #2 & #3 (Dual sentry gauntlet)
+      { id: "w17_e_golem2", x: 3760, y: 468, width: 28, height: 32, type: "crystal_golem", vx: -0.9, vy: 0, minX: 3700, maxX: 3880, facing: -1 },
+      { id: "w17_e_bat3", x: 4040, y: 280, width: 26, height: 22, type: "crystal_bat", vx: 1.4, vy: 0, minX: 3960, maxX: 4180, facing: 1 },
+      { id: "w17_e_golem3", x: 4220, y: 368, width: 28, height: 32, type: "crystal_golem", vx: 0.95, vy: 0, minX: 4160, maxX: 4360, facing: 1 }
+    ],
+    parTime: 110,
+    threeStarScore: 16800
   },
   {
     id: 18,
-    title: "18. Crystal Caverns: Aviator Flight",
+    title: "18. Prismatic Geode Sanctum: Aeronaut Geode Chasm",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
-    gameplayType: "rocketeer",
-    category: "rocketeer",
-    description: "Take to the open skies! Zero ground platforms—pure aerial jetpack flight navigating fuel canisters across the Crystal Caverns.",
-    worldWidth: 4800,
-    worldHeight: 650,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
+    worldName: "Prismatic Geode Sanctum",
+    gameplayType: "gadget",
+    category: "jetpack",
     startWithJetpack: true,
-    goal: {"x":4660,"y":420,"width":44,"height":60},
-    checkpoints: [],
-    platforms: [{"id":"w2_l8_launch","x":0,"y":480,"width":260,"height":170,"type":"solid"},{"id":"w2_l8_landing","x":4460,"y":440,"width":340,"height":210,"type":"solid"}],
-    hazards: [],
-    collectibles: [{"id":"w2_l8_jp_start","x":120,"y":440,"width":28,"height":28,"type":"jetpack","value":500},{"id":"w2_l8_acorn_1","x":1248,"y":110,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l8_acorn_2","x":2640,"y":490,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l8_acorn_3","x":3984,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l8_fuel_1","x":844,"y":396,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_2","x":1289,"y":198,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_3","x":1733,"y":152,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_4","x":2178,"y":371,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_5","x":2622,"y":318,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_6","x":3067,"y":123,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_7","x":3511,"y":265,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_fuel_8","x":3956,"y":395,"width":24,"height":24,"type":"jetpack_fuel","value":200},{"id":"w2_l8_c_1","x":618,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l8_c_2","x":977,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l8_c_5","x":2052,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l8_c_6","x":2410,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l8_c_7","x":2768,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l8_c_10","x":3843,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l8_c_11","x":4202,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l8_fly_1","x":1004,"y":336,"width":26,"height":22,"type":"pigeon","vx":-2,"vy":0,"minX":904,"maxX":1124,"facing":-1},{"id":"w2_l8_fly_2","x":1449,"y":138,"width":26,"height":22,"type":"flyer","vx":1.8,"vy":0,"minX":1349,"maxX":1569,"facing":1},{"id":"w2_l8_fly_3","x":1893,"y":120,"width":26,"height":22,"type":"pigeon","vx":-2,"vy":0,"minX":1793,"maxX":2013,"facing":-1},{"id":"w2_l8_fly_4","x":2338,"y":311,"width":26,"height":22,"type":"flyer","vx":1.8,"vy":0,"minX":2238,"maxX":2458,"facing":1},{"id":"w2_l8_fly_5","x":2782,"y":258,"width":26,"height":22,"type":"pigeon","vx":-2,"vy":0,"minX":2682,"maxX":2902,"facing":-1},{"id":"w2_l8_fly_6","x":3227,"y":120,"width":26,"height":22,"type":"flyer","vx":1.8,"vy":0,"minX":3127,"maxX":3347,"facing":1},{"id":"w2_l8_fly_7","x":3671,"y":205,"width":26,"height":22,"type":"pigeon","vx":-2,"vy":0,"minX":3571,"maxX":3791,"facing":-1},{"id":"w2_l8_fly_8","x":4116,"y":335,"width":26,"height":22,"type":"flyer","vx":1.8,"vy":0,"minX":4016,"maxX":4236,"facing":1}],
-    parTime: 82,
-    threeStarScore: 8200
+    description: "Take flight across the yawning crystal expanse of the Prismatic Geode Sanctum! Ride vertical anti-gravity resonance wells, collect the Prismatic Magnet in mid-air to vacuum up vast constellations of floating riches, and dogfight through swarms of Crystal Bats and Crystal Golem snipers.",
+    worldWidth: 5400,
+    worldHeight: 900,
+    theme: THEMES.prismaticSanctum,
+    playerStart: { x: 80, y: 720 },
+    goal: { x: 5220, y: 360, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1420, y: 560, width: 30, height: 40, activated: false },
+      { x: 2780, y: 460, width: 30, height: 40, activated: false },
+      { x: 4080, y: 500, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The Crystal Launch Gantry & First Anti-Grav Resonance Well
+      { id: "w18_p_launch", x: 0, y: 760, width: 220, height: 140, type: "solid" },
+      // First Anti-Gravity Lift Well: Ascend effortlessly to the high cavern canopy
+      { id: "w18_p_well1", x: 400, y: 220, width: 100, height: 540, type: "anti_grav" },
+      { id: "w18_p1_high_shelf", x: 340, y: 180, width: 140, height: 22, type: "solid" },
+      { id: "w18_p2_light1", x: 540, y: 320, width: 110, height: 16, type: "one-way" },
+      { id: "w18_p3_float1", x: 720, y: 460, width: 100, height: 22, type: "solid" },
+      // Moving Crystal Sentry Platform
+      { id: "w18_p4_moving1", x: 920, y: 500, width: 90, height: 20, type: "solid", startX: 920, startY: 500, distanceX: 180, speed: 1.2, vx: 1.2, vy: 0 },
+      // High Spire Roost with Golden Acorn #1
+      { id: "w18_p5_spire1", x: 1140, y: 160, width: 90, height: 20, type: "solid" },
+      // Checkpoint 1 Station Deck
+      { id: "w18_p_cp1", x: 1360, y: 600, width: 180, height: 300, type: "solid" },
+
+      // SECTOR 2: The Constellation Chasm & Mid-Air Magnet Rush
+      // Floating Altar perched with PRISMATIC MAGNET POWERUP #1
+      { id: "w18_p6_magnet_altar", x: 1660, y: 480, width: 100, height: 22, type: "solid" },
+      // High Anti-Grav Well 2 (Lifts Barnaby over the crystal saw trap)
+      { id: "w18_p_well2", x: 2160, y: 180, width: 90, height: 500, type: "anti_grav" },
+      // Secret High Roost with LASER BLASTER
+      { id: "w18_p7_blaster_roost", x: 2320, y: 160, width: 100, height: 20, type: "solid" },
+      // Bouncy Geode Launch Drum
+      { id: "w18_p8_spring1", x: 2420, y: 560, width: 55, height: 20, type: "bouncy" },
+      // Secret Lower Alcove with Golden Acorn #2
+      { id: "w18_p9_secret_cave", x: 2160, y: 780, width: 110, height: 24, type: "solid" },
+      // Moving Crystal Sentry Platform 2
+      { id: "w18_p10_moving2", x: 2520, y: 440, width: 90, height: 20, type: "solid", startX: 2520, startY: 440, distanceX: 160, speed: 1.3, vx: 1.3, vy: 0 },
+      // Checkpoint 2 Island Deck
+      { id: "w18_p_cp2", x: 2720, y: 500, width: 180, height: 400, type: "solid" },
+
+      // SECTOR 3: The Crystal Golem Sentry Gauntlet & Saw Lattices
+      // Elevated Golem Bastion 1
+      { id: "w18_p11_golem_ped1", x: 3020, y: 380, width: 110, height: 24, type: "solid" },
+      { id: "w18_p12_spindle", x: 3240, y: 260, width: 90, height: 20, type: "solid" },
+      // Crumbling Crystal Stepping Slabs across the saw gauntlet
+      { id: "w18_p13_crumb1", x: 3440, y: 460, width: 80, height: 18, type: "crumbling" },
+      { id: "w18_p14_crumb2", x: 3560, y: 420, width: 80, height: 18, type: "crumbling" },
+      // Vertical Moving Crystal Sentry Platform
+      { id: "w18_p15_moving_vert", x: 3720, y: 380, width: 90, height: 20, type: "solid", startX: 3720, startY: 260, distanceY: 240, speed: 1.3, vx: 0, vy: 1.3 },
+      // Altar with PRISMATIC MAGNET POWERUP #2
+      { id: "w18_p16_magnet_altar2", x: 3840, y: 220, width: 90, height: 20, type: "solid" },
+      // Checkpoint 3 Island Deck
+      { id: "w18_p_cp3", x: 4000, y: 540, width: 180, height: 360, type: "solid" },
+
+      // SECTOR 4: The Great Amethyst Stratosphere & High Sentry Roosts
+      // Third Anti-Grav Well: Soar up to the Stratospheric Pinnacle!
+      { id: "w18_p_well3", x: 4260, y: 140, width: 90, height: 600, type: "anti_grav" },
+      // High Stratospheric Spire Summit with Golden Acorn #3
+      { id: "w18_p17_summit", x: 4440, y: 130, width: 100, height: 20, type: "solid" },
+      // Mid-Air Shield Refuel Shelf
+      { id: "w18_p18_shield_shelf", x: 4320, y: 520, width: 90, height: 20, type: "solid" },
+      // Crumbling Crystal Bridges to Grand Cathedral
+      { id: "w18_p19_crumb3", x: 4660, y: 460, width: 80, height: 20, type: "crumbling" },
+      { id: "w18_p20_crumb4", x: 4800, y: 440, width: 80, height: 20, type: "crumbling" },
+      // Final Grand Altar approach & Goal Pedestal
+      { id: "w18_p21_cathedral_step", x: 4960, y: 420, width: 130, height: 480, type: "solid" },
+      { id: "w18_p_goal_altar", x: 5150, y: 420, width: 250, height: 480, type: "solid" }
+    ],
+    hazards: [
+      // Deep Bottom Abyss Crystal Spike Beds
+      { id: "w18_hz_spike1", x: 220, y: 884, width: 1140, height: 26, type: "spike" },
+      { id: "w18_hz_spike2", x: 1540, y: 884, width: 1180, height: 26, type: "spike" },
+      { id: "w18_hz_spike3", x: 2900, y: 884, width: 1100, height: 26, type: "spike" },
+      { id: "w18_hz_spike4", x: 4180, y: 884, width: 780, height: 26, type: "spike" },
+
+      // Rotating Ancient Crystal Saws
+      { id: "w18_hz_saw1", x: 780, y: 380, width: 42, height: 42, type: "saw" },
+      { id: "w18_hz_saw2", x: 1960, y: 320, width: 44, height: 44, type: "saw" },
+      { id: "w18_hz_saw3", x: 3160, y: 320, width: 44, height: 44, type: "saw" },
+      { id: "w18_hz_saw4", x: 3580, y: 260, width: 44, height: 44, type: "saw" },
+      { id: "w18_hz_saw5", x: 4540, y: 320, width: 44, height: 44, type: "saw" }
+    ],
+    collectibles: [
+      // Jetpack spawn at start gantry
+      { id: "w18_jp_spawn", x: 130, y: 720, width: 24, height: 28, type: "jetpack", value: 0 },
+
+      // 10 Jetpack Fuel Refill Canisters strategically spaced along flight arcs
+      { id: "w18_fuel_1", x: 390, y: 140, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_2", x: 760, y: 420, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_3", x: 1440, y: 550, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_4", x: 1920, y: 360, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_5", x: 2360, y: 380, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_6", x: 2800, y: 450, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_7", x: 3280, y: 210, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_8", x: 3760, y: 210, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_9", x: 4100, y: 490, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w18_fuel_10", x: 4500, y: 380, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+
+      // 3 Golden Acorns
+      { id: "w18_acorn_1", x: 1170, y: 120, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w18_acorn_2", x: 2200, y: 740, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w18_acorn_3", x: 4475, y: 90, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Power-ups: Dual Prismatic Magnets, Laser Blaster & Ammo, Bubble Shield, Hearts
+      { id: "w18_mag1", x: 1695, y: 440, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w18_mag2", x: 3870, y: 180, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w18_blaster1", x: 2355, y: 120, width: 28, height: 28, type: "blaster", value: 800 },
+      { id: "w18_ammo1", x: 3070, y: 340, width: 22, height: 22, type: "blaster_ammo", value: 300 },
+      { id: "w18_shield1", x: 4350, y: 480, width: 24, height: 24, type: "bubble_shield", value: 500 },
+      { id: "w18_heart1", x: 1480, y: 555, width: 22, height: 22, type: "heart", value: 0 },
+      { id: "w18_heart2", x: 4140, y: 495, width: 22, height: 22, type: "heart", value: 0 },
+
+      // Sector 1: Ascent Coins & Gems
+      { id: "w18_c1", x: 360, y: 640, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_c2", x: 360, y: 520, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem1", x: 450, y: 140, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c3", x: 590, y: 280, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_c4", x: 740, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_c5", x: 960, y: 450, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 2: The Constellation Chasm (Vast diamond array of treasure for the Prismatic Magnet!)
+      { id: "w18_c6", x: 1780, y: 420, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_c7", x: 1840, y: 360, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem2", x: 1900, y: 300, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c8", x: 1960, y: 260, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem3", x: 2020, y: 300, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c9", x: 2080, y: 360, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_c10", x: 2140, y: 420, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem4", x: 2260, y: 520, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c11", x: 2480, y: 510, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 3: Sentry Gauntlet Flight Path Coins & Gems
+      { id: "w18_c12", x: 3120, y: 340, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem5", x: 3340, y: 220, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c13", x: 3500, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_c14", x: 3620, y: 370, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem6", x: 3800, y: 160, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 4: Stratospheric High Coins & Finale Arc
+      { id: "w18_c15", x: 4380, y: 180, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem7", x: 4560, y: 120, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c16", x: 4720, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w18_gem8", x: 4860, y: 390, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w18_c17", x: 5020, y: 370, width: 20, height: 20, type: "coin", value: 100 }
+    ],
+    enemies: [
+      // Sector 1: Swooping Crystal Bats in the lower grotto
+      { id: "w18_e_bat1", x: 620, y: 360, width: 26, height: 22, type: "crystal_bat", vx: 1.3, vy: 0, minX: 540, maxX: 740, facing: 1 },
+      { id: "w18_e_bat2", x: 1040, y: 280, width: 26, height: 22, type: "crystal_bat", vx: -1.3, vy: 0, minX: 960, maxX: 1160, facing: -1 },
+
+      // Sector 2: Mid-air chasm patrol (Pigeon & Flyer dogfight)
+      { id: "w18_e_flyer1", x: 1780, y: 380, width: 28, height: 24, type: "flyer", vx: 1.4, vy: 0, minX: 1700, maxX: 1920, facing: 1 },
+      { id: "w18_e_bat3", x: 2040, y: 240, width: 26, height: 22, type: "crystal_bat", vx: -1.4, vy: 0, minX: 1960, maxX: 2180, facing: -1 },
+      { id: "w18_e_pigeon1", x: 2460, y: 320, width: 26, height: 22, type: "pigeon", vx: 1.3, vy: 0, minX: 2380, maxX: 2560, facing: 1 },
+
+      // Sector 3: Mounted Sentry Crystal Golems & High Bats
+      { id: "w18_e_golem1", x: 3050, y: 348, width: 28, height: 32, type: "crystal_golem", vx: 0.8, vy: 0, minX: 3025, maxX: 3105, facing: 1 },
+      { id: "w18_e_bat4", x: 3380, y: 220, width: 26, height: 22, type: "crystal_bat", vx: -1.4, vy: 0, minX: 3280, maxX: 3500, facing: -1 },
+      { id: "w18_e_golem2", x: 3750, y: 348, width: 28, height: 32, type: "crystal_golem", vx: -0.8, vy: 0, minX: 3725, maxX: 3795, facing: -1 },
+
+      // Sector 4: Stratospheric Bat & Grand Cathedral Sentry
+      { id: "w18_e_bat5", x: 4420, y: 260, width: 26, height: 22, type: "crystal_bat", vx: 1.5, vy: 0, minX: 4320, maxX: 4560, facing: 1 },
+      { id: "w18_e_golem3", x: 4990, y: 388, width: 28, height: 32, type: "crystal_golem", vx: 0.85, vy: 0, minX: 4970, maxX: 5060, facing: 1 },
+      { id: "w18_e_patrol1", x: 5220, y: 394, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 5170, maxX: 5320, facing: -1 }
+    ],
+    parTime: 115,
+    threeStarScore: 17500
   },
   {
     id: 19,
-    title: "19. Crystal Caverns: Chasm Exploration",
+    title: "19. Prismatic Geode Sanctum: The Resonant Geode Labyrinth",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
-    gameplayType: "terrain",
-    category: "classic",
-    description: "Explore the vertical elevations, moving platforms, and hidden secrets of Crystal Caverns.",
-    worldWidth: 4900,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4760,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1715,"y":470,"width":30,"height":40,"activated":false},{"x":3332,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l9_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w2_l9_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w2_l9_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w2_l9_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w2_l9_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w2_l9_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w2_l9_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.5599999999999998,"distanceX":140,"startX":2075,"startY":490,"vx":1.5599999999999998},{"id":"w2_l9_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w2_l9_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w2_l9_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w2_l9_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w2_l9_p11","x":3730,"y":392,"width":164,"height":26,"type":"solid"},{"id":"w2_l9_p12","x":4033,"y":292,"width":162,"height":26,"type":"bouncy"},{"id":"w2_l9_p13","x":4321,"y":392,"width":230,"height":14,"type":"one-way"},{"id":"w2_l9_finish_base","x":4520,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w2_l9_secret_p1","x":1323,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w2_l9_secret_p2","x":2744,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w2_l9_secret_p3","x":4620,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l9_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l9_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l9_hz12","x":4073,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w2_l9_acorn_1","x":1355,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l9_acorn_2","x":2766,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l9_acorn_3","x":4657,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l9_c_1","x":627,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_2","x":993,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_4","x":1727,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_5","x":2093,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_6","x":2460,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l9_c_7","x":2827,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_8","x":3193,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_9","x":3560,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l9_c_10","x":3927,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l9_c_11","x":4293,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l9_e_1","x":491,"y":400,"width":28,"height":26,"type":"beaver","vx":0.97,"vy":0,"minX":386,"maxX":623,"facing":1},{"id":"w2_l9_e_2","x":1170,"y":389,"width":28,"height":26,"type":"hedgehog","vx":-0.97,"vy":0,"minX":1114,"maxX":1253,"facing":-1},{"id":"w2_l9_e_3","x":1452,"y":289,"width":28,"height":26,"type":"frog","vx":0.97,"vy":0,"minX":1379,"maxX":1553,"facing":1,"minY":245,"maxY":315},{"id":"w2_l9_e_4","x":1800,"y":325,"width":26,"height":22,"type":"pigeon","vx":-1.3599999999999999,"vy":0,"minX":1641,"maxX":1987,"facing":-1},{"id":"w2_l9_e_5","x":2171,"y":464,"width":28,"height":26,"type":"skunk","vx":0.97,"vy":0,"minX":2081,"maxX":2289,"facing":1},{"id":"w2_l9_e_6","x":2771,"y":278,"width":28,"height":26,"type":"goose","vx":-0.97,"vy":0,"minX":2704,"maxX":2865,"facing":-1}],
-    parTime: 85,
-    threeStarScore: 8400
+    worldName: "Prismatic Geode Sanctum",
+    gameplayType: "gadget",
+    category: "jetpack",
+    startWithJetpack: true,
+    description: "Navigate an intricate multi-tiered subterranean crystal labyrinth! Ride thermal resonance lift wells through tight geode caverns, vacuum up concentric rings of floating diamonds with the Prismatic Magnet, and weave past oscillating crystal crusher gates and Crystal Golem fortifications.",
+    worldWidth: 5500,
+    worldHeight: 960,
+    theme: THEMES.prismaticSanctum,
+    playerStart: { x: 80, y: 760 },
+    goal: { x: 5320, y: 380, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1460, y: 640, width: 30, height: 40, activated: false },
+      { x: 2820, y: 480, width: 30, height: 40, activated: false },
+      { x: 4160, y: 520, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The Geode Labyrinth Entrance & Thermal Lift Wells
+      { id: "w19_p_start", x: 0, y: 800, width: 240, height: 160, type: "solid" },
+      // Low crystal ceiling creating an authentic enclosed cavern grotto entry
+      { id: "w19_p_ceiling1", x: 140, y: 520, width: 220, height: 40, type: "solid" },
+      // First Thermal Lift Well: Shoots Barnaby up into the upper grotto!
+      { id: "w19_p_well1", x: 380, y: 260, width: 95, height: 520, type: "anti_grav" },
+      { id: "w19_p1_upper_grotto", x: 490, y: 260, width: 140, height: 22, type: "solid" },
+      // Moving Crystal Sentry Platform 1
+      { id: "w19_p2_moving1", x: 660, y: 280, width: 90, height: 20, type: "solid", startX: 660, startY: 280, distanceX: 180, speed: 1.3, vx: 1.3, vy: 0 },
+      // High Secret Roost with Golden Acorn #1
+      { id: "w19_p3_acorn_roost", x: 890, y: 150, width: 85, height: 20, type: "solid" },
+      // Stepping Crystal Light Bridge
+      { id: "w19_p4_light1", x: 990, y: 380, width: 110, height: 16, type: "one-way" },
+      // Bouncy Geode Launch Drum 1
+      { id: "w19_p5_spring1", x: 1140, y: 520, width: 55, height: 20, type: "bouncy" },
+      { id: "w19_p6_refuel1", x: 1240, y: 420, width: 90, height: 20, type: "solid" },
+      // Checkpoint 1 Station Island
+      { id: "w19_p_cp1", x: 1400, y: 680, width: 190, height: 280, type: "solid" },
+
+      // SECTOR 2: The Resonant Geyser Hollow & Concentric Magnet Ring
+      // Central Altar perched with PRISMATIC MAGNET POWERUP #1
+      { id: "w19_p7_magnet_pedestal1", x: 1680, y: 540, width: 90, height: 22, type: "solid" },
+      // Floating Core Hub in center of the concentric diamond array
+      { id: "w19_p8_ring_hub", x: 2060, y: 440, width: 70, height: 20, type: "solid" },
+      // Moving Crystal Sentry Platform 2
+      { id: "w19_p10_moving2", x: 2240, y: 360, width: 90, height: 20, type: "solid", startX: 2240, startY: 360, distanceX: 180, speed: 1.3, vx: 1.3, vy: 0 },
+      // Secret Lower Fissure Shelf with Golden Acorn #2
+      { id: "w19_p9_acorn2_shelf", x: 2320, y: 840, width: 100, height: 22, type: "solid" },
+      // Second Anti-Gravity Lift Well: Launches player out of the lower depths
+      { id: "w19_p_well2", x: 2540, y: 220, width: 95, height: 600, type: "anti_grav" },
+      { id: "w19_p11_high_perch", x: 2460, y: 180, width: 90, height: 20, type: "solid" },
+      // Checkpoint 2 Station Island
+      { id: "w19_p_cp2", x: 2760, y: 520, width: 180, height: 440, type: "solid" },
+
+      // SECTOR 3: The Crystal Crusher Gates & Sentry Bastion
+      // Secret High Roost with LASER BLASTER
+      { id: "w19_p12_blaster_roost", x: 2980, y: 180, width: 90, height: 20, type: "solid" },
+      // Oscillating Crusher Platform 1 (Moves vertically)
+      { id: "w19_p13_crusher1", x: 3220, y: 360, width: 90, height: 24, type: "solid", startX: 3220, startY: 200, distanceY: 240, speed: 1.4, vx: 0, vy: 1.4 },
+      // Mid Bastion 1 (Mounted Crystal Golem)
+      { id: "w19_p14_bastion1", x: 3350, y: 460, width: 100, height: 30, type: "solid" },
+      // Oscillating Crusher Platform 2 (Counter-moves vertically)
+      { id: "w19_p15_crusher2", x: 3490, y: 440, width: 90, height: 24, type: "solid", startX: 3490, startY: 440, distanceY: -240, speed: 1.4, vx: 0, vy: -1.4 },
+      // Crumbling Crystal Lattices spanning the choke point
+      { id: "w19_p16_crumb1", x: 3620, y: 400, width: 80, height: 18, type: "crumbling" },
+      { id: "w19_p17_crumb2", x: 3740, y: 360, width: 80, height: 18, type: "crumbling" },
+      // Mid Bastion 2 (Mounted Crystal Golem 2)
+      { id: "w19_p18_bastion2", x: 3850, y: 460, width: 100, height: 30, type: "solid" },
+      // Altar perched with PRISMATIC MAGNET POWERUP #2
+      { id: "w19_p19_magnet_pedestal2", x: 3980, y: 280, width: 90, height: 20, type: "solid" },
+      // Checkpoint 3 Station Island
+      { id: "w19_p_cp3", x: 4100, y: 560, width: 180, height: 400, type: "solid" },
+
+      // SECTOR 4: The Stratospheric Geyser Apex
+      // Third Thermal Lift Well: Soar up to the Stratospheric Apex!
+      { id: "w19_p_well3", x: 4320, y: 120, width: 100, height: 660, type: "anti_grav" },
+      // Stratospheric Summit with Golden Acorn #3
+      { id: "w19_p20_summit", x: 4500, y: 110, width: 100, height: 20, type: "solid" },
+      // Mid-Air Bubble Shield Shelf
+      { id: "w19_p21_shield_shelf", x: 4380, y: 500, width: 90, height: 20, type: "solid" },
+      // Bouncy Geode Launch Drum 2
+      { id: "w19_p22_spring2", x: 4560, y: 540, width: 55, height: 20, type: "bouncy" },
+      // Crumbling Crystal Stepping Stones over the final abyss
+      { id: "w19_p23_crumb3", x: 4720, y: 460, width: 80, height: 20, type: "crumbling" },
+      { id: "w19_p24_crumb4", x: 4860, y: 440, width: 80, height: 20, type: "crumbling" },
+
+      // SECTOR 5: The Grand Crystal Portal Sanctum
+      { id: "w19_p25_cathedral_step", x: 5020, y: 420, width: 140, height: 540, type: "solid" },
+      { id: "w19_p_goal_altar", x: 5240, y: 420, width: 240, height: 540, type: "solid" }
+    ],
+    hazards: [
+      // Deep Bottom Abyss Crystal Spike Beds
+      { id: "w19_hz_spike1", x: 240, y: 944, width: 1120, height: 26, type: "spike" },
+      { id: "w19_hz_spike2", x: 1590, y: 944, width: 1170, height: 26, type: "spike" },
+      { id: "w19_hz_spike3", x: 2940, y: 944, width: 1160, height: 26, type: "spike" },
+      { id: "w19_hz_spike4", x: 4280, y: 944, width: 740, height: 26, type: "spike" },
+
+      // Overhead Ceiling Spikes in tight passages
+      { id: "w19_hz_spike_ceil1", x: 800, y: 40, width: 240, height: 26, type: "spike" },
+      { id: "w19_hz_spike_ceil2", x: 3100, y: 40, width: 340, height: 26, type: "spike" },
+
+      // Rotating Ancient Crystal Saws
+      { id: "w19_hz_saw1", x: 790, y: 340, width: 42, height: 42, type: "saw" },
+      { id: "w19_hz_saw2", x: 2075, y: 380, width: 44, height: 44, type: "saw" },
+      { id: "w19_hz_saw3", x: 3370, y: 280, width: 44, height: 44, type: "saw" },
+      { id: "w19_hz_saw4", x: 3740, y: 240, width: 44, height: 44, type: "saw" },
+      { id: "w19_hz_saw5", x: 4640, y: 340, width: 44, height: 44, type: "saw" }
+    ],
+    collectibles: [
+      // Jetpack spawn at start gantry
+      { id: "w19_jp_spawn", x: 130, y: 760, width: 24, height: 28, type: "jetpack", value: 0 },
+
+      // 10 Jetpack Fuel Refill Canisters strategically spaced along labyrinth routes
+      { id: "w19_fuel_1", x: 530, y: 220, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_2", x: 1030, y: 340, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_3", x: 1480, y: 630, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_4", x: 1940, y: 380, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_5", x: 2480, y: 140, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_6", x: 2840, y: 470, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_7", x: 3380, y: 410, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_8", x: 3880, y: 410, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_9", x: 4200, y: 510, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w19_fuel_10", x: 4600, y: 380, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+
+      // 3 Golden Acorns
+      { id: "w19_acorn_1", x: 920, y: 110, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w19_acorn_2", x: 2360, y: 800, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w19_acorn_3", x: 4535, y: 70, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Power-ups: Dual Prismatic Magnets, Laser Blaster & Ammo, Bubble Shield, Hearts
+      { id: "w19_mag1", x: 1715, y: 500, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w19_mag2", x: 4015, y: 240, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w19_blaster1", x: 3015, y: 140, width: 28, height: 28, type: "blaster", value: 800 },
+      { id: "w19_ammo1", x: 3480, y: 180, width: 22, height: 22, type: "blaster_ammo", value: 300 },
+      { id: "w19_shield1", x: 4415, y: 460, width: 24, height: 24, type: "bubble_shield", value: 500 },
+      { id: "w19_heart1", x: 1520, y: 635, width: 22, height: 22, type: "heart", value: 0 },
+      { id: "w19_heart2", x: 4240, y: 515, width: 22, height: 22, type: "heart", value: 0 },
+
+      // Sector 1: Grotto Coins & Ascent Gems
+      { id: "w19_c1", x: 240, y: 720, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_c2", x: 340, y: 680, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem1", x: 420, y: 200, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c3", x: 570, y: 220, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_c4", x: 740, y: 240, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem2", x: 920, y: 240, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c5", x: 1040, y: 480, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 2: The Concentric Geode Ring (Concentric diamond pattern around the hub)
+      { id: "w19_c6", x: 1840, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem3", x: 1950, y: 340, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c7", x: 2095, y: 280, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem4", x: 2240, y: 340, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c8", x: 2350, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem5", x: 2240, y: 540, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c9", x: 2095, y: 600, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem6", x: 1950, y: 540, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c10", x: 2095, y: 440, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 3: Sentry Gauntlet Precision Path Coins & Gems
+      { id: "w19_c11", x: 3120, y: 320, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_c12", x: 3340, y: 240, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem7", x: 3550, y: 360, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c13", x: 3700, y: 300, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem8", x: 3920, y: 220, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 4: Stratospheric High Coins & Finale Arc
+      { id: "w19_c14", x: 4440, y: 160, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem9", x: 4620, y: 110, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c15", x: 4780, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w19_gem10", x: 4920, y: 380, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w19_c16", x: 5120, y: 360, width: 20, height: 20, type: "coin", value: 100 }
+    ],
+    enemies: [
+      // Sector 1: Crystal Bats in the upper grotto
+      { id: "w19_e_bat1", x: 580, y: 220, width: 26, height: 22, type: "crystal_bat", vx: 1.3, vy: 0, minX: 500, maxX: 700, facing: 1 },
+      { id: "w19_e_bat2", x: 800, y: 240, width: 26, height: 22, type: "crystal_bat", vx: -1.3, vy: 0, minX: 720, maxX: 920, facing: -1 },
+
+      // Sector 2: Sentry Golem guarding lower fissure acorn + airborne flyer & bat
+      { id: "w19_e_golem1", x: 2280, y: 808, width: 28, height: 32, type: "crystal_golem", vx: 0.8, vy: 0, minX: 2250, maxX: 2330, facing: 1 },
+      { id: "w19_e_bat3", x: 1980, y: 480, width: 26, height: 22, type: "crystal_bat", vx: 1.4, vy: 0, minX: 1880, maxX: 2120, facing: 1 },
+      { id: "w19_e_flyer1", x: 2420, y: 300, width: 28, height: 24, type: "flyer", vx: -1.4, vy: 0, minX: 2340, maxX: 2540, facing: -1 },
+
+      // Sector 3: Crusher Gauntlet Sentry Golems #2 & #3 + Bat
+      { id: "w19_e_golem2", x: 3380, y: 428, width: 28, height: 32, type: "crystal_golem", vx: 0.8, vy: 0, minX: 3360, maxX: 3430, facing: 1 },
+      { id: "w19_e_bat4", x: 3660, y: 320, width: 26, height: 22, type: "crystal_bat", vx: -1.4, vy: 0, minX: 3580, maxX: 3780, facing: -1 },
+      { id: "w19_e_golem3", x: 3880, y: 428, width: 28, height: 32, type: "crystal_golem", vx: -0.8, vy: 0, minX: 3860, maxX: 3930, facing: -1 },
+
+      // Sector 4 & 5: Stratospheric Bat & Grand Cathedral Sentry Golem #4 + Patroller
+      { id: "w19_e_bat5", x: 4460, y: 220, width: 26, height: 22, type: "crystal_bat", vx: 1.5, vy: 0, minX: 4360, maxX: 4600, facing: 1 },
+      { id: "w19_e_golem4", x: 5060, y: 388, width: 28, height: 32, type: "crystal_golem", vx: 0.85, vy: 0, minX: 5030, maxX: 5130, facing: 1 },
+      { id: "w19_e_patrol1", x: 5300, y: 394, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 5250, maxX: 5400, facing: -1 }
+    ],
+    parTime: 120,
+    threeStarScore: 18000
   },
   {
     id: 20,
-    title: "20. Crystal Caverns: Fortress Climax",
+    title: "20. Prismatic Geode Sanctum: The Prism Core Climax",
     worldNumber: 2,
-    worldName: "Crystal Caverns",
-    gameplayType: "terrain",
-    category: "classic",
-    description: "The grand climax of Crystal Caverns! A high-stakes gauntlet testing all your platforming prowess.",
-    worldWidth: 4640,
-    worldHeight: 600,
-    theme: THEMES.cavern,
-    playerStart: {"x":80,"y":440},
-    goal: {"x":4500,"y":420,"width":44,"height":60},
-    checkpoints: [{"x":1624,"y":470,"width":30,"height":40,"activated":false},{"x":3155,"y":470,"width":30,"height":40,"activated":false}],
-    platforms: [{"id":"w2_l10_p_start","x":0,"y":500,"width":320,"height":100,"type":"solid"},{"id":"w2_l10_p1","x":380,"y":426,"width":249,"height":14,"type":"one-way"},{"id":"w2_l10_p2","x":764,"y":490,"width":207,"height":26,"type":"bouncy"},{"id":"w2_l10_p3","x":1108,"y":415,"width":151,"height":26,"type":"crumbling"},{"id":"w2_l10_p4","x":1373,"y":315,"width":186,"height":26,"type":"solid"},{"id":"w2_l10_p5","x":1691,"y":415,"width":246,"height":14,"type":"one-way"},{"id":"w2_l10_p6","x":2075,"y":490,"width":220,"height":26,"type":"solid","speed":1.5599999999999998,"distanceX":140,"startX":2075,"startY":490,"vx":1.5599999999999998},{"id":"w2_l10_p7","x":2413,"y":404,"width":156,"height":26,"type":"bouncy"},{"id":"w2_l10_p8","x":2698,"y":304,"width":173,"height":26,"type":"solid"},{"id":"w2_l10_p9","x":3010,"y":404,"width":240,"height":14,"type":"one-way"},{"id":"w2_l10_p10","x":3372,"y":490,"width":232,"height":26,"type":"solid"},{"id":"w2_l10_p11","x":3730,"y":392,"width":164,"height":26,"type":"solid"},{"id":"w2_l10_p12","x":4033,"y":292,"width":162,"height":26,"type":"bouncy"},{"id":"w2_l10_finish_base","x":4260,"y":480,"width":380,"height":120,"type":"solid"},{"id":"w2_l10_secret_p1","x":1253,"y":160,"width":90,"height":20,"type":"solid"},{"id":"w2_l10_secret_p2","x":2598,"y":470,"width":70,"height":20,"type":"crumbling"},{"id":"w2_l10_secret_p3","x":4360,"y":220,"width":100,"height":20,"type":"solid"}],
-    hazards: [{"id":"w2_l10_hz3","x":1145,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l10_hz9","x":3070,"y":574,"width":80,"height":26,"type":"spike"},{"id":"w2_l10_hz12","x":4073,"y":574,"width":80,"height":26,"type":"spike"}],
-    collectibles: [{"id":"w2_l10_acorn_1","x":1285,"y":130,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l10_acorn_2","x":2620,"y":440,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l10_acorn_3","x":4397,"y":190,"width":26,"height":26,"type":"acorn","value":1500},{"id":"w2_l10_c_1","x":605,"y":378,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_2","x":950,"y":313,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_4","x":1640,"y":216,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_5","x":1985,"y":345,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_6","x":2330,"y":365,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l10_c_7","x":2675,"y":243,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_8","x":3020,"y":182,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_9","x":3365,"y":283,"width":24,"height":24,"type":"gem","value":500},{"id":"w2_l10_c_10","x":3710,"y":379,"width":20,"height":20,"type":"coin","value":100},{"id":"w2_l10_c_11","x":4055,"y":310,"width":20,"height":20,"type":"coin","value":100}],
-    enemies: [{"id":"w2_l10_e_1","x":491,"y":336,"width":26,"height":22,"type":"pigeon","vx":1.3599999999999999,"vy":0,"minX":330,"maxX":679,"facing":1},{"id":"w2_l10_e_2","x":1170,"y":389,"width":28,"height":26,"type":"skunk","vx":-0.97,"vy":0,"minX":1114,"maxX":1253,"facing":-1},{"id":"w2_l10_e_3","x":1452,"y":289,"width":28,"height":26,"type":"goose","vx":0.97,"vy":0,"minX":1379,"maxX":1553,"facing":1},{"id":"w2_l10_e_4","x":1800,"y":389,"width":28,"height":26,"type":"patroller","vx":-0.97,"vy":0,"minX":1697,"maxX":1931,"facing":-1},{"id":"w2_l10_e_5","x":2171,"y":464,"width":28,"height":26,"type":"slime","vx":0.97,"vy":0,"minX":2081,"maxX":2289,"facing":1},{"id":"w2_l10_e_6","x":2771,"y":164,"width":26,"height":22,"type":"flyer","vx":-1.3599999999999999,"vy":0,"minX":2648,"maxX":2921,"facing":-1}],
-    parTime: 88,
-    threeStarScore: 8600
+    worldName: "Prismatic Geode Sanctum",
+    gameplayType: "gadget",
+    category: "jetpack",
+    startWithJetpack: true,
+    description: "The grand climax of the Prismatic Geode Sanctum! Conquer the perilous Prism Core featuring rhythmic phase-shift disappearing crystal floors, soaring anti-gravity resonance shafts, rotating crystal saw hazard grids, and heavy Crystal Golem bastions.",
+    worldWidth: 5600,
+    worldHeight: 960,
+    theme: THEMES.prismaticSanctum,
+    playerStart: { x: 80, y: 760 },
+    goal: { x: 5420, y: 380, width: 44, height: 60 },
+    checkpoints: [
+      { x: 1460, y: 640, width: 30, height: 40, activated: false },
+      { x: 2840, y: 500, width: 30, height: 40, activated: false },
+      { x: 4220, y: 520, width: 30, height: 40, activated: false }
+    ],
+    platforms: [
+      // SECTOR 1: The Phasing Grotto & Synchronized Stepping Stones
+      { id: "w20_p_start", x: 0, y: 800, width: 240, height: 160, type: "solid" },
+      { id: "w20_p_ceiling1", x: 140, y: 520, width: 220, height: 40, type: "solid" },
+
+      // NEW MECHANIC: Rhythmic Phase-Shift Disappearing Crystal Floors (Group A vs Group B)
+      { id: "w20_p_phase_a1", x: 320, y: 720, width: 90, height: 20, type: "phase", phasePeriod: 2.6, phaseOffset: 0, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_b1", x: 460, y: 640, width: 90, height: 20, type: "phase", phasePeriod: 2.6, phaseOffset: 1.3, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_a2", x: 600, y: 560, width: 90, height: 20, type: "phase", phasePeriod: 2.6, phaseOffset: 0, phaseActiveDuration: 1.4 },
+
+      // First Anti-Gravity Lift Well: Soar up to the High Tower
+      { id: "w20_p_well1", x: 740, y: 220, width: 95, height: 560, type: "anti_grav" },
+      { id: "w20_p_tower_top", x: 680, y: 180, width: 150, height: 22, type: "solid" },
+
+      // Secret Phase Bridge to Golden Acorn #1
+      { id: "w20_p_phase_b2", x: 890, y: 190, width: 85, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 1.3, phaseActiveDuration: 1.4 },
+      { id: "w20_p_acorn1_perch", x: 1020, y: 150, width: 85, height: 20, type: "solid" },
+      { id: "w20_p_light1", x: 1140, y: 340, width: 110, height: 16, type: "one-way" },
+      { id: "w20_p_spring1", x: 1280, y: 480, width: 55, height: 20, type: "bouncy" },
+      // Checkpoint 1 Station Deck
+      { id: "w20_p_cp1", x: 1400, y: 680, width: 190, height: 280, type: "solid" },
+
+      // SECTOR 2: The Core Crucible & Phasing Magnet Ring
+      // Floating Altar with PRISMATIC MAGNET POWERUP #1
+      { id: "w20_p_magnet_altar1", x: 1680, y: 540, width: 90, height: 22, type: "solid" },
+
+      // Phasing Diamond Ring (Blinking platforms surrounding central rotating saw & treasure)
+      { id: "w20_p_phase_a3", x: 1840, y: 440, width: 80, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 0, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_b3", x: 2040, y: 320, width: 80, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 1.3, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_a4", x: 2240, y: 440, width: 80, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 0, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_b4", x: 2040, y: 560, width: 80, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 1.3, phaseActiveDuration: 1.4 },
+
+      // Moving Crystal Sentry Platform
+      { id: "w20_p_moving1", x: 2360, y: 460, width: 90, height: 20, type: "solid", startX: 2360, startY: 460, distanceX: 160, speed: 1.3, vx: 1.3, vy: 0 },
+      // Lower Fissure Alcove with Golden Acorn #2
+      { id: "w20_p_acorn2_perch", x: 2280, y: 840, width: 100, height: 24, type: "solid" },
+      // Second Anti-Gravity Lift Well: Launches player out of the lower depths
+      { id: "w20_p_well2", x: 2560, y: 220, width: 95, height: 600, type: "anti_grav" },
+      // Checkpoint 2 Station Island
+      { id: "w20_p_cp2", x: 2780, y: 540, width: 180, height: 420, type: "solid" },
+
+      // SECTOR 3: Fortress of the Prism Golems & Alternating Phase Gauntlet
+      // Secret High Roost with LASER BLASTER
+      { id: "w20_p_blaster_roost", x: 3000, y: 180, width: 90, height: 20, type: "solid" },
+      // Elevated Golem Bastion 1
+      { id: "w20_p_bastion1", x: 3260, y: 460, width: 110, height: 30, type: "solid" },
+
+      // 3 Alternating Phase Slabs over the saw-lined chasm
+      { id: "w20_p_phase_a5", x: 3420, y: 420, width: 85, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 0, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_b5", x: 3560, y: 380, width: 85, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 1.3, phaseActiveDuration: 1.4 },
+      { id: "w20_p_phase_a6", x: 3700, y: 420, width: 85, height: 18, type: "phase", phasePeriod: 2.6, phaseOffset: 0, phaseActiveDuration: 1.4 },
+
+      // Elevated Golem Bastion 2
+      { id: "w20_p_bastion2", x: 3840, y: 460, width: 110, height: 30, type: "solid" },
+      // Altar with PRISMATIC MAGNET POWERUP #2
+      { id: "w20_p_magnet_altar2", x: 4020, y: 260, width: 90, height: 20, type: "solid" },
+      // Checkpoint 3 Station Island
+      { id: "w20_p_cp3", x: 4160, y: 560, width: 180, height: 400, type: "solid" },
+
+      // SECTOR 4: The Stratospheric Geode Apex & Phase Spire
+      // Third Thermal Lift Well: Soar up to the Stratospheric Apex!
+      { id: "w20_p_well3", x: 4340, y: 120, width: 100, height: 680, type: "anti_grav" },
+      // High Stratospheric Phase Spire with Golden Acorn #3
+      { id: "w20_p_phase_b6", x: 4500, y: 120, width: 85, height: 20, type: "phase", phasePeriod: 2.6, phaseOffset: 1.3, phaseActiveDuration: 1.4 },
+      { id: "w20_p_acorn3_perch", x: 4620, y: 110, width: 85, height: 20, type: "solid" },
+      // Mid-Air Bubble Shield Shelf
+      { id: "w20_p_shield_shelf", x: 4420, y: 500, width: 90, height: 20, type: "solid" },
+      // Bouncy Geode Launch Drum 2
+      { id: "w20_p_spring2", x: 4620, y: 540, width: 55, height: 20, type: "bouncy" },
+      // Crumbling Crystal Stepping Stones over the final abyss
+      { id: "w20_p_crumb1", x: 4760, y: 460, width: 80, height: 20, type: "crumbling" },
+      { id: "w20_p_crumb2", x: 4900, y: 440, width: 80, height: 20, type: "crumbling" },
+
+      // SECTOR 5: Grand Portal Climax
+      { id: "w20_p_cathedral_step", x: 5080, y: 420, width: 140, height: 540, type: "solid" },
+      { id: "w20_p_goal_altar", x: 5340, y: 420, width: 260, height: 540, type: "solid" }
+    ],
+    hazards: [
+      // Deep Bottom Abyss Crystal Spike Beds
+      { id: "w20_hz_spike1", x: 240, y: 944, width: 1120, height: 26, type: "spike" },
+      { id: "w20_hz_spike2", x: 1590, y: 944, width: 1170, height: 26, type: "spike" },
+      { id: "w20_hz_spike3", x: 2940, y: 944, width: 1160, height: 26, type: "spike" },
+      { id: "w20_hz_spike4", x: 4280, y: 944, width: 780, height: 26, type: "spike" },
+
+      // Overhead Ceiling Spikes in tight passages
+      { id: "w20_hz_spike_ceil1", x: 800, y: 40, width: 240, height: 26, type: "spike" },
+      { id: "w20_hz_spike_ceil2", x: 3100, y: 40, width: 340, height: 26, type: "spike" },
+
+      // Rotating Ancient Crystal Saws
+      { id: "w20_hz_saw1", x: 530, y: 480, width: 42, height: 42, type: "saw" },
+      { id: "w20_hz_saw2", x: 2040, y: 440, width: 46, height: 46, type: "saw" },
+      { id: "w20_hz_saw3", x: 3500, y: 320, width: 44, height: 44, type: "saw" },
+      { id: "w20_hz_saw4", x: 3780, y: 280, width: 44, height: 44, type: "saw" },
+      { id: "w20_hz_saw5", x: 4700, y: 360, width: 44, height: 44, type: "saw" }
+    ],
+    collectibles: [
+      // Jetpack spawn at start gantry
+      { id: "w20_jp_spawn", x: 130, y: 760, width: 24, height: 28, type: "jetpack", value: 0 },
+
+      // 10 Jetpack Fuel Refill Canisters strategically spaced along labyrinth routes
+      { id: "w20_fuel_1", x: 530, y: 220, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_2", x: 1050, y: 340, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_3", x: 1480, y: 630, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_4", x: 1940, y: 380, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_5", x: 2480, y: 140, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_6", x: 2860, y: 490, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_7", x: 3400, y: 410, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_8", x: 3900, y: 410, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_9", x: 4240, y: 510, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+      { id: "w20_fuel_10", x: 4620, y: 380, width: 20, height: 22, type: "jetpack_fuel", value: 200 },
+
+      // 3 Golden Acorns
+      { id: "w20_acorn_1", x: 1050, y: 110, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w20_acorn_2", x: 2320, y: 800, width: 26, height: 26, type: "acorn", value: 1500 },
+      { id: "w20_acorn_3", x: 4650, y: 70, width: 26, height: 26, type: "acorn", value: 1500 },
+
+      // Power-ups: Dual Prismatic Magnets, Laser Blaster & Ammo, Bubble Shield, Hearts
+      { id: "w20_mag1", x: 1715, y: 500, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w20_mag2", x: 4055, y: 220, width: 28, height: 28, type: "powerup_magnet", value: 600 },
+      { id: "w20_blaster1", x: 3035, y: 140, width: 28, height: 28, type: "blaster", value: 800 },
+      { id: "w20_ammo1", x: 3500, y: 180, width: 22, height: 22, type: "blaster_ammo", value: 300 },
+      { id: "w20_shield1", x: 4455, y: 460, width: 24, height: 24, type: "bubble_shield", value: 500 },
+      { id: "w20_heart1", x: 1520, y: 635, width: 22, height: 22, type: "heart", value: 0 },
+      { id: "w20_heart2", x: 4280, y: 515, width: 22, height: 22, type: "heart", value: 0 },
+
+      // Sector 1: Ascent Coins & Gems
+      { id: "w20_c1", x: 340, y: 670, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_c2", x: 480, y: 590, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem1", x: 780, y: 160, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c3", x: 920, y: 140, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_c4", x: 1180, y: 300, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem2", x: 1300, y: 430, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 2: The Core Crucible Phasing Diamond Array (Vast magnetic pull zone)
+      { id: "w20_c5", x: 1860, y: 390, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem3", x: 1960, y: 340, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c6", x: 2060, y: 270, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem4", x: 2160, y: 340, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c7", x: 2260, y: 390, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem5", x: 2160, y: 520, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c8", x: 2060, y: 610, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem6", x: 1960, y: 520, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c9", x: 2440, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+
+      // Sector 3: Sentry Gauntlet Precision Path Coins & Gems
+      { id: "w20_c10", x: 3140, y: 320, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_c11", x: 3440, y: 370, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem7", x: 3580, y: 330, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c12", x: 3720, y: 370, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem8", x: 3960, y: 220, width: 24, height: 24, type: "gem", value: 500 },
+
+      // Sector 4: Stratospheric High Coins & Finale Arc
+      { id: "w20_c13", x: 4520, y: 160, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem9", x: 4680, y: 110, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c14", x: 4820, y: 410, width: 20, height: 20, type: "coin", value: 100 },
+      { id: "w20_gem10", x: 4960, y: 380, width: 24, height: 24, type: "gem", value: 500 },
+      { id: "w20_c15", x: 5180, y: 360, width: 20, height: 20, type: "coin", value: 100 }
+    ],
+    enemies: [
+      // Sector 1: Crystal Bats in the lower grotto
+      { id: "w20_e_bat1", x: 540, y: 460, width: 26, height: 22, type: "crystal_bat", vx: 1.3, vy: 0, minX: 460, maxX: 660, facing: 1 },
+      { id: "w20_e_bat2", x: 960, y: 260, width: 26, height: 22, type: "crystal_bat", vx: -1.3, vy: 0, minX: 880, maxX: 1080, facing: -1 },
+
+      // Sector 2: Sentry Golem guarding lower fissure acorn + flyer & bat
+      { id: "w20_e_golem1", x: 2240, y: 808, width: 28, height: 32, type: "crystal_golem", vx: 0.8, vy: 0, minX: 2210, maxX: 2290, facing: 1 },
+      { id: "w20_e_bat3", x: 1980, y: 480, width: 26, height: 22, type: "crystal_bat", vx: 1.4, vy: 0, minX: 1880, maxX: 2120, facing: 1 },
+      { id: "w20_e_flyer1", x: 2420, y: 300, width: 28, height: 24, type: "flyer", vx: -1.4, vy: 0, minX: 2340, maxX: 2540, facing: -1 },
+
+      // Sector 3: Sentry Golems #2 & #3 guarding alternating phase bridges
+      { id: "w20_e_golem2", x: 3290, y: 428, width: 28, height: 32, type: "crystal_golem", vx: 0.8, vy: 0, minX: 3270, maxX: 3340, facing: 1 },
+      { id: "w20_e_bat4", x: 3660, y: 320, width: 26, height: 22, type: "crystal_bat", vx: -1.4, vy: 0, minX: 3580, maxX: 3780, facing: -1 },
+      { id: "w20_e_golem3", x: 3870, y: 428, width: 28, height: 32, type: "crystal_golem", vx: -0.8, vy: 0, minX: 3850, maxX: 3920, facing: -1 },
+
+      // Sector 4 & 5: Stratospheric Bat & Grand Cathedral Sentry Golem #4 + Patroller
+      { id: "w20_e_bat5", x: 4460, y: 220, width: 26, height: 22, type: "crystal_bat", vx: 1.5, vy: 0, minX: 4360, maxX: 4600, facing: 1 },
+      { id: "w20_e_golem4", x: 5120, y: 388, width: 28, height: 32, type: "crystal_golem", vx: 0.85, vy: 0, minX: 5090, maxX: 5190, facing: 1 },
+      { id: "w20_e_patrol1", x: 5380, y: 394, width: 28, height: 26, type: "patroller", vx: -0.8, vy: 0, minX: 5330, maxX: 5480, facing: -1 }
+    ],
+    parTime: 125,
+    threeStarScore: 18800
   }
 ];

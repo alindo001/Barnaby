@@ -928,6 +928,72 @@ class SoundEngine {
     } catch {}
   }
 
+  // PRISMATIC MAGNET POWERUP SOUND (Electric magnetic sweep & chime)
+  public playMagnetActivate() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      // High-tech frequency sweep
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.22);
+      osc.frequency.exponentialRampToValueAtTime(1320, now + 0.35);
+
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.42);
+
+      // Harmonized sparkling crystal tones
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+        const hOsc = this.ctx!.createOscillator();
+        const hGain = this.ctx!.createGain();
+        hOsc.type = 'triangle';
+        hOsc.frequency.setValueAtTime(freq, now + 0.08 + idx * 0.05);
+        hGain.gain.setValueAtTime(0, now + 0.08 + idx * 0.05);
+        hGain.gain.linearRampToValueAtTime(0.15, now + 0.08 + idx * 0.05 + 0.02);
+        hGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08 + idx * 0.05 + 0.25);
+        hOsc.connect(hGain);
+        hGain.connect(this.masterGain!);
+        hOsc.start(now + 0.08 + idx * 0.05);
+        hOsc.stop(now + 0.08 + idx * 0.05 + 0.26);
+      });
+    } catch {}
+  }
+
+  // PRISMATIC MAGNET PULL CHIME (Subtle rapid resonant ping)
+  public playMagnetPull() {
+    if (!this.soundEnabled) return;
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(1174, now + 0.06);
+
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    } catch {}
+  }
+
   // BUBBLE SHIELD POP / BURST SOUND (Aquatic watery pop)
   public playShieldPop() {
     if (!this.soundEnabled) return;
